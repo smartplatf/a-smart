@@ -1,0 +1,17 @@
+name:   TestSmartData
+type:   SmartData-Object
+merge:  test
+config: trial
+attributes:
+    - attribute:    _test
+      type:         destination
+      configName:   trial
+    - attribute:    _name
+      type:         key
+      groups:       test
+states:
+    - name:         active
+      startState:   yes
+    - name:         inactive
+      endState:     yes
+
