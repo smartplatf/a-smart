@@ -26,68 +26,47 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.test.loader.ObjectStereoType
+ * File:                org.anon.smart.smcore.deployment.FlowDeploymentSuite
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                14-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A stereotype to test multiple types
+ * A deployment service for flows
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.test.loader;
+package org.anon.smart.smcore.deployment;
 
-import org.anon.smart.base.stt.annot.MethodExit;
+import org.anon.smart.deployment.DeploymentSuite;
+import org.anon.smart.deployment.ArtefactType;
 
-import org.anon.utilities.fsm.FiniteState;
-import org.anon.utilities.fsm.StateEntity;
 import org.anon.utilities.exception.CtxException;
 
-public class ObjectStereoType implements StateEntity
+public class FlowDeploymentSuite extends DeploymentSuite<FlowDeployment>
 {
-    private String __object__type__;
-    private FiniteState __current__state__;
+    private static FlowDeploymentSuite APP_INSTANCE = null;
 
 
-    public ObjectStereoType()
-    {
-    }
-
-    @MethodExit("constructor")
-    private void initializeObject()
-    {
-        __object__type__ = "New";
-    }
-
-    public String utilities___stateEntityType()
-    {
-        return __object__type__;
-    }
-
-    public void utilities___setCurrentState(FiniteState state)
-    {
-        __current__state__ = state;
-    }
-
-    public FiniteState utilities___currentState()
-    {
-        return __current__state__;
-    }
-
-    public StateEntity utilities___parent()
+    public FlowDeploymentSuite()
         throws CtxException
     {
-        return null;
+        super();
+        setHandleDeployment(FlowDeployment.class);
     }
 
-    public StateEntity[] utilities___children(String setype)
-        throws CtxException
+    private static void setSingleInstance(Object obj)
     {
-        return null;
+        if (APP_INSTANCE == null)
+            APP_INSTANCE = (FlowDeploymentSuite)obj;
+    }
+
+    private static Object getSingleInstance()
+    {
+        return APP_INSTANCE;
     }
 }
 

@@ -26,68 +26,62 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.test.loader.ObjectStereoType
+ * File:                org.anon.smart.deployment.Deployer
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                13-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A stereotype to test multiple types
+ * A deployer for different types of files
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.test.loader;
+package org.anon.smart.deployment;
 
-import org.anon.smart.base.stt.annot.MethodExit;
+import java.util.Map;
 
-import org.anon.utilities.fsm.FiniteState;
-import org.anon.utilities.fsm.StateEntity;
+import static org.anon.utilities.services.ServiceLocator.*;
+
 import org.anon.utilities.exception.CtxException;
 
-public class ObjectStereoType implements StateEntity
+public interface Deployer
 {
-    private String __object__type__;
-    private FiniteState __current__state__;
-
-
-    public ObjectStereoType()
+    public static enum deployers
     {
+        ear(new EARDeployer(), "ear"),
+        jar(new JARDeployer(), "jar");
+
+        private Deployer _deployer;
+        private String _extension;
+        private deployers(Deployer dep, String ext)
+        {
+            _deployer = dep;
+            _extension = ext;
+        }
+
+        public static Deployer deployerFor(String file)
+            throws CtxException
+        {
+            int li = file.lastIndexOf(".");
+            if (li <= 0)
+                except().te("Cannot recognize the type of file to be deployed");
+            String ext = file.substring(li + 1);
+
+            for (deployers d : deployers.values())
+            {
+                if (d._extension.equals(ext))
+                    return d._deployer;
+            }
+
+            except().te("Cannot recognize the type of file to be deployed. " + ext);
+            return null;
+        }
     }
 
-    @MethodExit("constructor")
-    private void initializeObject()
-    {
-        __object__type__ = "New";
-    }
-
-    public String utilities___stateEntityType()
-    {
-        return __object__type__;
-    }
-
-    public void utilities___setCurrentState(FiniteState state)
-    {
-        __current__state__ = state;
-    }
-
-    public FiniteState utilities___currentState()
-    {
-        return __current__state__;
-    }
-
-    public StateEntity utilities___parent()
-        throws CtxException
-    {
-        return null;
-    }
-
-    public StateEntity[] utilities___children(String setype)
-        throws CtxException
-    {
-        return null;
-    }
+    public Map<String, String> deploy(String file, DeploymentSuite service)
+        throws CtxException;
 }
 

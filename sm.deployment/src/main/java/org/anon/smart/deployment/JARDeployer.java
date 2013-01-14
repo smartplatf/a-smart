@@ -26,65 +26,32 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.test.loader.ObjectStereoType
+ * File:                org.anon.smart.deployment.JARDeployer
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                13-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A stereotype to test multiple types
+ * A deployer for jar files
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.test.loader;
+package org.anon.smart.deployment;
 
-import org.anon.smart.base.stt.annot.MethodExit;
+import java.util.Map;
 
-import org.anon.utilities.fsm.FiniteState;
-import org.anon.utilities.fsm.StateEntity;
 import org.anon.utilities.exception.CtxException;
 
-public class ObjectStereoType implements StateEntity
+public class JARDeployer implements Deployer
 {
-    private String __object__type__;
-    private FiniteState __current__state__;
-
-
-    public ObjectStereoType()
+    public JARDeployer()
     {
     }
 
-    @MethodExit("constructor")
-    private void initializeObject()
-    {
-        __object__type__ = "New";
-    }
-
-    public String utilities___stateEntityType()
-    {
-        return __object__type__;
-    }
-
-    public void utilities___setCurrentState(FiniteState state)
-    {
-        __current__state__ = state;
-    }
-
-    public FiniteState utilities___currentState()
-    {
-        return __current__state__;
-    }
-
-    public StateEntity utilities___parent()
-        throws CtxException
-    {
-        return null;
-    }
-
-    public StateEntity[] utilities___children(String setype)
+    public Map<String, String> deploy(String file, DeploymentSuite service)
         throws CtxException
     {
         return null;
