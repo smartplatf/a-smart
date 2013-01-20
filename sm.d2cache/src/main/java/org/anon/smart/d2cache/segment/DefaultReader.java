@@ -45,36 +45,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anon.smart.d2cache.Reader;
+import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.utilities.exception.CtxException;
 
-public class DefualtReader implements Reader {
+public class DefaultReader implements Reader {
 
-	protected CSegment[] _segments;
+	protected Store _store;
 	protected StoreConfig _config;
 	
-	public DefualtReader(CSegment[] segements, StoreConfig cfg)
+	public DefaultReader(Store store, StoreConfig cfg)
 	{
-		_segments = segements;
+		_store = store;
 		_config = cfg;
 	}
 	@Override
 	public Object lookup(String group, Object key) throws CtxException {
 		Object ret = null;
-		for(int i = 0 ; ((ret == null) && (i < _segments.length)); i++) {
-			ret = _segments[i].get(group, key);
-		}
-		
+		ret = _store.read(group, key);
 		return ret;
 	}
 
 	@Override
 	public List<Object> search(String group, Object query) throws CtxException {
 		List<Object> resultSet = new ArrayList<Object>();
-		for(int i = 0 ; i < _segments.length; i++) {
-			resultSet.addAll(_segments[i].search(group, query));//TODO
-		}
-		
+		//TODO
 		return resultSet;
 	}
 	

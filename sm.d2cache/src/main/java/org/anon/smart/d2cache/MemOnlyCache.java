@@ -49,6 +49,7 @@ import org.anon.smart.d2cache.D2CacheScheme;
 import org.anon.smart.d2cache.segment.CSegment;
 import org.anon.smart.d2cache.segment.ReaderFactory;
 import org.anon.smart.d2cache.store.StoreConfig;
+import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.memory.jcs.JCSSegment;
 import org.anon.utilities.exception.CtxException;
 
@@ -69,12 +70,13 @@ public class MemOnlyCache implements D2Cache {
 	}
 	@Override
 	public D2CacheTransaction startTransaction(UUID txnid) throws CtxException {
-		return new D2CacheTransactionImpl(txnid, _segments);
+		StoreConnection[] connections = new StoreConnection[_segments.length];
+		return new D2CacheTransactionImpl(txnid, connections);
 	}
 
 	@Override
 	public Reader myReader() throws CtxException {
-		return ReaderFactory.getReaderFor(_segments, _flags, _config);
+		return ReaderFactory.getReaderFor(_segments[0].getStore(), _flags, _config);
 		
 	}
 
