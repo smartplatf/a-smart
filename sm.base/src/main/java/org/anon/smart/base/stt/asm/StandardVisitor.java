@@ -41,6 +41,7 @@
 
 package org.anon.smart.base.stt.asm;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -56,7 +57,7 @@ public class StandardVisitor extends ClassVisitor
 
     public StandardVisitor(ClassVisitor cv, STTVisitor visit)
     {
-        super(1, cv);
+        super(Opcodes.ASM4, cv);
         _visitor = visit;
         _descriptor = visit.descriptor();
     }
