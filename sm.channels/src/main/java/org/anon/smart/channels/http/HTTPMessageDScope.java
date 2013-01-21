@@ -160,5 +160,10 @@ public abstract class HTTPMessageDScope implements DScope
     {
         _route.close();
     }
+
+    public String origin()
+    {
+        return _origin;
+    }
 }
 

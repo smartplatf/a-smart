@@ -41,17 +41,47 @@
 
 package org.anon.smart.base.tenant.shell;
 
+import java.util.List;
+
 import org.anon.utilities.exception.CtxException;
 
 public class RuntimeShell implements SmartShell
 {
+    private transient ShellContext _context;
+
     public RuntimeShell()
+        throws CtxException
+    {
+        initializeShell();
+    }
+
+    public void initializeShell()
+        throws CtxException
+    {
+        _context = new ShellContext();
+    }
+
+    public void cleanup()
+        throws CtxException
     {
     }
 
-    public void initializeShell(String name)
+    public Object lookupFor(String spacemodel, String group, Object key)
         throws CtxException
     {
+        //no need to search different spaces to find out which space has it
+        //it is searched directly on the shell that has to have it. IF not 
+        //present, then it is not accessible or not present.
+        DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
+        Object ret = shell.lookup(spacemodel, group, key);
+        return ret;
+    }
+
+    public List<Object> searchFor(String spacemodel, String group, Object query)
+        throws CtxException
+    {
+        DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
+        return shell.search(spacemodel, group, query);
     }
 }
 

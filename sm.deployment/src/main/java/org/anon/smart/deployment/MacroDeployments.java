@@ -74,9 +74,38 @@ public class MacroDeployments<T extends Deployment>
         return dep;
     }
 
-    public Deployment deploymentFor(String dep)
+    public T addDeploymentFrom(T dep, String[] features)
+        throws CtxException
+    {
+        T ret = _deployments.get(dep.deployedName());
+        if (ret == null)
+        {
+            ret = Deployment.deploymentFrom(dep, features, _handleClass);
+            _deployments.put(ret.deployedName(), ret);
+        }
+
+        return ret;
+    }
+
+    public T deploymentFor(String dep)
     {
         return _deployments.get(dep);
+    }
+
+    public T deploymentFor(DeploymentFilter<T> filter)
+        throws CtxException
+    {
+        T ret = null;
+        for (T dep : _deployments.values())
+        {
+            if (filter.matches(dep))
+            {
+                ret = dep;
+                break;
+            }
+        }
+
+        return ret;
     }
 
     public void addDeployment(String file)

@@ -42,6 +42,9 @@
 package org.anon.smart.deployment;
 
 import java.util.List;
+import java.util.ArrayList;
+
+import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.verify.VerifiableObject;
 import org.anon.utilities.exception.CtxException;
@@ -77,6 +80,24 @@ public class Feature implements Deployable, VerifiableObject
     public String deployedName()
     {
         return name;
+    }
+
+    public List<String> myartefacts() { return artefacts; }
+    public List<String> mysubs() { return subFeatures; }
+
+    public List<String> allArtefacts()
+        throws CtxException
+    {
+        List<String> ret = new ArrayList<String>();
+        ret.addAll(artefacts);
+        for (int i = 0; (subFeatures != null) && (i < subFeatures.size()); i++)
+        {
+            Feature f = _belongsTo.featureFor(subFeatures.get(i));
+            assertion().assertNotNull(f, "Invalid feature deployed. " + subFeatures.get(i));
+            ret.addAll(f.allArtefacts());
+        }
+
+        return ret;
     }
 
     public boolean belongsToMe(Class cls)

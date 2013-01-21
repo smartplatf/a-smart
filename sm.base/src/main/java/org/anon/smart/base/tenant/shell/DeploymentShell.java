@@ -43,32 +43,91 @@ package org.anon.smart.base.tenant.shell;
 
 import java.util.List;
 
-import org.anon.smart.deployment.MicroArtefacts;
+import static org.anon.utilities.services.ServiceLocator.*;
+
+import org.anon.smart.base.flow.FlowDeployment;
+import org.anon.smart.base.flow.PrimeTypeFilter;
+import org.anon.smart.base.flow.ClassTypeFilter;
+import org.anon.smart.base.flow.FlowConstants;
 import org.anon.smart.deployment.ArtefactType;
+import org.anon.smart.deployment.LicensedDeploymentSuite;
 
 import org.anon.utilities.exception.CtxException;
 
-public class DeploymentShell
+public class DeploymentShell implements SmartShell, FlowConstants
 {
     private ClassLoader _loader;
-    private MicroArtefacts _enabled;
+    private LicensedDeploymentSuite<FlowDeployment> _licensed;
 
     public DeploymentShell(ClassLoader ldr)
     {
-        _enabled = new MicroArtefacts();
+        _licensed = new LicensedDeploymentSuite<FlowDeployment>();
         _loader = ldr;
     }
 
-    public Class deployment(String name, ArtefactType type)
+    public Class deployment(String name, String type)
         throws CtxException
     {
-        return _enabled.clazzFor(name, type, _loader);
+        ArtefactType atype = ArtefactType.artefactTypeFor(type);
+        assertion().assertNotNull(atype, "Cannot recognized artefactType: " + type);
+        return _licensed.assistant().clazzFor(name, atype, _loader);
     }
 
-    public List<Class> searchDeployment(String wild, ArtefactType type)
+    public Class eventClass(String name)
         throws CtxException
     {
-        return _enabled.clazzezFor(wild, type, _loader);
+        return deployment(name, EVENT);
+    }
+
+    public Class dataClass(String name)
+        throws CtxException
+    {
+        Class cls = deployment(name, DATA);
+        if (cls == null)
+            cls = deployment(name, PRIMEDATA);
+        return cls;
+    }
+
+    public Class primeClass(String name)
+        throws CtxException
+    {
+        return deployment(name, PRIMEDATA);
+    }
+
+    public List<Class> searchDeployment(String wild, String type)
+        throws CtxException
+    {
+        ArtefactType atype = ArtefactType.artefactTypeFor(type);
+        assertion().assertNotNull(atype, "Cannot recognized artefactType: " + type);
+        return _licensed.assistant().clazzezFor(wild, atype, _loader);
+    }
+
+    public FlowDeployment deploymentFor(String flow)
+        throws CtxException
+    {
+        return (FlowDeployment)_licensed.assistant().deploymentFor(flow);
+    }
+
+    public FlowDeployment flowForPrimeType(String name)
+        throws CtxException
+    {
+        return (FlowDeployment)_licensed.assistant().deploymentFor(new PrimeTypeFilter(name));
+    }
+
+    public FlowDeployment flowForType(String name)
+        throws CtxException
+    {
+        return (FlowDeployment)_licensed.assistant().deploymentFor(new ClassTypeFilter(name));
+    }
+
+    public void initializeShell()
+        throws CtxException
+    {
+    }
+
+    public void cleanup()
+        throws CtxException
+    {
     }
 }
 

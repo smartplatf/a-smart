@@ -66,6 +66,7 @@ public class TestLoader
     public void testTestLoader()
         throws Exception
     {
+        STTRegister.registerSTT("Base", "org.anon.smart.base.test.loader.BaseStereoType");
         STTRegister.registerSTT("SmartData", "org.anon.smart.base.test.loader.SmartDataStereoType");
         STTRegister.registerSTT("TagObject", "org.anon.smart.base.test.loader.TagObjectStereoType");
         STTRegister.registerSTT("Object", "org.anon.smart.base.test.loader.ObjectStereoType");
@@ -82,6 +83,17 @@ public class TestLoader
         fld.setAccessible(true);
         Object val = fld.get(obj);
         assertTrue(val != null);
+
+        mthd = cls.getDeclaredMethod("init");
+        assertTrue(mthd != null);
+        fld = cls.getDeclaredField("___smart_type___");
+        assertTrue(fld != null);
+        assertFieldAnnotations(fld);
+        fld.setAccessible(true);
+        val = fld.get(obj);
+        assertTrue(val != null);
+        assertTrue(val.toString().equals("test"));
+
         mthd = cls.getDeclaredMethod("getTest");
         mthd.invoke(obj);
         mthd = cls.getDeclaredMethod("getName");

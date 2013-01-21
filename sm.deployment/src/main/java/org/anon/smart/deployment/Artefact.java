@@ -61,6 +61,14 @@ public class Artefact implements Deployable
         _name = type.getName(clazz);
     }
 
+    private Artefact(Artefact art)
+    {
+        _name = art._name;
+        _clazz = art._clazz;
+        _type = art._type;
+        _keys = art._keys;
+    }
+
     public String[] getKeys() { return _keys; }
     public String getName() { return _name; }
     public Class getClazz() { return _clazz; }
@@ -101,6 +109,19 @@ public class Artefact implements Deployable
         Artefact[] ret = new Artefact[t.length];
         for (int i = 0; i < t.length; i++)
             ret[i] = new Artefact(clazz, t[i]);
+        return ret;
+    }
+
+    public static Artefact[] artefactsFor(Artefact[] arts)
+        throws CtxException
+    {
+        if (arts == null)
+            return arts;
+
+        Artefact[] ret = new Artefact[arts.length];
+        for (int i = 0; i < arts.length; i++)
+            ret[i] = new Artefact(arts[i]);
+
         return ret;
     }
 }

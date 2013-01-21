@@ -57,17 +57,19 @@ public class ArtefactType
 {
     private static Map<Class<? extends Annotation>, ArtefactType> ARTEFACTS = new HashMap<Class<? extends Annotation>, ArtefactType>();
 
+    private String _typeName;
     private Class<? extends Annotation> _recognizer;
     private String _namekey;
     private Method _nameMethod;
     private Method[] _keyMethods;
     private String[] _keys;
 
-    private ArtefactType(Class<? extends Annotation> annot, String namekey, String ... keys)
+    private ArtefactType(String typename, Class<? extends Annotation> annot, String namekey, String ... keys)
         throws CtxException
     {
         try
         {
+            _typeName = typename;
             _recognizer = annot;
             _keys = keys;
             _namekey = namekey;
@@ -146,14 +148,25 @@ public class ArtefactType
         return ret.toArray(new String[0]);
     }
 
-    public static void registerArtefactType(Class<? extends Annotation> annot, String namekey, String ... keys)
+    public static void registerArtefactType(String typename, Class<? extends Annotation> annot, String namekey, String ... keys)
         throws CtxException
     {
         if (ARTEFACTS.containsKey(annot))
             return;
 
-        ArtefactType t = new ArtefactType(annot, namekey, keys);
+        ArtefactType t = new ArtefactType(typename, annot, namekey, keys);
         ARTEFACTS.put(annot, t);
+    }
+
+    public static ArtefactType artefactTypeFor(String name)
+    {
+        for (ArtefactType t : ARTEFACTS.values())
+        {
+            if (t._typeName.equals(name))
+                return t;
+        }
+
+        return null;
     }
 
     public static ArtefactType[] recognizeArtefactType(Class cls)

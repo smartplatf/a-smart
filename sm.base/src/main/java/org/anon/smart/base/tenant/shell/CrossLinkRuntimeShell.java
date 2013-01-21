@@ -41,13 +41,49 @@
 
 package org.anon.smart.base.tenant.shell;
 
+import java.util.List;
+
 import org.anon.utilities.crosslink.CrossLinker;
+import org.anon.utilities.exception.CtxException;
 
 public class CrossLinkRuntimeShell extends CrossLinker
 {
     public CrossLinkRuntimeShell(Object obj)
     {
         super(obj);
+    }
+
+    public CrossLinkRuntimeShell(ClassLoader ldr)
+        throws CtxException
+    {
+        super(ldr);
+        create();
+    }
+
+    protected Class[] parmTypes(String method, Object ... params)
+    {
+        if (method.equals("lookupFor") || method.equals("searchFor"))
+            return new Class[] { String.class, String.class, Object.class };
+
+        return super.parmTypes(method, params);
+    }
+
+    public void cleanup()
+        throws CtxException
+    {
+        linkMethod("cleanup");
+    }
+
+    public Object lookupFor(String spacemodel, String group, Object key)
+        throws CtxException
+    {
+        return linkMethod("lookupFor", spacemodel, group, key);
+    }
+
+    public List<Object> searchFor(String spacemodel, String group, Object query)
+        throws CtxException
+    {
+        return (List<Object>)linkMethod("searchFor", spacemodel, group, query);
     }
 }
 

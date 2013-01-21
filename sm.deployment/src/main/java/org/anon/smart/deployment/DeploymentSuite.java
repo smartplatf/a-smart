@@ -43,21 +43,24 @@ package org.anon.smart.deployment;
 
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.utils.ApplicationSingleton;
 import org.anon.utilities.exception.CtxException;
 
-public class DeploymentSuite<T extends Deployment> extends ApplicationSingleton
+public abstract class DeploymentSuite<T extends Deployment> extends ApplicationSingleton implements DSuite<T>
 {
     private MicroArtefacts _microArtefacts;
     private MacroDeployments<T> _macroDeployments;
+    private SuiteAssistant<T> _assistant;
 
     protected DeploymentSuite()
     {
         _microArtefacts = new MicroArtefacts();
         _macroDeployments = new MacroDeployments<T>();
+        _assistant = new SuiteAssistant<T>(this);
     }
 
     protected void setHandleDeployment(Class<T> cls)
@@ -66,51 +69,56 @@ public class DeploymentSuite<T extends Deployment> extends ApplicationSingleton
         _macroDeployments.setHandleDeployment(cls);
     }
 
-    protected Artefact[] deployClazz(Class cls)
-        throws CtxException
+    public MicroArtefacts artefacts()
     {
-        Artefact[] artefacts = _microArtefacts.deployClazz(cls);
-        return artefacts;
+        return _microArtefacts;
     }
 
-    protected Deployment deployClazz(Class cls, String dep)
-        throws CtxException
+    public MacroDeployments<T> deployments()
     {
-        Artefact[] artefacts = _microArtefacts.deployClazz(cls);
-        return _macroDeployments.addDeployment(dep, artefacts);
+        return _macroDeployments;
     }
 
-    protected Map<String, String> deployFile(String file)
+    public Map<String, String> deployFile(String file)
         throws CtxException
     {
         Deployer deployer = Deployer.deployers.deployerFor(file);
         return deployer.deploy(file, this);
     }
 
-    protected List<Class> clazzezFor(String wild, ArtefactType type, ClassLoader ldr)
-        throws CtxException
+    public SuiteAssistant<T> assistant()
     {
-        return _microArtefacts.clazzezFor(wild, type, ldr);
+        return _assistant;
     }
 
-    protected Class clazzFor(String key, ArtefactType type, ClassLoader ldr)
+    public void enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
         throws CtxException
     {
-        return _microArtefacts.clazzFor(key, type, ldr);
-    }
-
-    protected void enableFor(MicroArtefacts micro, String dep)
-        throws CtxException
-    {
-        Deployment deployment = _macroDeployments.deploymentFor(dep);
+        T deployment = _macroDeployments.deploymentFor(dep);
         assertion().assertNotNull(deployment, "No Deployment " + dep + " to enable");
 
-        List<String> arts = deployment.artefacts();
-        for (int i = 0; (arts != null) && (i < arts.size()); i++)
+        Deployment ldeployment = ldeploy.assistant().deploymentFor(dep);
+        List<String> enable = new ArrayList<String>();
+        if (ldeployment == null)
         {
-            Artefact[] artefacts = _microArtefacts.artefactsForClazz(arts.get(i));
-            assertion().assertNotNull(artefacts, "Wrong deployment details. No class deployed for: " + arts.get(i));
-            //TODO: micro.enable(artefacts);
+            ldeployment = ldeploy.deployments().addDeploymentFrom(deployment, features);
+            enable.addAll(ldeployment.featureArtefacts());
+        }
+        else
+        {
+            for (int i = 0; (features != null) && (i < features.length); i++)
+            {
+                ldeployment.addFeatureFrom(deployment, features[i]);
+                enable.addAll(deployment.featureArtefacts(features[i]));
+            }
+        }
+
+        for (int i = 0; (enable != null) && (i < enable.size()); i++)
+        {
+            Artefact[] artefacts = _microArtefacts.artefactsForClazz(enable.get(i));
+            assertion().assertNotNull(artefacts, "Wrong deployment details. No class deployed for: " + enable.get(i));
+            ldeployment.addArtefacts(artefacts);
+            ldeploy.deployArtefacts(artefacts);
         }
     }
 }

@@ -41,12 +41,88 @@
 
 package org.anon.smart.smcore.stt;
 
-import org.anon.smart.smcore.data.SmartData;
+import java.util.List;
+import java.util.UUID;
+import java.util.ArrayList;
 
-public class SmartDataSTT
+import static org.anon.smart.base.utils.AnnotationUtils.*;
+
+import org.anon.smart.base.stt.annot.MethodExit;
+import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.data.DataLegend;
+
+import org.anon.utilities.fsm.StateEntity;
+import org.anon.utilities.fsm.FiniteState;
+import org.anon.utilities.exception.CtxException;
+
+public class SmartDataSTT implements SmartData
 {
+    private FiniteState ___smart_currentState___;
+    private DataLegend ___smart_legend___;
+    private transient String ___smart_name___;
+
     public SmartDataSTT()
     {
+    }
+
+    @MethodExit("constructor")
+    private void smartdatastt___init()
+        throws CtxException
+    {
+        ___smart_legend___ = new DataLegend();
+        ___smart_name___ = objectName(this);
+    }
+
+    public UUID smart___id()
+    {
+        return ___smart_legend___.id();
+    }
+
+    public String smart___owner()
+    {
+        return ___smart_legend___.ownedBy();
+    }
+
+    public String smart___group()
+    {
+        return ___smart_legend___.group();
+    }
+
+    public String[] smart___tags()
+        throws CtxException
+    {
+        List<String> tags = new ArrayList<String>();
+        tags.add(___smart_name___);
+        return tags.toArray(new String[0]);
+    }
+
+    public String utilities___stateEntityType()
+    {
+        return ___smart_name___;
+    }
+
+    public void utilities___setCurrentState(FiniteState state)
+    {
+        ___smart_currentState___ = state;
+    }
+
+    public FiniteState utilities___currentState()
+    {
+        return ___smart_currentState___;
+    }
+
+    public StateEntity utilities___parent()
+        throws CtxException
+    {
+        //TODO:
+        return null;
+    }
+
+    public StateEntity[] utilities___children(String setype)
+        throws CtxException
+    {
+        //TODO:
+        return null;
     }
 }
 
