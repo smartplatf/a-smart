@@ -42,11 +42,14 @@
 package org.anon.smart.base.dspace;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.anon.smart.d2cache.Reader;
 import org.anon.smart.d2cache.D2Cache;
 import org.anon.smart.d2cache.D2CacheScheme;
 import org.anon.smart.d2cache.BrowsableReader;
+import org.anon.smart.d2cache.D2CacheTransaction;
+import org.anon.smart.d2cache.store.StoreItem;
 import org.anon.smart.base.anatomy.SmartModuleContext;
 
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -130,6 +133,27 @@ public class DSpaceService
         boolean ret = (space instanceof BrowsableTransactDSpace);
         ret = (ret && (space.cacheImpl().isEnabled(D2CacheScheme.BROWSABLE_CACHE)));
         return ret;
+    }
+
+    public static void addObject(D2CacheTransaction transaction, DSpaceObject sobj)
+        throws CtxException
+    {
+        List<Object> keys = sobj.smart___keys();
+        StoreItem item = new StoreItem(keys.toArray(new Object[0]), sobj, sobj.smart___objectGroup());
+        transaction.add(item);
+    }
+
+    public static void addToSpace(TransactDSpace space, DSpaceObject[] sobj)
+        throws CtxException
+    {
+        if ((sobj == null) || (sobj.length <= 0))
+            return;
+
+        UUID txnid = UUID.randomUUID();
+        D2CacheTransaction transaction = space.startTransaction(txnid);
+        for (int i = 0; i < sobj.length; i++)
+            addObject(transaction, sobj[i]);
+        transaction.commit();
     }
 }
 

@@ -111,6 +111,7 @@ public class DataShell implements SmartShell, TenantConstants
     {
         _context = new ShellContext();
         _spaces = new ConcurrentHashMap<String, DSpace>();
+        _models = new ConcurrentHashMap<String, SpaceModel>();
         _indexedSpaces = new ArrayList<String>();
     }
 

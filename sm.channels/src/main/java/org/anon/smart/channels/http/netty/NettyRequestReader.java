@@ -107,7 +107,7 @@ public class NettyRequestReader implements HTTPMessageReader
     public Object transmitObject(PData[] resp)
         throws CtxException
     {
-        HttpResponse response = new DefaultHttpResponse(HTTP_1_1, CONTINUE);
+        HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
         for (int i = 0; i < resp.length; i++)
         {
             StringBuffer buff = io().readStream(resp[i].cdata().data());

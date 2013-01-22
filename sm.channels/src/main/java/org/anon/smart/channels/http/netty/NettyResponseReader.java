@@ -117,7 +117,6 @@ public class NettyResponseReader implements HTTPMessageReader
         for (int i = 0; i < req.length; i++)
         {
             StringBuffer buff = io().readStream(req[i].cdata().data());
-            System.out.println("Set Content as: " + buff);
             request.setContent(ChannelBuffers.copiedBuffer(buff.toString(), CharsetUtil.UTF_8));
         }
         request.setHeader(CONTENT_TYPE, "application/json");

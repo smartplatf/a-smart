@@ -55,7 +55,7 @@ public class TestCacheUtil {
 	throws CtxException {
 		D2CacheTransaction txn =  cache.startTransaction(UUID.randomUUID());
 		StoreItem item = new StoreItem(keys, obj, group);
-		txn.add(null, item);
+		txn.add(item);
 		txn.commit();
 		
 	}
@@ -66,7 +66,7 @@ public class TestCacheUtil {
 		D2CacheTransaction txn =  cache.startTransaction(UUID.randomUUID());
 		for(Map.Entry<Object, Object[]> e : data.entrySet()) {
 			StoreItem item = new StoreItem(e.getValue(), e.getKey(), group);
-			txn.add(null, item);
+			txn.add(item);
 		}
 		
 		txn.commit();

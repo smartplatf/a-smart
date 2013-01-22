@@ -54,9 +54,9 @@ public class SmartLoader extends RelatedLoader implements Repeatable
 {
     static
     {
-        addForceLoadSuper("org.anon.utilities.base.stt.*");
-        addForceLoadSuper("org.anon.utilities.base.loader.*");
-        addForceLoadSuper("org.anon.utilities.base.annot.*");
+        addForceLoadSuper("org.anon.smart.base.stt.*");
+        addForceLoadSuper("org.anon.smart.base.loader.*");
+        addForceLoadSuper("org.anon.smart.base.annot.*");
     }
 
     public SmartLoader(URL[] urls, String name, String[] comps)

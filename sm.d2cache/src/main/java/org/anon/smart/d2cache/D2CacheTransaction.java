@@ -50,7 +50,7 @@ import org.anon.utilities.exception.CtxException;
 
 public interface D2CacheTransaction
 {
-    public void add(String qname, StoreItem item)
+    public void add(StoreItem item)
         throws CtxException;
 
     public void commit()

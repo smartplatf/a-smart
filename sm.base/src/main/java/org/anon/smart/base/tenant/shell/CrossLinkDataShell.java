@@ -60,6 +60,9 @@ public class CrossLinkDataShell extends CrossLinker
 
     protected Class[] parmTypes(String method, Object ... params)
     {
+        if (method.equals("<init>"))
+            return new Class[] { Integer.TYPE };
+
         if (method.equals("addSpace"))
             return new Class[] { Object.class };
 

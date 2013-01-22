@@ -50,6 +50,7 @@ public class Rectifier
 {
     private List<Distillation> _steps;
     private boolean _completed;
+    private ErrorHandler _handler;
 
     public Rectifier()
     {
@@ -62,6 +63,11 @@ public class Rectifier
         _steps.add(distill);
     }
 
+    public void setupErrorHandler(ErrorHandler handler)
+    {
+        _handler = handler;
+    }
+
     public Distillate distill(Distillate start)
         throws CtxException
     {
@@ -72,16 +78,25 @@ public class Rectifier
         throws CtxException
     {
         Distillate cont = start;
-        for (int i = 0; i < till; i++)
+        try
         {
-            Distillation dist = _steps.get(i);
-            if (dist.distillFrom(cont))
+            for (int i = 0; i < till; i++)
             {
-                cont = dist.distill(cont);
+                Distillation dist = _steps.get(i);
+                if (dist.distillFrom(cont))
+                {
+                    cont = dist.distill(cont);
+                }
             }
+
+            _completed = cont.isDone();
+        }
+        catch (Exception e)
+        {
+            if (_handler != null)
+                _handler.handleError(this, e, start);
         }
 
-        _completed = cont.isDone();
         return cont;
     }
 

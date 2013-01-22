@@ -47,14 +47,29 @@ import org.anon.smart.channels.distill.Isotope;
 
 public class AlteredData extends Isotope
 {
-    private List<Object> _events;
+    public static class FlowEvent
+    {
+        Object flowObject;
+        Object evtObject;
 
-    public AlteredData(Isotope parent, List<Object> evts)
+        public FlowEvent(Object f, Object e)
+        {
+            flowObject = f;
+            evtObject = e;
+        }
+
+        public Object flow() { return flowObject; }
+        public Object event() { return evtObject; }
+    }
+
+    private List<FlowEvent> _events;
+
+    public AlteredData(Isotope parent, List<FlowEvent> evts)
     {
         super(parent);
         _events = evts;
     }
 
-    public List<Object> events() { return _events; }
+    public List<FlowEvent> events() { return _events; }
 }
 

@@ -84,7 +84,6 @@ public abstract class HTTPMessageDScope implements DScope
         _uri = rdr.getURI(msg);
         _path = rdr.getPath(msg);
         CData cd = new ContentData(rdr.contentStream(msg));
-        _pdata = fact.createPrimal(this, cd);
         List<Map.Entry<String, String>> hdrs = rdr.getHeaders(msg);
         for (Map.Entry<String, String> hdr : hdrs)
             handleHeader(hdr.getKey(), hdr.getValue());
@@ -92,6 +91,7 @@ public abstract class HTTPMessageDScope implements DScope
         _source = new Source(Source.src.ex, _origin);
         _keepAlive = rdr.isKeepAlive(msg);
         handlePath(_path);
+        _pdata = fact.createPrimal(this, cd);
         _responder = new BaseResponder(_requestID);
         _dataCount = anatomy().jvmEnv().createAtomicCounter(_requestID.toString() + "-EventCounter", 0);
     }

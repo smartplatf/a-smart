@@ -17,10 +17,42 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
+      <groupId>org.anon.smart</groupId>
+      <artifactId>sm.channels</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.anon.smart</groupId>
+      <artifactId>sm.smcore</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <forkMode>always</forkMode>
+          <argLine>-Xms512m -Xmx512m</argLine>
+          <includes>
+              <include>
+                  **/Test*Suite*
+              </include>
+          </includes>
+          <environmentVariables>
+              <SMART_PATH>
+                  ${settings.localRepository}
+              </SMART_PATH>
+              <SMART_VERSION>
+                  ${project.version}
+              </SMART_VERSION>
+          </environmentVariables>
+          <systemProperties combine.children="append">
+          </systemProperties>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

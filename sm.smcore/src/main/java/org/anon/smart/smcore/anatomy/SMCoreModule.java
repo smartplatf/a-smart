@@ -42,20 +42,24 @@
 package org.anon.smart.smcore.anatomy;
 
 import org.anon.smart.base.flow.FlowService;
+import org.anon.smart.base.tenant.TenantsHosted;
+import org.anon.smart.channels.shell.SCShell;
+import org.anon.smart.channels.shell.ExternalConfig;
 import org.anon.smart.smcore.stt.STTService;
 
 import org.anon.utilities.anatomy.AModule;
 import org.anon.utilities.anatomy.ModuleContext;
+import org.anon.utilities.anatomy.StartConfig;
 import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
 import org.anon.utilities.exception.CtxException;
 
 public class SMCoreModule extends AModule
 {
-    public SMCoreModule(AModule parent, ModuleContext ctx)
+    public SMCoreModule(AModule parent)
         throws CtxException
     {
-        super(parent, ctx, true);
+        super(parent, new SMCoreContext(), true);
     }
 
     protected void setup()
@@ -68,7 +72,26 @@ public class SMCoreModule extends AModule
     public Repeatable repeatMe(RepeaterVariants vars)
         throws CtxException
     {
-        return new SMCoreModule(_parent, _context);
+        return new SMCoreModule(_parent);
+    }
+
+    public void start(StartConfig cfg)
+        throws CtxException
+    {
+        if (!(cfg instanceof SMCoreConfig))
+            return;
+
+        SMCoreContext smctx = (SMCoreContext)_context;
+        SCShell shell = smctx.smartChannelShell();
+        SMCoreConfig ccfg = (SMCoreConfig)cfg;
+        ExternalConfig[] channels = ccfg.startChannels();
+        for (int i = 0; i < channels.length; i++)
+            shell.addChannel(channels[i]);
+
+        shell.startAllChannels();
+
+        if (ccfg.firstJVM())
+            TenantsHosted.initialize();
     }
 }
 

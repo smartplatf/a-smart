@@ -41,6 +41,7 @@
 
 package org.anon.smart.smcore.channel.distill.alteration;
 
+import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -49,6 +50,8 @@ import org.anon.smart.channels.distill.Distillate;
 import org.anon.smart.channels.distill.Distillation;
 
 import org.anon.smart.smcore.channel.distill.sanitization.SearchedData;
+
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 import org.anon.utilities.reflect.ClassTraversal;
 import org.anon.utilities.exception.CtxException;
@@ -65,13 +68,14 @@ public class AlterationStage implements Distillation
         SearchedData data = (SearchedData)prev.current();
         List<SearchedData.PrimeFlow> flows = data.getPrimes();
         Class evtClazz = data.eventClass();
-        List<Object> events = new ArrayList<Object>();
+        List<AlteredData.FlowEvent> events = new ArrayList<AlteredData.FlowEvent>();
         for (SearchedData.PrimeFlow f : flows)
         {
             CreateEventVisitor visitor = new CreateEventVisitor(data, f);
             ClassTraversal traverse = new ClassTraversal(evtClazz, visitor);
             Object ret = traverse.traverse();
-            events.add(ret);
+            AlteredData.FlowEvent add = new AlteredData.FlowEvent(f.flow(), ret);
+            events.add(add);
         }
 
         AlteredData isotope = new AlteredData(data, events);
@@ -81,8 +85,17 @@ public class AlterationStage implements Distillation
     public Distillate condense(Distillate prev)
         throws CtxException
     {
-        //TODO:
-        return null;
+        //get altered data, create SearchedData
+        AlteredData adata = (AlteredData)prev.current();
+        SearchedData sdata = new SearchedData(adata);
+        List<AlteredData.FlowEvent> evts = adata.events();
+        for (AlteredData.FlowEvent evt : evts)
+        {
+            Object resp = evt.event();
+            Map<String, Object> m = convert().objectToMap(resp);
+            sdata.setupSearchMap(m);
+        }
+        return new Distillate(prev, sdata);
     }
 
     public boolean distillFrom(Distillate prev)
@@ -94,7 +107,7 @@ public class AlterationStage implements Distillation
     public boolean condenseFrom(Distillate prev)
         throws CtxException
     {
-        return (prev.current() instanceof SearchedData);
+        return (prev.current() instanceof AlteredData);
     }
 }
 

@@ -46,6 +46,8 @@ import java.util.Set;
 import static org.anon.smart.base.dspace.DSpaceService.*;
 
 import org.anon.smart.base.dspace.DSpace;
+import org.anon.smart.base.dspace.TransactDSpace;
+import org.anon.smart.base.dspace.DSpaceObject;
 import org.anon.smart.d2cache.BrowsableReader;
 
 import org.anon.utilities.crosslink.CrossLinkAny;
@@ -56,13 +58,13 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
 {
     private static TenantsHosted TENANTS_HOSTED = null;
 
-    private DSpace _tenantSpace;
+    private TransactDSpace _tenantSpace;
 
     public TenantsHosted()
         throws CtxException
     {
         super();
-        _tenantSpace = spaceFor(TENANTSPACENAME, true);
+        _tenantSpace = (TransactDSpace)spaceFor(TENANTSPACENAME, true);
     }
 
     private static void setSingleInstance(Object obj)
@@ -87,6 +89,15 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
     {
         return getAppInstance(TenantsHosted.class.getName(), "org.anon.smart.base.tenant.TenantSpaceCreator", "createTenantsHosted", 
                 new Class[] { String.class }, new Object[] { TenantsHosted.class.getName() });
+    }
+
+    public static void initialize()
+        throws CtxException
+    {
+        TenantsHosted ts = (TenantsHosted)tenantsSpace();
+        SmartTenant owner = new SmartTenant(PLATFORMOWNER);
+        addToSpace(ts._tenantSpace, new DSpaceObject[] { owner });
+        //need to enable flows here.
     }
 
     public static SmartTenant tenantFor(String name)

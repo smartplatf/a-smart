@@ -108,6 +108,7 @@ public class JCSConnection implements StoreConnection
                 ret = _cache.getFromGroup(key, group);
             else
                 ret = _cache.get(key);
+            System.out.println("FOUND:"+group+":::"+key+ "::" + ret + "::" + _cache);
         }
         catch (Exception e)
         {
@@ -148,8 +149,4 @@ public class JCSConnection implements StoreConnection
 	public List<Object> search(String group, Object query) throws CtxException {
 		return null; //Does not support
 	}
-
-    
-
-	
 }

@@ -43,7 +43,7 @@ package org.anon.smart.channels.distill;
 
 public abstract class Isotope
 {
-    private Isotope _isotopeOf;
+    private transient Isotope _isotopeOf;
 
     public Isotope(Isotope iso)
     {

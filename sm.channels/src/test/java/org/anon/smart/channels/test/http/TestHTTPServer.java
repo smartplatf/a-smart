@@ -62,7 +62,7 @@ public class TestHTTPServer
         throws Exception
     {
         Rectifier r = new Rectifier();
-        r.addStep(new TestDistillation());
+        r.addStep(new TestDistillation(true));
         HTTPConfig cfg = new HTTPConfig(9080, false);
         cfg.setRectifierInstinct(r, new TestDataFactory());
         SCShell shell = new SCShell();
@@ -70,10 +70,12 @@ public class TestHTTPServer
         shell.startAllChannels();
 
 
+        Rectifier rr = new Rectifier();
+        rr.addStep(new TestDistillation(false));
         HTTPConfig ccfg = new HTTPConfig(9080, false);
         ccfg.setClient();
         ccfg.setServer("localhost");
-        ccfg.setRectifierInstinct(r, new TestDataFactory());
+        ccfg.setRectifierInstinct(rr, new TestDataFactory());
         HTTPClientChannel cchnl = (HTTPClientChannel)shell.addChannel(ccfg);
         cchnl.connect();
         String post = "This is a first post";

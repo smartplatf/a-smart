@@ -43,6 +43,7 @@ package org.anon.smart.channels.shell;
 
 import java.util.UUID;
 import java.util.Map;
+import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.anon.smart.channels.SmartChannel;
@@ -95,5 +96,34 @@ public class SCShell
         }
     }
 
+    public static int isUsed(int port)
+    {
+        try
+        {
+            String host = "localhost";
+            Socket sock = new Socket(host, port);
+            sock.close();
+        }
+        catch (Exception e)
+        {
+            return port;
+        }
+
+        return -1;
+    }
+
+    public static int getNextAvailablePort(int[] ports)
+    {
+        if (ports != null)
+        {
+            for (int i = 1; i < ports.length; i++)
+            {
+                int port = isUsed(ports[i]);
+                if (port > 0) return port;
+            }
+        }
+
+        return -1;
+    }
 }
 

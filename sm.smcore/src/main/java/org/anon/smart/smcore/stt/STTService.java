@@ -42,6 +42,10 @@
 package org.anon.smart.smcore.stt;
 
 import org.anon.smart.base.stt.STTRegister;
+import org.anon.smart.base.stt.tl.TemplateReader;
+import org.anon.smart.base.stt.tl.SmartObjectTL;
+import org.anon.smart.smcore.stt.tl.EventTL;
+import org.anon.smart.smcore.stt.tl.EventResponseTL;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -57,6 +61,13 @@ public class STTService
         STTRegister.registerSTT("PrimeData", "org.anon.smart.smcore.stt.SmartPrimeDataSTT");
         STTRegister.registerSTT("Data", "org.anon.smart.smcore.stt.SmartDataSTT");
         STTRegister.registerSTT("Event", "org.anon.smart.smcore.stt.EventSTT");
+        STTRegister.registerSTT("Response", "org.anon.smart.smcore.stt.EventResponseSTT");
+
+        TemplateReader.registerTemplate("PrimeData", SmartObjectTL.class);
+        TemplateReader.registerTemplate("Data", SmartObjectTL.class);
+        TemplateReader.registerTemplate("Event", EventTL.class);
+        TemplateReader.registerTemplate("Response", EventResponseTL.class);
+                                             
     }
 }
 

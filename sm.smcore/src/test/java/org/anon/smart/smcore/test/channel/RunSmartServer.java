@@ -26,28 +26,42 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.segment.BrowsableReader
+ * File:                org.anon.smart.smcore.test.channel.RunSmartServer
  * Author:              rsankar
  * Revision:            1.0
- * Date:                15-01-2013
+ * Date:                22-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A reader that can browse data rather than just search or lookup
+ * A runner in the startup loader
  *
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache.segment;
+package org.anon.smart.smcore.test.channel;
 
-import java.util.Set;
+import org.anon.smart.base.loader.SmartLoader;
 
-import org.anon.utilities.exception.CtxException;
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
-public interface BrowsableReader extends SegmentReader
+public class RunSmartServer implements Runnable
 {
-    public Set<Object> currentKeySet(String group)
-        throws CtxException;
+    public RunSmartServer()
+    {
+    }
+
+    public void run()
+    {
+        try
+        {
+            TestStartConfig cfg = new TestStartConfig();
+            anatomy().startup(cfg);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 }
 

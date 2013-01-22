@@ -26,71 +26,56 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.channel.distill.sanitization.SanitationStage
+ * File:                org.anon.smart.smcore.test.channel.TestDistillation
  * Author:              rsankar
  * Revision:            1.0
- * Date:                19-01-2013
+ * Date:                11-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A stage where data is sanitized
+ * A testing for refinery
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.channel.distill.sanitization;
+package org.anon.smart.smcore.test.channel;
 
-import java.util.Map;
-
-import org.anon.smart.channels.data.PData;
-import org.anon.smart.channels.distill.Isotope;
-import org.anon.smart.channels.distill.Distillate;
 import org.anon.smart.channels.distill.Distillation;
-import org.anon.smart.smcore.channel.distill.translation.MapData;
+import org.anon.smart.channels.distill.Distillate;
 
 import org.anon.utilities.exception.CtxException;
 
-public class SanitationStage implements Distillation
+public class TestDistillation implements Distillation
 {
-    public SanitationStage()
+    public TestDistillation()
     {
     }
 
     public Distillate distill(Distillate prev)
         throws CtxException
     {
-        Isotope curr = prev.current();
-        PData pdata = (PData)prev.from().current();
-        SearchedData data = new SearchedData(curr);
-        SanitizeData sanitize = new SanitizeData();
-        sanitize.sanitizePData(pdata, data);
-        if (curr instanceof MapData)
-        {
-            MapData m = (MapData)curr;
-            sanitize.sanitizeMap(m, data);
-        }
-
-        return new Distillate(prev, data);
+        System.out.println(prev.current());
+        return prev;
     }
 
     public Distillate condense(Distillate prev)
         throws CtxException
     {
-        //TODO:
-        return null;
+        System.out.println(prev.current());
+        return prev;
     }
 
     public boolean distillFrom(Distillate prev)
         throws CtxException
     {
-        return (prev.current() instanceof MapData);
+        return true;
     }
 
     public boolean condenseFrom(Distillate prev)
         throws CtxException
     {
-        return (prev.current() instanceof MapData);
+        return true;
     }
 }
 

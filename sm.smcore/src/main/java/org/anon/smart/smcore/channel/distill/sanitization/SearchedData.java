@@ -63,6 +63,8 @@ public class SearchedData extends Isotope implements ChannelConstants
             _primeObject = p;
             _flowObject = f;
         }
+
+        public Object flow() { return _flowObject; }
     }
 
     private SmartTenant _tenant;
@@ -176,5 +178,8 @@ public class SearchedData extends Isotope implements ChannelConstants
     {
         return _values.get(fld);
     }
+
+    public void setupSearchMap(Map<String, Object> m) { _values = m; }
+    public Map<String, Object> searchedMap() { return _values; }
 }
 

@@ -41,13 +41,20 @@
 
 package org.anon.smart.smcore.channel.distill.translation;
 
-import java.io.InputStream;
 import java.util.Map;
+import java.util.List;
+import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 
+import org.anon.smart.channels.data.PData;
+import org.anon.smart.channels.data.RData;
+import org.anon.smart.channels.data.ContentData;
+import org.anon.smart.channels.distill.Isotope;
 import org.anon.smart.channels.distill.Distillation;
 import org.anon.smart.channels.distill.Distillate;
-import org.anon.smart.channels.distill.Isotope;
-import org.anon.smart.channels.data.PData;
+import org.anon.smart.smcore.channel.server.EventPData;
+import org.anon.smart.smcore.channel.distill.alteration.AlteredData;
 
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import static org.anon.utilities.objservices.ConvertService.*;
@@ -81,8 +88,40 @@ public class TranslationStage implements Distillation
     public Distillate condense(Distillate prev)
         throws CtxException
     {
-        //TODO:
-        return null;
+        MapData map = (MapData)prev.current();
+        //Map<String, Object> send = map.translated();
+        //Trying. instead of map
+        AlteredData adata = (AlteredData)prev.from().from().current();
+        ByteArrayOutputStream ostr = new ByteArrayOutputStream();
+        List<AlteredData.FlowEvent> evts = adata.events();
+        for (AlteredData.FlowEvent evt : evts)
+        {
+            Object resp = evt.event();
+            convert().writeObject(resp, ostr, _type);
+        }
+        byte[] bytes = ostr.toByteArray();
+        try
+        {
+            ostr.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        ByteArrayInputStream istr = new ByteArrayInputStream(bytes);
+        ContentData cdata = new ContentData(istr);
+
+        RData rdata = null;
+        Distillate start = prev.from();
+        while((start != null) && (start.from() != null))
+            start = start.from();
+
+        rdata = (RData)start.current();
+        PData origpdata = (PData)start.current().isotope();
+
+        PData prime = new EventPData(origpdata.dscope(), cdata);
+        prime.setIsotopeOf(rdata);
+        return new Distillate(prev, prime);
     }
 
     public boolean distillFrom(Distillate prev)

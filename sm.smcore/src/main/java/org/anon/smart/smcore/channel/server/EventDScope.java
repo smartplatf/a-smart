@@ -83,6 +83,8 @@ public class EventDScope extends HTTPMessageDScope
             _eventName = tokens[count++];
         else
             _eventName = "SearchEvent";
+
+        System.out.println("Got : " + _tenant + ":" + _flow + ":" + _eventName);
     }
 
     protected void handleHeader(String key, String value)
@@ -92,7 +94,7 @@ public class EventDScope extends HTTPMessageDScope
             _sessionId = UUID.fromString(value);
     }
 
-    String tenant() { return _tenant; }
+    public String tenant() { return _tenant; }
     String flow() { return _flow; }
     String eventName() { return _eventName; }
     UUID sessionId() { return _sessionId; }

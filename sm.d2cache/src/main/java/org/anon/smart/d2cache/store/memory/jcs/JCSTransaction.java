@@ -92,6 +92,7 @@ public class JCSTransaction extends AbstractStoreTransaction
 			try {
 				if (group != null){
 					conn.cache().putInGroup(k, group, mod);
+                    System.out.println("Putting: " + mod + ":" + k + ":" + conn.cache() + ":" + conn.cache().getFromGroup(k, group));
 				}
 				else
 					conn.cache().put(k, mod);

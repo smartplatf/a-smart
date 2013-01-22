@@ -75,7 +75,7 @@ public class D2CacheTransactionImpl implements D2CacheTransaction {
 		int i = 0;
 		for(StoreConnection conn : storeConnections) {
 			try {
-				_storeTransactions[i++] = conn.startTransaction(UUID.randomUUID());
+				_storeTransactions[i++] = conn.startTransaction(id);
 				
 			} catch (CtxException e) {
 				e.printStackTrace();
@@ -83,7 +83,7 @@ public class D2CacheTransactionImpl implements D2CacheTransaction {
 		}
 	}
 	@Override
-	public void add(String qname, StoreItem item) throws CtxException {
+	public void add(StoreItem item) throws CtxException {
 		List<StoreRecord> recList = new ArrayList<StoreRecord>();
 		for (Object key : item.keys()) {
 			for (StoreTransaction txn : _storeTransactions) {

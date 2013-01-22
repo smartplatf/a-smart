@@ -42,11 +42,14 @@
 package org.anon.smart.base.tenant;
 
 import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.anon.smart.base.flow.FlowModel;
 import org.anon.smart.base.loader.LoaderVars;
 import org.anon.smart.base.loader.SmartLoader;
+import org.anon.smart.base.dspace.DSpaceObject;
 import org.anon.smart.base.tenant.shell.CrossLinkDataShell;
 import org.anon.smart.base.tenant.shell.CrossLinkRuntimeShell;
 import org.anon.smart.base.tenant.shell.DeploymentShell;
@@ -57,7 +60,7 @@ import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import org.anon.utilities.loader.RelatedObject;
 import org.anon.utilities.exception.CtxException;
 
-public class SmartTenant implements RelatedObject, TenantConstants, java.io.Serializable
+public class SmartTenant implements RelatedObject, TenantConstants, DSpaceObject, java.io.Serializable
 {
     private static final Map<String, String> GROUP_MAPPING = new HashMap<String, String>();
 
@@ -168,6 +171,20 @@ public class SmartTenant implements RelatedObject, TenantConstants, java.io.Seri
         Object amodel = serial().cloneIn(model, _loader);
         CrossLinkDataShell shell = _data.get(FLOW_GROUP);
         shell.addSpace(amodel);
+    }
+
+    public List<Object> smart___keys()
+        throws CtxException
+    {
+        List<Object> keys = new ArrayList<Object>();
+        keys.add(_name);
+        return keys;
+    }
+
+    public String smart___objectGroup()
+        throws CtxException
+    {
+        return TENANTGROUP;
     }
 }
 

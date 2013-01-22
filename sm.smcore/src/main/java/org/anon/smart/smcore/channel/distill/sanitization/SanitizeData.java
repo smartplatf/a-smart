@@ -81,6 +81,7 @@ public class SanitizeData implements ChannelConstants
         EventDScope epscope = (EventDScope)data.dscope();
 
         String tenant = epdata.tenant();
+        System.out.println("Looking up tenant: " + tenant + ":" + epscope.tenant());
         SmartTenant stenant = TenantsHosted.tenantFor(tenant);
         assertion().assertNotNull(stenant, "Tenant " + tenant + " does not exist");
         populate.setupTenant(stenant);
@@ -113,6 +114,8 @@ public class SanitizeData implements ChannelConstants
                 sanitizePrime(p, search, populate);
             }
         }
+
+        assertion().assertTrue((populate.getPrimes().size() > 0), "There are no flows defined to which to post the event.");
 
         for (String key : data.keySet())
         {
@@ -172,7 +175,7 @@ public class SanitizeData implements ChannelConstants
 
         SmartTenant tenant = populate.tenant();
         Class cls = typeForKey(key, populate);
-        String type = AnnotationUtils.typeFor(cls);
+        String type = AnnotationUtils.className(cls);
         if (type == null)
             return; //not a hosted type
 

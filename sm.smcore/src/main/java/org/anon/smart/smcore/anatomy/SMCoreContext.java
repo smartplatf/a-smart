@@ -41,20 +41,54 @@
 
 package org.anon.smart.smcore.anatomy;
 
+import org.anon.smart.channels.shell.SCShell;
+import org.anon.smart.base.loader.SmartLoader;
+import org.anon.smart.base.loader.LoaderVars;
+import org.anon.smart.base.dspace.DSpaceAuthor;
+import org.anon.smart.base.dspace.DefaultAuthor;
+import org.anon.smart.base.anatomy.SmartModuleContext;
+
+import static org.anon.utilities.services.ServiceLocator.*;
+
 import org.anon.utilities.anatomy.ModuleContext;
 import org.anon.utilities.anatomy.JVMEnvironment;
 import org.anon.utilities.exception.CtxException;
 
-public class SMCoreContext implements ModuleContext
+public class SMCoreContext implements SmartModuleContext
 {
+    private SCShell _smartChannels;
+
     public SMCoreContext()
     {
+        _smartChannels = new SCShell();
     }
 
     public JVMEnvironment vmEnvironment()
         throws CtxException
     {
         return null; //use default
+    }
+
+    public SCShell smartChannelShell() { return _smartChannels; }
+
+    public ClassLoader smartLoader(ClassLoader ldr, String name)
+        throws CtxException
+    {
+        if (ldr instanceof SmartLoader)
+        {
+            LoaderVars vars = new LoaderVars(name);
+            SmartLoader replicate = (SmartLoader)ldr;
+            return (SmartLoader)replicate.repeatMe(vars);
+        }
+
+        except().te(this, "Cannot replicate a non SmartLoader.");
+        return null;
+    }
+
+    public DSpaceAuthor spaceAuthor()
+        throws CtxException
+    {
+        return new DefaultAuthor();
     }
 }
 

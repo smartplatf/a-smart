@@ -80,7 +80,45 @@
                 <includes>
                     <include>**/Test*Suite*</include>
                 </includes>
-                <systemProperties combine.children="append"/>
+                <systemProperties combine.children="append">
+                    <property>
+                        <name>maven.repository</name>
+                        <value>.m2/repository/</value>
+                    </property>
+                    <property>
+                        <name>deployment.group</name>
+                        <value>org/anon/</value>
+                    </property>
+                    <property>
+                        <name>smart.base</name>
+                        <value>smart/sm.base/${project.version}/sm.base-${project.version}.jar</value>
+                    </property>
+                    <property>
+                        <name>smart.d2cache</name>
+                        <value>smart/sm.d2cache/${project.version}/sm.d2cache-${project.version}.jar</value>
+                    </property>
+                    <property>
+                        <name>smart.deployment</name>
+                        <value>smart/sm.deployment/${project.version}/sm.deployment-${project.version}.jar</value>
+                    </property>
+                    <property>
+                        <name>smart.atomicity</name>
+                        <value>smart/sm.atomicity/${project.version}/sm.atomicity-${project.version}.jar</value>
+                    </property>
+                    <property>
+                        <name>smart.channels</name>
+                        <value>smart/sm.channels/${project.version}/sm.channels-${project.version}.jar</value>
+                    </property>
+                    <property>
+                        <name>smart.smcore</name>
+                        <value>smart/sm.smcore/${project.version}/sm.smcore-${project.version}.jar</value>
+                    </property>
+                    <property>
+                        <name>utilities</name>
+                        <value>utilities/${project.version}/utilities-${project.version}.jar</value>
+                    </property>
+
+                </systemProperties>
             </configuration>
         </plugin>
     </plugins>

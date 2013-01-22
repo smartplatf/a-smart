@@ -46,8 +46,12 @@ import java.util.UUID;
 import java.util.ArrayList;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
+import static org.anon.utilities.services.ServiceLocator.*;
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 import org.anon.smart.base.stt.annot.MethodExit;
+import org.anon.smart.base.dspace.DSpaceObject;
+import org.anon.smart.base.annot.KeyAnnotate;
 import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.data.DataLegend;
 
@@ -55,7 +59,7 @@ import org.anon.utilities.fsm.StateEntity;
 import org.anon.utilities.fsm.FiniteState;
 import org.anon.utilities.exception.CtxException;
 
-public class SmartDataSTT implements SmartData
+public class SmartDataSTT implements SmartData, DSpaceObject
 {
     private FiniteState ___smart_currentState___;
     private DataLegend ___smart_legend___;
@@ -123,6 +127,32 @@ public class SmartDataSTT implements SmartData
     {
         //TODO:
         return null;
+    }
+
+    public List<Object> smart___keys()
+        throws CtxException
+    {
+        KeyAnnotate kannot = (KeyAnnotate)reflect().getAnyAnnotation(this.getClass(), KeyAnnotate.class.getName());
+        assertion().assertNotNull(kannot, "No keys defined for SmartData. Error.");
+        assertion().assertNotNull(kannot.keys(), "No keys defined for SmartData. Error.");
+        assertion().assertTrue((kannot.keys().length() > 0), "No keys defined for SmartData. Error.");
+        List<Object> ret = new ArrayList<Object>();
+        ret.add(smart___id());
+        String[] flds = value().listAsString(kannot.keys());
+        for (int i = 0; i < flds.length; i++)
+        {
+            Object val = reflect().getAnyFieldValue(this.getClass(), this, flds[i]);
+            assertion().assertNotNull(val, "Key Value: " + flds[i] + " cannot be null. ");
+            ret.add(val);
+        }
+
+        return ret;
+    }
+
+    public String smart___objectGroup()
+        throws CtxException
+    {
+        return ___smart_name___;
     }
 }
 

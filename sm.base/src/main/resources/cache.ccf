@@ -1,10 +1,8 @@
 # DEFAULT CACHE REGION
 jcs.default=DC
-jcs.default.cacheattributes=
-    org.apache.jcs.engine.CompositeCacheAttributes
+jcs.default.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
 jcs.default.cacheattributes.MaxObjects=1000
-jcs.default.cacheattributes.MemoryCacheName=
-    org.apache.jcs.engine.memory.lru.LRUMemoryCache
+jcs.default.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
 jcs.default.cacheattributes.UseMemoryShrinker=false
 jcs.default.cacheattributes.MaxMemoryIdleTimeSeconds=3600
 jcs.default.cacheattributes.ShrinkerIntervalSeconds=60
@@ -18,11 +16,9 @@ jcs.default.elementattributes.IsLateral=true
 
 # PRE-DEFINED CACHE REGIONS
 jcs.region.testCache1=DC
-jcs.region.testCache1.cacheattributes=
-    org.apache.jcs.engine.CompositeCacheAttributes
+jcs.region.testCache1.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
 jcs.region.testCache1.cacheattributes.MaxObjects=1000
-jcs.region.testCache1.cacheattributes.MemoryCacheName=
-    org.apache.jcs.engine.memory.lru.LRUMemoryCache
+jcs.region.testCache1.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
 jcs.region.testCache1.cacheattributes.UseMemoryShrinker=false
 jcs.region.testCache1.cacheattributes.MaxMemoryIdleTimeSeconds=3600
 jcs.region.testCache1.cacheattributes.ShrinkerIntervalSeconds=60

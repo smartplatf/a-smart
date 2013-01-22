@@ -43,19 +43,28 @@ package org.anon.smart.channels.test.http;
 
 import org.anon.smart.channels.distill.Distillation;
 import org.anon.smart.channels.distill.Distillate;
+import org.anon.smart.channels.data.PData;
 
 import org.anon.utilities.exception.CtxException;
 
 public class TestDistillation implements Distillation
 {
-    public TestDistillation()
+    private boolean _respond;
+
+    public TestDistillation(boolean resp)
     {
+        _respond = resp;
     }
 
     public Distillate distill(Distillate prev)
         throws CtxException
     {
         System.out.println(prev.current());
+        if (_respond)
+        {
+            PData pdata = (PData)prev.current();
+            pdata.dscope().transmit(new PData[] { pdata });
+        }
         return prev;
     }
 
