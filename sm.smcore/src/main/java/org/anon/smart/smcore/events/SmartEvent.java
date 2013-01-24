@@ -44,14 +44,14 @@ package org.anon.smart.smcore.events;
 import java.util.UUID;
 
 import org.anon.smart.base.flow.FlowObject;
-import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.data.SmartPrimeData;
 
 public interface SmartEvent
 {
     public UUID eventID();
     public FlowObject forFlow();
     public EventLegend legend();
-    public SmartData primeData();
+    public SmartPrimeData primeData();
     //public Session session();
 }
 

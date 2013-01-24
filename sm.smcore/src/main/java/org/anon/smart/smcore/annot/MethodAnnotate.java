@@ -26,44 +26,37 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.stt.tl.EventResponseTL
+ * File:                org.anon.smart.smcore.annot.MethodAnnotate
  * Author:              rsankar
  * Revision:            1.0
- * Date:                22-01-2013
+ * Date:                23-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A event response descriptor
+ * An annotation for methods in java
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.stt.tl;
+package org.anon.smart.smcore.annot;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.anon.smart.base.stt.tl.BaseTL;
-import org.anon.smart.base.annot.ResponseAnnotate;
-
-public class EventResponseTL extends BaseTL
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MethodAnnotate
 {
-    public EventResponseTL()
-    {
-        super();
-    }
-
-    @Override
-    public Class[] getAnnotations(String name)
-    {
-        List<Class> annons = new ArrayList<Class>();
-        Class[] annots = super.getAnnotations(name);
-        for (int i = 0; (annots != null) && (i < annots.length); i++)
-            annons.add(annots[i]);
-
-        annons.add(ResponseAnnotate.class);
-        return annons.toArray(new Class[0]);
-    }
+    public String name();
+    public String method();
+    public String parms();
+    public String foreach();
+    public String from();
+    public String to();
+    public String runAfter();
+    public String runBefore();
 }
 

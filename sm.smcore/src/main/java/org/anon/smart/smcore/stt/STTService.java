@@ -46,6 +46,7 @@ import org.anon.smart.base.stt.tl.TemplateReader;
 import org.anon.smart.base.stt.tl.SmartObjectTL;
 import org.anon.smart.smcore.stt.tl.EventTL;
 import org.anon.smart.smcore.stt.tl.EventResponseTL;
+import org.anon.smart.smcore.stt.tl.TransitionTL;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -67,6 +68,7 @@ public class STTService
         TemplateReader.registerTemplate("Data", SmartObjectTL.class);
         TemplateReader.registerTemplate("Event", EventTL.class);
         TemplateReader.registerTemplate("Response", EventResponseTL.class);
+        TemplateReader.registerTemplate("Transition", TransitionTL.class);
                                              
     }
 }

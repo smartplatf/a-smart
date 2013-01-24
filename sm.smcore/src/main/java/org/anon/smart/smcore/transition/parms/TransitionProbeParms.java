@@ -26,44 +26,37 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.stt.tl.EventResponseTL
+ * File:                org.anon.smart.smcore.transition.parms.TransitionProbeParms
  * Author:              rsankar
  * Revision:            1.0
- * Date:                22-01-2013
+ * Date:                23-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A event response descriptor
+ * A set of transition probe parameters
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.stt.tl;
+package org.anon.smart.smcore.transition.parms;
 
 import java.util.List;
-import java.util.ArrayList;
 
-import org.anon.smart.base.stt.tl.BaseTL;
-import org.anon.smart.base.annot.ResponseAnnotate;
+import org.anon.smart.smcore.events.SmartEvent;
+import org.anon.smart.smcore.data.SmartPrimeData;
+import org.anon.smart.smcore.transition.TransitionContext;
 
-public class EventResponseTL extends BaseTL
+import org.anon.utilities.gconcurrent.execute.DefaultProbeParms;
+
+public class TransitionProbeParms extends DefaultProbeParms
 {
-    public EventResponseTL()
-    {
-        super();
-    }
+    private SmartEvent _event;
+    private SmartPrimeData _prime;
 
-    @Override
-    public Class[] getAnnotations(String name)
+    public TransitionProbeParms(TransitionContext ctx, List<Object> prms)
     {
-        List<Class> annons = new ArrayList<Class>();
-        Class[] annots = super.getAnnotations(name);
-        for (int i = 0; (annots != null) && (i < annots.length); i++)
-            annons.add(annots[i]);
-
-        annons.add(ResponseAnnotate.class);
-        return annons.toArray(new Class[0]);
+        super(ctx, prms);
     }
 }
 

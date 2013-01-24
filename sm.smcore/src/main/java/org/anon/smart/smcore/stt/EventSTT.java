@@ -45,7 +45,7 @@ import java.util.UUID;
 
 import org.anon.smart.base.flow.FlowObject;
 import org.anon.smart.smcore.flow.SmartFlow;
-import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.data.SmartPrimeData;
 import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.events.EventLegend;
 
@@ -53,7 +53,7 @@ public class EventSTT implements SmartEvent
 {
     private EventLegend ___smart_legend___;
     private FlowObject ___smart_flow___;
-    private SmartData ___smart_primeData___;
+    private SmartPrimeData ___smart_primeData___;
 
     public EventSTT()
     {
@@ -61,7 +61,7 @@ public class EventSTT implements SmartEvent
 
     public EventLegend legend() { return ___smart_legend___; }
     public FlowObject forFlow() { return ___smart_flow___; }
-    public SmartData primeData() { return ___smart_primeData___; }
+    public SmartPrimeData primeData() { return ___smart_primeData___; }
     public UUID eventID() { return ___smart_legend___.eventID(); }
 }
 

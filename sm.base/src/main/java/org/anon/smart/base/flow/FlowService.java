@@ -61,7 +61,7 @@ public class FlowService implements FlowConstants
         ArtefactType.registerArtefactType(PRIMEDATA, primeDataRecognizer(), "name", "name");
         ArtefactType.registerArtefactType(DATA, dataRecognizer(), "name", "name");
         ArtefactType.registerArtefactType(EVENT, eventRecognizer(), "name", "name");
-        ArtefactType.registerArtefactType(TRANSITION, transitionRecognizer(), "name", "flow", "event");
+        ArtefactType.registerArtefactType(TRANSITION, transitionRecognizer(), "name", "name", "foreach");
         ArtefactType.registerArtefactType(RESPONSE, responseRecognizer(), "name", "name");
         ArtefactType.registerArtefactType(MESSAGE, messageRecognizer(), "name", "name");
     }

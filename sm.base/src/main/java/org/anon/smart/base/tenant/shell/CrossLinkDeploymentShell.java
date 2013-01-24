@@ -93,5 +93,11 @@ public class CrossLinkDeploymentShell extends CrossLinker
         Object obj = linkMethod("flowForType", name);
         return new CrossLinkFlowDeployment(obj);
     }
+
+    public List<Class> transitionsFor(String prime, String event)
+        throws CtxException
+    {
+        return (List<Class>)linkMethod("transitionsFor", prime, event);
+    }
 }
 

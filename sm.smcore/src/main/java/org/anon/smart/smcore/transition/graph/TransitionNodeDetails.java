@@ -26,44 +26,51 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.stt.tl.EventResponseTL
+ * File:                org.anon.smart.smcore.transition.graph.TransitionNodeDetails
  * Author:              rsankar
  * Revision:            1.0
- * Date:                22-01-2013
+ * Date:                23-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A event response descriptor
+ * A set of details for transitions
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.stt.tl;
+package org.anon.smart.smcore.transition.graph;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.lang.reflect.Method;
 
-import org.anon.smart.base.stt.tl.BaseTL;
-import org.anon.smart.base.annot.ResponseAnnotate;
+import org.anon.smart.smcore.annot.MethodAnnotate;
 
-public class EventResponseTL extends BaseTL
+import org.anon.utilities.gconcurrent.DefaultNodeDetails;
+import org.anon.utilities.exception.CtxException;
+
+public class TransitionNodeDetails extends DefaultNodeDetails
 {
-    public EventResponseTL()
+    private String _name;
+    private String _from;
+    private String _to;
+    private String _after;
+    private String _before;
+
+    public TransitionNodeDetails(Class cls, Method mthd, MethodAnnotate annot)
+        throws CtxException
     {
-        super();
+        super(cls, mthd, annot.parms());
+        _from = annot.from();
+        _to = annot.to();
+        _after = annot.runAfter();
+        _before = annot.runBefore();
+        _name = annot.name();
     }
 
-    @Override
-    public Class[] getAnnotations(String name)
-    {
-        List<Class> annons = new ArrayList<Class>();
-        Class[] annots = super.getAnnotations(name);
-        for (int i = 0; (annots != null) && (i < annots.length); i++)
-            annons.add(annots[i]);
-
-        annons.add(ResponseAnnotate.class);
-        return annons.toArray(new Class[0]);
-    }
+    public String name() { return _name; }
+    public String from() { return _from; }
+    public String to() { return _to; }
+    public String after() { return _after; }
+    public String before() { return _before; }
 }
 

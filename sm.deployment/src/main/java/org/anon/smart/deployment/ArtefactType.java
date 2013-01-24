@@ -55,6 +55,7 @@ import org.anon.utilities.exception.CtxException;
 
 public class ArtefactType
 {
+    private static final String KEY_SEPARATOR = "|";
     private static Map<Class<? extends Annotation>, ArtefactType> ARTEFACTS = new HashMap<Class<? extends Annotation>, ArtefactType>();
 
     private String _typeName;
@@ -133,7 +134,7 @@ public class ArtefactType
                         String addTo = ret.get(k);
                         for (int j = 0; j < str.length; j++)
                         {
-                            String add = addTo + "|" + str[j];
+                            String add = addTo + KEY_SEPARATOR + str[j];
                             newret.add(add);
                         }
                     }
@@ -146,6 +147,31 @@ public class ArtefactType
             except().rt(e, new CtxException.Context("Artefact.getKeys", "Exception"));
         }
         return ret.toArray(new String[0]);
+    }
+
+    public static String createKey(String ... keyvals)
+        throws CtxException
+    {
+        String ret = "";
+        String add = "";
+        String useadd = "";
+        boolean containswild = false;
+        for (int i = 0; !containswild && (i < keyvals.length); i++)
+        {
+            if (keyvals[i].indexOf("*") > 0)
+            {
+                containswild = true;
+                useadd = "\\";
+            }
+        }
+
+        for (int i = 0; i < keyvals.length; i++)
+        {
+            ret = add + keyvals[i];
+            add = useadd + KEY_SEPARATOR;
+        }
+
+        return ret;
     }
 
     public static void registerArtefactType(String typename, Class<? extends Annotation> annot, String namekey, String ... keys)

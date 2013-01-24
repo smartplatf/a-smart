@@ -26,15 +26,15 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.stt.tl.EventResponseTL
+ * File:                org.anon.smart.smcore.stt.tl.TransitionTL
  * Author:              rsankar
  * Revision:            1.0
- * Date:                22-01-2013
+ * Date:                23-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A event response descriptor
+ * A template to read transition configuration
  *
  * ************************************************************
  * */
@@ -45,13 +45,16 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.anon.smart.base.stt.tl.BaseTL;
-import org.anon.smart.base.annot.ResponseAnnotate;
+import org.anon.smart.base.annot.TransitionAnnotate;
 
-public class EventResponseTL extends BaseTL
+public class TransitionTL extends BaseTL
 {
-    public EventResponseTL()
+    private String prime;
+    private String event;
+    private List<MethodTL> actions;
+
+    public TransitionTL()
     {
-        super();
     }
 
     @Override
@@ -62,7 +65,7 @@ public class EventResponseTL extends BaseTL
         for (int i = 0; (annots != null) && (i < annots.length); i++)
             annons.add(annots[i]);
 
-        annons.add(ResponseAnnotate.class);
+        annons.add(TransitionAnnotate.class);
         return annons.toArray(new Class[0]);
     }
 }

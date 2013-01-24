@@ -88,6 +88,14 @@ public class DeploymentShell implements SmartShell, FlowConstants
         return cls;
     }
 
+    public List<Class> transitionsFor(String prime, String event)
+        throws CtxException
+    {
+        ArtefactType atype = ArtefactType.artefactTypeFor(TRANSITION);
+        String srch = atype.createKey("*", prime, event);
+        return _licensed.assistant().clazzezFor(srch, atype, _loader);
+    }
+
     public Class primeClass(String name)
         throws CtxException
     {

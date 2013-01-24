@@ -49,8 +49,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.anon.smart.base.stt.tl.BaseTL;
-import org.anon.smart.base.stt.tl.AttributeTL;
-import org.anon.smart.base.stt.tl.ActionTL;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;

@@ -26,26 +26,37 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.stt.tl.ActionTL
+ * File:                org.anon.smart.smcore.channel.server.CrossLinkEventRData
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                24-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A configuration for actions
-
+ * A crosslink for event data
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.stt.tl;
+package org.anon.smart.smcore.channel.server;
 
-public class ActionTL extends BaseTL
+import org.anon.smart.smcore.events.SmartEvent;
+
+import org.anon.utilities.crosslink.CrossLinker;
+import org.anon.utilities.exception.CtxException;
+
+public class CrossLinkEventRData extends CrossLinker
 {
-    public ActionTL()
+    public CrossLinkEventRData(Object rdata)
     {
+        super(rdata);
+    }
+
+    public SmartEvent event()
+        throws CtxException
+    {
+        return (SmartEvent)linkMethod("event");
     }
 }
 

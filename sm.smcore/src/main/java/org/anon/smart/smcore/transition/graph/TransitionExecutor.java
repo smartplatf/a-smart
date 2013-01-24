@@ -26,68 +26,55 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.atomicity.Atomicity
+ * File:                org.anon.smart.smcore.transition.graph.TransitionExecutor
  * Author:              rsankar
  * Revision:            1.0
- * Date:                04-01-2013
+ * Date:                24-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * An atomic operation provided for all included hypothesis
+ * An executor for a single transiton
  *
  * ************************************************************
  * */
 
-package org.anon.smart.atomicity;
+package org.anon.smart.smcore.transition.graph;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
+import org.anon.smart.base.tenant.shell.RuntimeShell;
 
+import org.anon.utilities.gconcurrent.GraphRuntimeNode;
+import org.anon.utilities.gconcurrent.execute.ProbeParms;
+import org.anon.utilities.gconcurrent.execute.ExecuteGraphNode;
 import org.anon.utilities.exception.CtxException;
 
-public class Atomicity
+public class TransitionExecutor extends ExecuteGraphNode
 {
-    private UUID _atomicID;
-    private Map<String, Hypothesis> _hypothesis;
-
-    public Atomicity()
+    public TransitionExecutor(GraphRuntimeNode nde, ProbeParms parms)
     {
-        _atomicID = UUID.randomUUID();
-        _hypothesis = new ConcurrentHashMap<String, Hypothesis>();
+        super(nde, parms);
     }
 
-    public EmpiricalData includeEmpiricalData(EmpiricalData edata)
+    protected Object runtimeObject(Class cls)
         throws CtxException
     {
-        EmpiricalData eret = edata;
-        String dt = edata.dataType();
-        Hypothesis hypo = _hypothesis.get(dt);    
-        if (hypo == null)
-            hypo = new DeductiveHypothesis(_atomicID, edata);
-        else
-            eret = hypo.collect(edata);
-
-        _hypothesis.put(dt, hypo);
-        return eret;
+        CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+        RuntimeShell shell = (RuntimeShell)tenant.runtimeShell();
+        Object transition = shell.getTransition(cls);
+        return transition;
     }
 
-    public List<EmpiricalData> dataFor(String dt, String tag)
+    protected boolean successOrFailure(Object ret)
         throws CtxException
     {
-        Hypothesis hypo = _hypothesis.get(dt);
-        return hypo.empiricalDataFor(tag);
+        return true;
     }
 
-    public List<EmpiricalData> searchDataFor(String dt, String[] regex)
+    protected void done()
         throws CtxException
     {
-        Hypothesis hypo = _hypothesis.get(dt);
-        return hypo.searchEmpiricalData(regex);
+        //TODO:
     }
-
-    public UUID atomicID() { return _atomicID; }
 }
 

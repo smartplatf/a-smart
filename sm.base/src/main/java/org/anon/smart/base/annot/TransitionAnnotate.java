@@ -51,7 +51,6 @@ import java.lang.annotation.Target;
 public @interface TransitionAnnotate
 {
     public String name();
-    public String flow();
-    public String event();
+    public String foreach();
 }
 

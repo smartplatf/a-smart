@@ -42,12 +42,22 @@
 package org.anon.smart.base.tenant.shell;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
+import static org.anon.utilities.services.ServiceLocator.*;
+
+import org.anon.utilities.pool.Pool;
+import org.anon.utilities.pool.PoolEntity;
 import org.anon.utilities.exception.CtxException;
 
 public class RuntimeShell implements SmartShell
 {
     private transient ShellContext _context;
+    private transient Map<Class, Pool> _transitionPool;
+    private ExecutorService _transitionExecutor;
 
     public RuntimeShell()
         throws CtxException
@@ -59,6 +69,8 @@ public class RuntimeShell implements SmartShell
         throws CtxException
     {
         _context = new ShellContext();
+        _transitionPool = new ConcurrentHashMap<Class, Pool>();
+        _transitionExecutor = anatomy().jvmEnv().executorFor("Transition", _context.name());
     }
 
     public void cleanup()
@@ -82,6 +94,32 @@ public class RuntimeShell implements SmartShell
     {
         DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
         return shell.search(spacemodel, group, query);
+    }
+
+    public <T extends PoolEntity> T getTransition(Class<T> cls)
+        throws CtxException
+    {
+        Pool tpool = _transitionPool.get(cls);
+        if (tpool == null)
+        {
+            tpool = (Pool)pool().createPool(cls);
+            _transitionPool.put(cls, tpool);
+        }
+
+        return cls.cast(tpool.lockone());
+    }
+
+    public void releaseTransition(PoolEntity transition)
+        throws CtxException
+    {
+        assertion().assertNotNull(transition, "Error cannot release null objects into pool");
+        Pool tpool = _transitionPool.get(transition.getClass());
+        tpool.unlockone(transition);
+    }
+
+    public ExecutorService transitionExecutor()
+    {
+        return _transitionExecutor;
     }
 }
 

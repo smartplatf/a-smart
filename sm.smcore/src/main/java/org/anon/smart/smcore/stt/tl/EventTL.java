@@ -41,7 +41,11 @@
 
 package org.anon.smart.smcore.stt.tl;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import org.anon.smart.base.stt.tl.BaseTL;
+import org.anon.smart.base.annot.EventAnnotate;
 
 public class EventTL extends BaseTL
 {
@@ -49,5 +53,18 @@ public class EventTL extends BaseTL
     {
         super();
     }
+
+    @Override
+    public Class[] getAnnotations(String name)
+    {
+        List<Class> annons = new ArrayList<Class>();
+        Class[] annots = super.getAnnotations(name);
+        for (int i = 0; (annots != null) && (i < annots.length); i++)
+            annons.add(annots[i]);
+
+        annons.add(EventAnnotate.class);
+        return annons.toArray(new Class[0]);
+    }
+    
 }
 

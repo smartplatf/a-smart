@@ -26,15 +26,15 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.stt.tl.EventResponseTL
+ * File:                org.anon.smart.smcore.stt.tl.MethodTL
  * Author:              rsankar
  * Revision:            1.0
- * Date:                22-01-2013
+ * Date:                23-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A event response descriptor
+ * A template to read a single transition method configuration
  *
  * ************************************************************
  * */
@@ -45,25 +45,31 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.anon.smart.base.stt.tl.BaseTL;
-import org.anon.smart.base.annot.ResponseAnnotate;
+import org.anon.smart.smcore.annot.MethodAnnotate;
 
-public class EventResponseTL extends BaseTL
+public class MethodTL extends BaseTL
 {
-    public EventResponseTL()
+    private String name;
+    private String method;
+    private String parms;
+    private String event;
+    private String prime;
+    private String from;
+    private String to;
+    private String runAfter;
+    private String runBefore;
+
+    public MethodTL()
     {
-        super();
     }
 
     @Override
     public Class[] getAnnotations(String name)
     {
         List<Class> annons = new ArrayList<Class>();
-        Class[] annots = super.getAnnotations(name);
-        for (int i = 0; (annots != null) && (i < annots.length); i++)
-            annons.add(annots[i]);
-
-        annons.add(ResponseAnnotate.class);
+        annons.add(MethodAnnotate.class);
         return annons.toArray(new Class[0]);
     }
+    
 }
 
