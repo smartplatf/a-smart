@@ -107,11 +107,13 @@ public class SanitizeData implements ChannelConstants
         assertion().assertTrue((prime.size() > 0), "The flow does not have even one prime enabled.");
         for (String p : prime)
         {
-            if (data.containsKey(p))
+            String lookp = populate.flowDeployment().nameFor(p);
+            System.out.println("Looking for: " + lookp + ":" + data.get(lookp) + ":" + data);
+            if (data.containsKey(lookp))
             {
                 //means we need to post to these flows
-                Object search = data.get(p);
-                sanitizePrime(p, search, populate);
+                Object search = data.get(lookp);
+                sanitizePrime(lookp, search, populate);
             }
         }
 
@@ -128,7 +130,11 @@ public class SanitizeData implements ChannelConstants
     {
         Class typecls = populate.tenant().deploymentShell().primeClass(type);
         Object searched = searchData(type, typecls, val, populate.flowDeployment(), populate.tenant());
+
+        assertion().assertNotNull(searched, "Cannot find object of type: " + type + ":" + val);
+
         Collection primes = null;
+        System.out.println("Searching for: " + type + ":" + val + typecls + ":" + searched);
 
         if (searched instanceof Collection)
         {

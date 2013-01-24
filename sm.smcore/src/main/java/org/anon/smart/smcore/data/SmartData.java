@@ -47,6 +47,7 @@ import org.anon.utilities.fsm.StateEntity;
 
 public interface SmartData extends StateEntity, TaggedData
 {
+    public String smart___name();
     public UUID smart___id();
     public String smart___owner();
     public String smart___group();

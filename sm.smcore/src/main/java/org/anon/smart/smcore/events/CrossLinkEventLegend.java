@@ -55,6 +55,20 @@ public class CrossLinkEventLegend extends CrossLinker
         create(sess, origin);
     }
 
+    protected Class[] parmTypes(String mthd, Object ... params)
+    {
+        if (mthd.equals("<init>"))
+        {
+            return new Class[] { UUID.class, String.class };
+        }
+        else if (mthd.equals("stampReceived") && (params.length > 0))
+        {
+            return new Class[] { Long.TYPE };
+        }
+
+        return super.parmTypes(mthd, params);
+    }
+
     public void stampReceived(long recvd)
         throws CtxException
     {

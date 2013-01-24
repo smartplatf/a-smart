@@ -57,6 +57,11 @@ public class TransitionProbeParms extends DefaultProbeParms
     public TransitionProbeParms(TransitionContext ctx, List<Object> prms)
     {
         super(ctx, prms);
+        _event = ctx.event();
+        _prime = ctx.primeData();
     }
+
+    public SmartEvent event() { return _event; }
+    public SmartPrimeData primeData() { return _prime; }
 }
 

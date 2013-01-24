@@ -26,48 +26,51 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.stt.tl.TransitionTL
+ * File:                org.anon.smart.smcore.stt.TransitionSTT
  * Author:              rsankar
  * Revision:            1.0
- * Date:                23-01-2013
+ * Date:                24-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A template to read transition configuration
+ * An stt for transition classes
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.stt.tl;
+package org.anon.smart.smcore.stt;
 
-import java.util.List;
-import java.util.ArrayList;
+import org.anon.utilities.pool.Pool;
+import org.anon.utilities.pool.PoolEntity;
 
-import org.anon.smart.base.stt.tl.BaseTL;
-import org.anon.smart.base.annot.TransitionAnnotate;
-
-public class TransitionTL extends BaseTL
+public class TransitionSTT implements PoolEntity
 {
-    private String prime;
-    private String event;
-    private String foreach;
-    private List<MethodTL> actions;
+    private PoolEntity _nextEntity;
+    private Pool _pool;
 
-    public TransitionTL()
+    public TransitionSTT()
     {
     }
 
-    @Override
-    public Class[] getAnnotations(String name)
+    public PoolEntity nextEntity()
     {
-        List<Class> annons = new ArrayList<Class>();
-        Class[] annots = super.getAnnotations(name);
-        for (int i = 0; (annots != null) && (i < annots.length); i++)
-            annons.add(annots[i]);
+        return _nextEntity;
+    }
 
-        annons.add(TransitionAnnotate.class);
-        return annons.toArray(new Class[0]);
+    public void setNextEntity(PoolEntity entity)
+    {
+        _nextEntity = entity;
+    }
+
+    public Pool pool()
+    {
+        return _pool;
+    }
+
+    public void storePool(Pool p)
+    {
+        _pool = p;
     }
 }
 

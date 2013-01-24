@@ -48,10 +48,11 @@ import org.anon.smart.smcore.data.SmartPrimeData;
 
 public interface SmartEvent
 {
-    public UUID eventID();
-    public FlowObject forFlow();
-    public EventLegend legend();
-    public SmartPrimeData primeData();
+    public String smart___name();
+    public UUID smart___eventID();
+    public FlowObject smart___forFlow();
+    public EventLegend smart___legend();
+    public SmartPrimeData smart___primeData();
     //public Session session();
 }
 

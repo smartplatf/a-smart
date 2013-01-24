@@ -91,13 +91,17 @@ public class TestSmartChannel implements ModConstants
                             new URL(PathHelper.getJar(true, UTILITIES)),
                             new URL(PathHelper.getJar(true, CHANNELS)),
                             new URL(PathHelper.getJar(true, ATOMICITY)),
+                            new URL(PathHelper.getJar(true, SAMPLEAPP)),
                             new URL(PathHelper.getProjectTestBuildPath()),
                             new URL(PathHelper.getProjectBuildPath()),
                             new URL(PathHelper.getDependantPath(true, "org/jboss/netty/netty/3.2.5.Final/netty-3.2.5.Final.jar")),
                             new URL(PathHelper.getDependantPath(true, "jcs/jcs/1.3/jcs-1.3.jar"))
                         };
 
-        String[] comps = new String[] { "org.anon.smart.smcore.anatomy.SMCoreModule" };
+        for (int i = 0; i < urls.length; i++)
+            System.out.println("URL added: " + urls[i]);
+
+        String[] comps = new String[] { "org.anon.smart.smcore.anatomy.SMCoreModule", "org.anon.smart.smcore.test.testanatomy.TestModule" };
 
         SmartLoader ldr = new SmartLoader(urls, comps);
         CrossLinkApplication.getApplication().setStartLoader(ldr);
@@ -125,6 +129,7 @@ public class TestSmartChannel implements ModConstants
         SCShell shell = new SCShell();
         postTo(shell, 9080, "localhost", "/invalidtenant/invalidflow/invalidevent", "{'order':'testorder'}");
         postTo(shell, 9080, "localhost", "/SmartOwner/invalidflow/", "{'order':'testorder'}");
+        postTo(shell, 9080, "localhost", "/SmartOwner/ReviewFlow/WriteReview", "{'ReviewObject':'Not present', 'review':'Reviewed','rating':1}");
     }
 }
 

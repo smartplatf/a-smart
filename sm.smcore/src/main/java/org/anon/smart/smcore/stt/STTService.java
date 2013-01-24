@@ -63,6 +63,7 @@ public class STTService
         STTRegister.registerSTT("Data", "org.anon.smart.smcore.stt.SmartDataSTT");
         STTRegister.registerSTT("Event", "org.anon.smart.smcore.stt.EventSTT");
         STTRegister.registerSTT("Response", "org.anon.smart.smcore.stt.EventResponseSTT");
+        STTRegister.registerSTT("Transition", "org.anon.smart.smcore.stt.TransitionSTT");
 
         TemplateReader.registerTemplate("PrimeData", SmartObjectTL.class);
         TemplateReader.registerTemplate("Data", SmartObjectTL.class);

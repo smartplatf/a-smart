@@ -45,16 +45,20 @@ import org.anon.smart.channels.shell.ExternalConfig;
 import org.anon.smart.smcore.channel.server.EventServerConfig;
 import org.anon.smart.smcore.anatomy.SMCoreConfig;
 
+import org.anon.smart.smcore.test.testanatomy.TestModuleConfig;
+
 import org.anon.utilities.exception.CtxException;
 
-public class TestStartConfig implements SMCoreConfig
+public class TestStartConfig implements SMCoreConfig, TestModuleConfig
 {
     private ExternalConfig[] _channels;
+    private String[] _deploy;
 
-    public TestStartConfig()
+    public TestStartConfig(String[] deploy)
     {
         _channels = new ExternalConfig[1];
         _channels[0] = new EventServerConfig(9080, false);
+        _deploy = deploy;
     }
 
     public ExternalConfig[] startChannels()
@@ -72,6 +76,11 @@ public class TestStartConfig implements SMCoreConfig
         throws CtxException
     {
         return "config";
+    }
+
+    public String[] deploymentFiles()
+    {
+        return _deploy;
     }
 }
 

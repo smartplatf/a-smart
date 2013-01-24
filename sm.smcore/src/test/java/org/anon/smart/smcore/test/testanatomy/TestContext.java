@@ -26,72 +26,49 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.atomicity.Atomicity
+ * File:                org.anon.smart.smcore.test.testanatomy.TestContext
  * Author:              rsankar
  * Revision:            1.0
- * Date:                04-01-2013
+ * Date:                24-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * An atomic operation provided for all included hypothesis
+ * A test context based on which the module is initialized
  *
  * ************************************************************
  * */
 
-package org.anon.smart.atomicity;
+package org.anon.smart.smcore.test.testanatomy;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.anon.smart.base.anatomy.SmartModuleContext;
+import org.anon.smart.base.dspace.DSpaceAuthor;
 
+import org.anon.utilities.anatomy.JVMEnvironment;
 import org.anon.utilities.exception.CtxException;
 
-public class Atomicity
+public class TestContext implements SmartModuleContext
 {
-    private UUID _atomicID;
-    private Map<String, Hypothesis> _hypothesis;
-
-    public Atomicity()
+    public TestContext()
     {
-        _atomicID = UUID.randomUUID();
-        _hypothesis = new ConcurrentHashMap<String, Hypothesis>();
     }
 
-    public EmpiricalData includeEmpiricalData(EmpiricalData edata)
+    public JVMEnvironment vmEnvironment()
         throws CtxException
     {
-        EmpiricalData eret = edata;
-        String dt = edata.dataType();
-        Hypothesis hypo = _hypothesis.get(dt);    
-        if (hypo == null)
-            hypo = new DeductiveHypothesis(_atomicID, edata);
-        else
-            eret = hypo.collect(edata);
-
-        _hypothesis.put(dt, hypo);
-        return eret;
+        return null; //use default
     }
 
-    public List<EmpiricalData> dataFor(String dt, String tag)
+    public ClassLoader smartLoader(ClassLoader ldr, String name)
         throws CtxException
     {
-        Hypothesis hypo = _hypothesis.get(dt);
-        return hypo.empiricalDataFor(tag);
+        return null;
     }
 
-    public List<EmpiricalData> searchDataFor(String dt, String[] regex)
+    public DSpaceAuthor spaceAuthor()
         throws CtxException
     {
-        Hypothesis hypo = _hypothesis.get(dt);
-        return hypo.searchEmpiricalData(regex);
-    }
-
-    public UUID atomicID() { return _atomicID; }
-
-    public void finish()
-    {
+        return null;
     }
 }
 

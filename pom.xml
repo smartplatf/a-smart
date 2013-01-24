@@ -115,7 +115,11 @@
                     </property>
                     <property>
                         <name>utilities</name>
-                        <value>utilities/${project.version}/utilities-${project.version}.jar</value>
+                        <value>utilities/utilities/${project.version}/utilities-${project.version}.jar</value>
+                    </property>
+                    <property>
+                        <name>sampleapp</name>
+                        <value>sampleapp/sampleapp/${project.version}/sampleapp-${project.version}.jar</value>
                     </property>
 
                 </systemProperties>

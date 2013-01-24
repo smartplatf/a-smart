@@ -62,6 +62,7 @@ public class FlowDeployment extends Deployment
     private List<String> events;
     private List<String> responses;
     private List<String> messages;
+    private List<String> transitions;
 
     private Map<String, String> _classToName;
     private Map<String, String> _nameToClass;
@@ -80,16 +81,19 @@ public class FlowDeployment extends Deployment
         events = new ArrayList<String>();
         responses = new ArrayList<String>();
         messages = new ArrayList<String>();
+        transitions = new ArrayList<String>();
         _classToName = new HashMap<String, String>();
         _nameToClass = new HashMap<String, String>();
         initialize();
     }
 
     public FlowDeployment(FlowDeployment dep, String[] features)
+        throws CtxException
     {
         super(dep, features);
         initialize();
         _classToName = new HashMap<String, String>();
+        _nameToClass = new HashMap<String, String>();
         primeData = dep.primeData;
         for (String p : primeData)
         {
@@ -101,10 +105,20 @@ public class FlowDeployment extends Deployment
 
     @Override
     public <T extends Deployment> T createDefault(String[] features, Class<T> cls)
+        throws CtxException
     {
         return cls.cast(new FlowDeployment(this, features));
     }
 
+    @Override
+    protected void setup()
+        throws CtxException
+    {
+        super.setup();
+        initialize();
+        _classToName = new HashMap<String, String>();
+        _nameToClass = new HashMap<String, String>();
+    }
 
     private void initialize()
     {
@@ -114,6 +128,7 @@ public class FlowDeployment extends Deployment
         _mapTypes.put(FlowService.eventRecognizer(), events);
         _mapTypes.put(FlowService.responseRecognizer(), responses);
         _mapTypes.put(FlowService.messageRecognizer(), messages);
+        _mapTypes.put(FlowService.transitionRecognizer(), transitions);
     }
 
     @Override
@@ -121,10 +136,11 @@ public class FlowDeployment extends Deployment
     {
         String clsname = cls.getName();
         boolean ret = primeData.contains(clsname);
-        ret = ret || (data.contains(clsname));
-        ret = ret || (events.contains(clsname));
-        ret = ret || (responses.contains(clsname));
-        ret = ret || (messages.contains(clsname));
+        ret = ret || ((data != null) && data.contains(clsname));
+        ret = ret || ((events != null) && events.contains(clsname));
+        ret = ret || ((responses != null) && responses.contains(clsname));
+        ret = ret || ((messages != null) && messages.contains(clsname));
+        ret = ret || ((transitions != null) && transitions.contains(clsname));
 
         return ret;
     }
@@ -150,10 +166,21 @@ public class FlowDeployment extends Deployment
     {
         List<String> ret = new ArrayList<String>();
         ret.addAll(primeData);
-        ret.addAll(data);
-        ret.addAll(events);
-        ret.addAll(responses);
-        ret.addAll(messages);
+        if (data != null)
+            ret.addAll(data);
+
+        if (events != null)
+            ret.addAll(events);
+
+        if (responses != null)
+            ret.addAll(responses);
+
+        if (messages != null)
+            ret.addAll(messages);
+
+        if (transitions != null)
+            ret.addAll(transitions);
+
         return ret;
     }
 
@@ -178,10 +205,11 @@ public class FlowDeployment extends Deployment
     public boolean belongs(String clsname)
     {
         boolean ret = primeData.contains(clsname);
-        ret = ret || (data.contains(clsname));
-        ret = ret || (events.contains(clsname));
-        ret = ret || (responses.contains(clsname));
-        ret = ret || (messages.contains(clsname));
+        ret = ret || ((data != null) && data.contains(clsname));
+        ret = ret || ((events != null) && events.contains(clsname));
+        ret = ret || ((responses != null) && responses.contains(clsname));
+        ret = ret || ((messages != null) && messages.contains(clsname));
+        ret = ret || ((transitions != null) && transitions.contains(clsname));
 
         return ret;
     }

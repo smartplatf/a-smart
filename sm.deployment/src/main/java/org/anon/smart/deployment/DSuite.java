@@ -41,9 +41,13 @@
 
 package org.anon.smart.deployment;
 
+import org.anon.utilities.exception.CtxException;
+
 public interface DSuite<T extends Deployment>
 {
     public MicroArtefacts artefacts();
     public MacroDeployments<T> deployments();
+    public void enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
+        throws CtxException;
 }
 

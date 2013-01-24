@@ -43,25 +43,39 @@ package org.anon.smart.smcore.stt;
 
 import java.util.UUID;
 
+import static org.anon.smart.base.utils.AnnotationUtils.*;
+
+import org.anon.smart.base.stt.annot.MethodExit;
 import org.anon.smart.base.flow.FlowObject;
 import org.anon.smart.smcore.flow.SmartFlow;
 import org.anon.smart.smcore.data.SmartPrimeData;
 import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.events.EventLegend;
 
+import org.anon.utilities.exception.CtxException;
+
 public class EventSTT implements SmartEvent
 {
     private EventLegend ___smart_legend___;
     private FlowObject ___smart_flow___;
     private SmartPrimeData ___smart_primeData___;
+    private String ___smart_name___;
 
     public EventSTT()
     {
     }
 
-    public EventLegend legend() { return ___smart_legend___; }
-    public FlowObject forFlow() { return ___smart_flow___; }
-    public SmartPrimeData primeData() { return ___smart_primeData___; }
-    public UUID eventID() { return ___smart_legend___.eventID(); }
+    @MethodExit("constructor")
+    private void smarteventstt____init()
+        throws CtxException
+    {
+        ___smart_name___ = objectName(this);
+    }
+
+    public String smart___name() { return ___smart_name___; }
+    public EventLegend smart___legend() { return ___smart_legend___; }
+    public FlowObject smart___forFlow() { return ___smart_flow___; }
+    public SmartPrimeData smart___primeData() { return ___smart_primeData___; }
+    public UUID smart___eventID() { return ___smart_legend___.eventID(); }
 }
 

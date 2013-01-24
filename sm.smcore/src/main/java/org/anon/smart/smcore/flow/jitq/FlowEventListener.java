@@ -45,6 +45,8 @@ import java.util.UUID;
 import java.util.Map;
 
 import org.anon.smart.base.flow.FlowObject;
+import org.anon.smart.smcore.transition.TransitionService;
+import org.anon.smart.smcore.transition.TransitionContext;
 
 import org.anon.utilities.jitq.JITProcessQueue;
 import org.anon.utilities.jitq.DataListener;
@@ -68,6 +70,8 @@ public class FlowEventListener implements DataListener
         throws CtxException
     {
         System.out.println("Data is: " + data);
+        TransitionContext ctx = TransitionService.createContext(data);
+        ctx.executeGraph();
     }
 
     public RuntimeContext startRuntimeContext(String action, JITProcessQueue queue)

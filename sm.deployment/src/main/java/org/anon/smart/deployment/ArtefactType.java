@@ -204,8 +204,8 @@ public class ArtefactType
         Annotation[] annots = cls.getAnnotations();
         for (int i = 0; i < annots.length; i++)
         {
-            if (ARTEFACTS.containsKey(annots[i]))
-                ret.add(ARTEFACTS.get(annots[i]));
+            if (ARTEFACTS.containsKey(annots[i].annotationType()))
+                ret.add(ARTEFACTS.get(annots[i].annotationType()));
         }
 
         return ret.toArray(new ArtefactType[0]);

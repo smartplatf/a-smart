@@ -54,6 +54,12 @@ public class SuiteAssistant<T extends Deployment>
         _suite = suite;
     }
 
+    public T addDeployment(T dep)
+        throws CtxException
+    {
+        return _suite.deployments().addDeployment(dep);
+    }
+
     public Artefact[] deployClazz(Class cls)
         throws CtxException
     {
@@ -97,6 +103,12 @@ public class SuiteAssistant<T extends Deployment>
     {
         ArtefactType atype = ArtefactType.artefactTypeFor(type);
         return clazzFor(key, atype, ldr);
+    }
+
+    public void enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
+        throws CtxException
+    {
+        _suite.enableFor(ldeploy, dep, features);
     }
 }
 

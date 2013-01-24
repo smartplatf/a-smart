@@ -26,7 +26,7 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.transition.graph.TransitionGraphExecutor
+ * File:                org.anon.smart.smcore.transition.graph.EndTransitionExecutor
  * Author:              rsankar
  * Revision:            1.0
  * Date:                24-01-2013
@@ -34,7 +34,7 @@
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * an executor for all the nodes of a transition
+ * An executor that ends the execution of all transitions
  *
  * ************************************************************
  * */
@@ -44,30 +44,24 @@ package org.anon.smart.smcore.transition.graph;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.anon.utilities.utils.Repeatable;
-import org.anon.utilities.utils.RepeaterVariants;
+import org.anon.smart.smcore.transition.TransitionContext;
+
 import org.anon.utilities.cthreads.CtxRunnable;
-import org.anon.utilities.cthreads.RuntimeContext;
 import org.anon.utilities.cthreads.CThreadContext;
-import org.anon.utilities.gconcurrent.GraphRuntimeNode;
-import org.anon.utilities.gconcurrent.execute.ExecuteGraph;
-import org.anon.utilities.gconcurrent.execute.ProbeParms;
-import org.anon.utilities.gconcurrent.execute.ExecuteGraphNode;
-import org.anon.utilities.gconcurrent.execute.ExecuteGraphParms;
+import org.anon.utilities.cthreads.RuntimeContext;
 import org.anon.utilities.exception.CtxException;
 
-public class TransitionGraphExecutor extends ExecuteGraph implements CtxRunnable
+public class EndTransitionExecutor implements CtxRunnable
 {
-    public TransitionGraphExecutor(GraphRuntimeNode nde, ProbeParms parms)
-        throws CtxException
-    {
-        super(nde, parms);
-    }
+    private CThreadContext _context;
+    private CtxRunnable _parent;
+    private boolean _hasCompleted;
 
-    protected ExecuteGraphNode graphNodeExecutor(GraphRuntimeNode nde, ProbeParms parms)
-        throws CtxException
+    public EndTransitionExecutor(CThreadContext ctx, CtxRunnable running)
     {
-        return new TransitionExecutor(nde, parms);
+        _parent = running;
+        _context = ctx;
+        _hasCompleted = false;
     }
 
     public void recordException(Throwable e)
@@ -77,13 +71,33 @@ public class TransitionGraphExecutor extends ExecuteGraph implements CtxRunnable
         e.printStackTrace();
     }
 
-    public Repeatable repeatMe(RepeaterVariants vars)
+    public void run()
+    {
+        try
+        {
+            if ((_context instanceof TransitionContext) && (_parent.hasCompleted()))
+            {
+                TransitionContext gctx = (TransitionContext)_context;
+                if (gctx.graphDone())
+                {
+                    gctx.atomicity().finish();
+                }
+            }
+            _hasCompleted = true;
+        }
+        catch (Exception e)
+        {
+            //TODO:
+            e.printStackTrace();
+        }
+    }
+
+    public boolean hasCompleted()
         throws CtxException
     {
-        ExecuteGraphParms p = (ExecuteGraphParms)vars;
-        return new TransitionGraphExecutor(p.runtimeNode(), p.parms());
+        return _hasCompleted;
     }
-    
+
     public RuntimeContext startRuntimeContext(String action)
         throws CtxException
     {
@@ -94,20 +108,19 @@ public class TransitionGraphExecutor extends ExecuteGraph implements CtxRunnable
     public CThreadContext runContext()
         throws CtxException
     {
-        return (CThreadContext)_graphContext;
+        return (CThreadContext)_context;
     }
 
     public Map<String, Object> contextLocals()
         throws CtxException
     {
-        //TODO:
         return new HashMap<String, Object>();
     }
 
     public CtxRunnable endWith()
         throws CtxException
     {
-        return new EndTransitionExecutor((CThreadContext)_graphContext, this);
+        return null;
     }
 }
 

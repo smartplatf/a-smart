@@ -73,7 +73,7 @@ public class EventRData extends RData
         _tenant = tenant;
         _event = event;
         CrossLinkSmartEvent cle = new CrossLinkSmartEvent(_event);
-        _eventID = cle.eventID();
+        _eventID = cle.smart___eventID();
     }
 
     public Object event() { return _event; }

@@ -69,6 +69,7 @@ public abstract class BaseTL implements Constants
 
     private String name;
     private String type;
+    private String flow;
 
     protected BaseTL()
     {
@@ -76,6 +77,7 @@ public abstract class BaseTL implements Constants
 
     public String getName() { return name; }
     public String getType() { return type; }
+    public String getFlow() { return flow; }
     public String[] getTypes()
         throws CtxException
     { 

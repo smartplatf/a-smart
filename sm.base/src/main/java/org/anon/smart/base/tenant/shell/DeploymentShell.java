@@ -46,6 +46,7 @@ import java.util.List;
 import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.smart.base.flow.FlowDeployment;
+import org.anon.smart.base.flow.FlowDeploymentSuite;
 import org.anon.smart.base.flow.PrimeTypeFilter;
 import org.anon.smart.base.flow.ClassTypeFilter;
 import org.anon.smart.base.flow.FlowConstants;
@@ -60,9 +61,19 @@ public class DeploymentShell implements SmartShell, FlowConstants
     private LicensedDeploymentSuite<FlowDeployment> _licensed;
 
     public DeploymentShell(ClassLoader ldr)
+        throws CtxException
     {
         _licensed = new LicensedDeploymentSuite<FlowDeployment>();
+        _licensed.setHandleDeployment(FlowDeployment.class);
         _loader = ldr;
+    }
+
+    public void enableForMe(String name, String[] features)
+        throws CtxException
+    {
+        //this has to be run from the same classloader as the tenant which will be
+        //the application class loader. Anything else should anyways give error.
+        FlowDeploymentSuite.getAssistant().enableFor(_licensed, name, features);
     }
 
     public Class deployment(String name, String type)

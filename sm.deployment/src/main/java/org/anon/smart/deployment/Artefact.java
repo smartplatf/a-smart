@@ -108,7 +108,9 @@ public class Artefact implements Deployable
         ArtefactType[] t = ArtefactType.recognizeArtefactType(clazz);
         Artefact[] ret = new Artefact[t.length];
         for (int i = 0; i < t.length; i++)
+        {
             ret[i] = new Artefact(clazz, t[i]);
+        }
         return ret;
     }
 

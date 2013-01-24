@@ -46,6 +46,7 @@ import org.anon.smart.base.tenant.TenantsHosted;
 import org.anon.smart.channels.shell.SCShell;
 import org.anon.smart.channels.shell.ExternalConfig;
 import org.anon.smart.smcore.stt.STTService;
+import org.anon.smart.smcore.transition.TransitionService;
 
 import org.anon.utilities.anatomy.AModule;
 import org.anon.utilities.anatomy.ModuleContext;
@@ -67,6 +68,7 @@ public class SMCoreModule extends AModule
     {
         FlowService.initialize();
         STTService.initialize();
+        TransitionService.initialize();
     }
 
     public Repeatable repeatMe(RepeaterVariants vars)

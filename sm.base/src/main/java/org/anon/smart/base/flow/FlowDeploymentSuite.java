@@ -42,12 +42,14 @@
 package org.anon.smart.base.flow;
 
 import org.anon.smart.deployment.DeploymentSuite;
+import org.anon.smart.deployment.SuiteAssistant;
 import org.anon.smart.deployment.ArtefactType;
 
 import org.anon.utilities.exception.CtxException;
 
 public class FlowDeploymentSuite extends DeploymentSuite<FlowDeployment>
 {
+    private static final String FLOWSUITE = "org.anon.smart.base.flow.FlowDeploymentSuite";
     private static FlowDeploymentSuite APP_INSTANCE = null;
 
     protected FlowDeploymentSuite()
@@ -68,5 +70,11 @@ public class FlowDeploymentSuite extends DeploymentSuite<FlowDeployment>
         return APP_INSTANCE;
     }
 
+    public static SuiteAssistant<FlowDeployment> getAssistant()
+        throws CtxException
+    {
+        FlowDeploymentSuite suite = (FlowDeploymentSuite)getAppInstance(FLOWSUITE);
+        return suite.assistant();
+    }
 }
 

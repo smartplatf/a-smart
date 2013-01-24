@@ -76,6 +76,7 @@ public class TranslationStage implements Distillation
         PData data = (PData)prev.current();
         InputStream str = data.cdata().data();
         Object convert = convert().readObject(str, Map.class, _type);
+        System.out.println("Converted: " + str + ":" + convert);
         Isotope translated = null;
         if (convert instanceof Map)
             translated = new MapData(data, (Map<String, Object>)convert);

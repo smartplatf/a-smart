@@ -108,9 +108,17 @@ public class MacroDeployments<T extends Deployment>
         return ret;
     }
 
-    public void addDeployment(String file)
+    public T addDeployment(T deployment)
         throws CtxException
     {
+        T dep = _deployments.get(deployment.deployedName());
+        if (dep == null)
+        {
+            _deployments.put(deployment.deployedName(), deployment);
+            dep = deployment;
+        }
+
+        return dep;
     }
 }
 

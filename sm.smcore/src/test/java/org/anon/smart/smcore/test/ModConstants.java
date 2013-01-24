@@ -50,5 +50,6 @@ public interface ModConstants
     public static final String ATOMICITY = "smart.atomicity";
     public static final String SMCORE = "smart.smcore";
     public static final String UTILITIES = "utilities";
+    public static final String SAMPLEAPP = "sampleapp";
 }
 

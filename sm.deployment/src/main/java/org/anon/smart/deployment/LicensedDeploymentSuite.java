@@ -41,6 +41,8 @@
 
 package org.anon.smart.deployment;
 
+import static org.anon.utilities.services.ServiceLocator.*;
+
 import org.anon.utilities.exception.CtxException;
 
 public class LicensedDeploymentSuite<T extends Deployment> implements DSuite<T>
@@ -56,7 +58,7 @@ public class LicensedDeploymentSuite<T extends Deployment> implements DSuite<T>
         _assistant = new SuiteAssistant<T>(this);
     }
 
-    protected void setHandleDeployment(Class<T> cls)
+    public void setHandleDeployment(Class<T> cls)
         throws CtxException
     {
         _licensedDeployments.setHandleDeployment(cls);
@@ -81,6 +83,12 @@ public class LicensedDeploymentSuite<T extends Deployment> implements DSuite<T>
         throws CtxException
     {
         _licensedClazzez.deployArtefacts(artefacts);
+    }
+
+    public void enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
+        throws CtxException
+    {
+        except().te(this, "Enabling from an already licensed suite is not supported");
     }
 }
 

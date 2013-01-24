@@ -77,6 +77,11 @@ public class SmartDataSTT implements SmartData, DSpaceObject
         ___smart_name___ = objectName(this);
     }
 
+    public String smart___name()
+    {
+        return ___smart_name___;
+    }
+
     public UUID smart___id()
     {
         return ___smart_legend___.id();

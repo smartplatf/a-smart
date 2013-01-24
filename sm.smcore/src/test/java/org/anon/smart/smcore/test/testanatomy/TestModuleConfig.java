@@ -26,48 +26,25 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.stt.tl.TransitionTL
+ * File:                org.anon.smart.smcore.test.testanatomy.TestModuleConfig
  * Author:              rsankar
  * Revision:            1.0
- * Date:                23-01-2013
+ * Date:                24-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A template to read transition configuration
+ * A configuration for the test module
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.stt.tl;
+package org.anon.smart.smcore.test.testanatomy;
 
-import java.util.List;
-import java.util.ArrayList;
+import org.anon.utilities.anatomy.StartConfig;
 
-import org.anon.smart.base.stt.tl.BaseTL;
-import org.anon.smart.base.annot.TransitionAnnotate;
-
-public class TransitionTL extends BaseTL
+public interface TestModuleConfig extends StartConfig
 {
-    private String prime;
-    private String event;
-    private String foreach;
-    private List<MethodTL> actions;
-
-    public TransitionTL()
-    {
-    }
-
-    @Override
-    public Class[] getAnnotations(String name)
-    {
-        List<Class> annons = new ArrayList<Class>();
-        Class[] annots = super.getAnnotations(name);
-        for (int i = 0; (annots != null) && (i < annots.length); i++)
-            annons.add(annots[i]);
-
-        annons.add(TransitionAnnotate.class);
-        return annons.toArray(new Class[0]);
-    }
+    public String[] deploymentFiles();
 }
 

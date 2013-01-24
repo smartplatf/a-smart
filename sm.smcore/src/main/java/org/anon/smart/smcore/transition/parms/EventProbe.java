@@ -26,48 +26,37 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.stt.tl.TransitionTL
+ * File:                org.anon.smart.smcore.transition.parms.EventProbe
  * Author:              rsankar
  * Revision:            1.0
- * Date:                23-01-2013
+ * Date:                24-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A template to read transition configuration
+ * A probe that assigns event object as a parameter
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.stt.tl;
+package org.anon.smart.smcore.transition.parms;
 
-import java.util.List;
-import java.util.ArrayList;
+import org.anon.utilities.gconcurrent.execute.ProbeParms;
+import org.anon.utilities.gconcurrent.execute.AbstractProbe;
+import org.anon.utilities.exception.CtxException;
 
-import org.anon.smart.base.stt.tl.BaseTL;
-import org.anon.smart.base.annot.TransitionAnnotate;
-
-public class TransitionTL extends BaseTL
+public class EventProbe extends AbstractProbe
 {
-    private String prime;
-    private String event;
-    private String foreach;
-    private List<MethodTL> actions;
-
-    public TransitionTL()
+    public EventProbe()
     {
+        super();
     }
 
-    @Override
-    public Class[] getAnnotations(String name)
+    protected Object valueFor(ProbeParms parms)
+        throws CtxException
     {
-        List<Class> annons = new ArrayList<Class>();
-        Class[] annots = super.getAnnotations(name);
-        for (int i = 0; (annots != null) && (i < annots.length); i++)
-            annons.add(annots[i]);
-
-        annons.add(TransitionAnnotate.class);
-        return annons.toArray(new Class[0]);
+        TransitionProbeParms tparms = (TransitionProbeParms)parms;
+        return tparms.event();
     }
 }
 

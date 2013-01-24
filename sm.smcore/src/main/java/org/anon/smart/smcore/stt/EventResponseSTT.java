@@ -63,6 +63,6 @@ public class EventResponseSTT implements SmartEventResponse
         ___smart_responseid___ = UUID.randomUUID();
     }
 
-    public UUID eventID() { return ___smart_responseid___; }
+    public UUID smart___eventID() { return ___smart_responseid___; }
 }
 

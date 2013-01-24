@@ -55,8 +55,9 @@ public class RunSmartServer implements Runnable
     {
         try
         {
-            TestStartConfig cfg = new TestStartConfig();
+            TestStartConfig cfg = new TestStartConfig(new String[] { "ReviewFlow.soa" });
             anatomy().startup(cfg);
+            //need to deploy a jar here?
         }
         catch (Exception e)
         {

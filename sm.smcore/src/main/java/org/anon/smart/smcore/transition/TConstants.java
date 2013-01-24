@@ -26,48 +26,26 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.stt.tl.TransitionTL
+ * File:                org.anon.smart.smcore.transition.TConstants
  * Author:              rsankar
  * Revision:            1.0
- * Date:                23-01-2013
+ * Date:                24-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A template to read transition configuration
+ * A set of constants used in transitions
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.stt.tl;
+package org.anon.smart.smcore.transition;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import org.anon.smart.base.stt.tl.BaseTL;
-import org.anon.smart.base.annot.TransitionAnnotate;
-
-public class TransitionTL extends BaseTL
+public interface TConstants
 {
-    private String prime;
-    private String event;
-    private String foreach;
-    private List<MethodTL> actions;
-
-    public TransitionTL()
-    {
-    }
-
-    @Override
-    public Class[] getAnnotations(String name)
-    {
-        List<Class> annons = new ArrayList<Class>();
-        Class[] annots = super.getAnnotations(name);
-        for (int i = 0; (annots != null) && (i < annots.length); i++)
-            annons.add(annots[i]);
-
-        annons.add(TransitionAnnotate.class);
-        return annons.toArray(new Class[0]);
-    }
+    public static final String EVENT = "event";
+    public static final String DATA = "data";
+    public static final String RELATED = "related";
+    public static final String CONFIG = "config";
 }
 

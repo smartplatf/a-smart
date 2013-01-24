@@ -43,10 +43,13 @@ package org.anon.smart.deployment;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.io.InputStream;
 
+import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
+
 import org.anon.utilities.config.Format;
 import org.anon.utilities.verify.VerifiableObject;
 import org.anon.utilities.crosslink.CrossLinkAny;
@@ -69,6 +72,7 @@ public class Deployment implements Deployable, VerifiableObject
     public Deployment()
     {
         _verified = false;
+        _features = new HashMap<String, Feature>();
     }
 
     protected Deployment(String nm, Artefact[] a)
@@ -77,10 +81,12 @@ public class Deployment implements Deployable, VerifiableObject
         name = nm;
         features = new ArrayList<Feature>();
         relations = new ArrayList<Relation>();
+        _features = new HashMap<String, Feature>();
         addArtefacts(a);
     }
 
     protected Deployment(Deployment dep, String[] feats)
+        throws CtxException
     {
         //by default enable the default feature
         name = dep.name;
@@ -92,17 +98,20 @@ public class Deployment implements Deployable, VerifiableObject
         _verified = true;
 
         features = new ArrayList<Feature>();
+        _features = new HashMap<String, Feature>();
         addFeatureFrom(dep, dep.defaultEnable);
         for (int i = 0; (feats != null) && (i < feats.length); i++)
             addFeatureFrom(dep, feats[i]);
     }
 
     public void addFeatureFrom(Deployment dep, String feature)
+        throws CtxException
     {
         if (_features.containsKey(feature))
             return;
 
         Feature f = dep._features.get(feature);
+        assertion().assertNotNull(f, "Cannot find the feature: " + feature + " to enable.");
         features.add(f);
         _features.put(f.getName(), f);
         List<String> sub = f.mysubs();
@@ -111,6 +120,7 @@ public class Deployment implements Deployable, VerifiableObject
     }
 
     public <T extends Deployment> T createDefault(String[] features, Class<T> cls)
+        throws CtxException
     {
         return cls.cast(new Deployment(this, features));
     }
@@ -152,7 +162,7 @@ public class Deployment implements Deployable, VerifiableObject
         return _features.get(fn);
     }
 
-    public Feature[] features()
+    public Feature[] getFeatures()
     {
         return features.toArray(new Feature[0]);
     }
@@ -168,6 +178,9 @@ public class Deployment implements Deployable, VerifiableObject
             if ((run != null) && (run.length > 1))
                 _runMethod = run[1];
         }
+
+        if (_features == null)
+            _features = new HashMap<String, Feature>();
 
         for (Feature f : features)
         {

@@ -45,6 +45,6 @@ import java.util.UUID;
 
 public interface SmartEventResponse
 {
-    public UUID eventID();
+    public UUID smart___eventID();
 }
 
