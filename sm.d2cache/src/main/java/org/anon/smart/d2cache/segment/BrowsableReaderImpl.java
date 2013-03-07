@@ -26,40 +26,49 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.D2Cache
- * Author:              rsankar
+ * File:                org.anon.smart.d2cache.segment.BrowsableReaderImpl
+ * Author:              vjaasti
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                Mar 6, 2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A durable cache interface through which access to this cache is given
+ * <Purpose>
  *
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache;
+package org.anon.smart.d2cache.segment;
 
-import java.util.UUID;
+import java.awt.Stroke;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.anon.smart.d2cache.store.StoreItem;
-
+import org.anon.smart.d2cache.BrowsableReader;
+import org.anon.smart.d2cache.store.BrowsableStore;
+import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.utilities.exception.CtxException;
 
-public interface D2Cache
-{
-    public D2CacheTransaction startTransaction(UUID txnid)
-        throws CtxException;
+public class BrowsableReaderImpl extends DefualtReader implements BrowsableReader{
 
-    public Reader myReader()
-        throws CtxException;
+	
+	public BrowsableReaderImpl(CSegment[] segments, StoreConfig cfg)
+	{
+		super(segments, cfg);
+	}
+	
 
-    public void cleanupMemory()
-        throws CtxException;
+	@Override
+	public Set<Object> currentKeySet(String group) throws CtxException {
+		// TODO Auto-generated method stub
+		return ((BrowsableStore)_segments[0].getStore()).keySet(group);
+	}
 
-    public boolean isEnabled(int flags);
+	@Override
+	public Map<String, Set<Object>> currentKeySet() throws CtxException {
+		// TODO Auto-generated method stub
+		return ((BrowsableStore)_segments[0].getStore()).keySet();
+	}
 }
-

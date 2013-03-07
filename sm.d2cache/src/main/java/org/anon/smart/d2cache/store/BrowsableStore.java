@@ -26,40 +26,28 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.D2Cache
- * Author:              rsankar
+ * File:                org.anon.smart.d2cache.store.BrowsableStore
+ * Author:              vjaasti
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                Mar 6, 2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A durable cache interface through which access to this cache is given
+ * <Purpose>
  *
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache;
+package org.anon.smart.d2cache.store;
 
-import java.util.UUID;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import org.anon.smart.d2cache.store.StoreItem;
 
 import org.anon.utilities.exception.CtxException;
 
-public interface D2Cache
-{
-    public D2CacheTransaction startTransaction(UUID txnid)
-        throws CtxException;
-
-    public Reader myReader()
-        throws CtxException;
-
-    public void cleanupMemory()
-        throws CtxException;
-
-    public boolean isEnabled(int flags);
+public interface BrowsableStore extends MemoryStore {
+	
+	public Set<Object> keySet(String group) throws CtxException;
+	public Map<String, Set<Object>> keySet() throws CtxException;
 }
-

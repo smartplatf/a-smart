@@ -26,40 +26,58 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.D2Cache
- * Author:              rsankar
+ * File:                org.anon.smart.d2cache.segment.DefualtReader
+ * Author:              vjaasti
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                Mar 6, 2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A durable cache interface through which access to this cache is given
+ * <Purpose>
  *
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache;
+package org.anon.smart.d2cache.segment;
 
-import java.util.UUID;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.anon.smart.d2cache.store.StoreItem;
-
+import org.anon.smart.d2cache.Reader;
+import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.utilities.exception.CtxException;
 
-public interface D2Cache
-{
-    public D2CacheTransaction startTransaction(UUID txnid)
-        throws CtxException;
+public class DefualtReader implements Reader {
 
-    public Reader myReader()
-        throws CtxException;
+	protected CSegment[] _segments;
+	protected StoreConfig _config;
+	
+	public DefualtReader(CSegment[] segements, StoreConfig cfg)
+	{
+		_segments = segements;
+		_config = cfg;
+	}
+	@Override
+	public Object lookup(String group, Object key) throws CtxException {
+		Object ret = null;
+		for(int i = 0 ; ((ret == null) && (i < _segments.length)); i++) {
+			ret = _segments[i].get(group, key);
+		}
+		
+		return ret;
+	}
 
-    public void cleanupMemory()
-        throws CtxException;
+	@Override
+	public List<Object> search(String group, Object query) throws CtxException {
+		List<Object> resultSet = new ArrayList<Object>();
+		for(int i = 0 ; i < _segments.length; i++) {
+			resultSet.addAll(_segments[i].search(group, query));//TODO
+		}
+		
+		return resultSet;
+	}
+	
+	
 
-    public boolean isEnabled(int flags);
 }
-

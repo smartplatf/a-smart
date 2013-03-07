@@ -26,40 +26,33 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.D2Cache
+ * File:                org.anon.smart.d2cache.BrowsableReader
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                16-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A durable cache interface through which access to this cache is given
+ * A reader that allows for browsing
  *
  * ************************************************************
  * */
 
 package org.anon.smart.d2cache;
 
-import java.util.UUID;
-import java.util.List;
 import java.util.Set;
-
-import org.anon.smart.d2cache.store.StoreItem;
+import java.util.Map;
 
 import org.anon.utilities.exception.CtxException;
 
-public interface D2Cache
+public interface BrowsableReader extends Reader
 {
-    public D2CacheTransaction startTransaction(UUID txnid)
+    public Set<Object> currentKeySet(String group)
         throws CtxException;
 
-    public Reader myReader()
+    //map which contains a set of keys for each group
+    public Map<String, Set<Object>> currentKeySet()
         throws CtxException;
-
-    public void cleanupMemory()
-        throws CtxException;
-
-    public boolean isEnabled(int flags);
 }
 

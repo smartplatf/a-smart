@@ -26,40 +26,37 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.D2Cache
- * Author:              rsankar
+ * File:                org.anon.smart.d2cache.segment.ReaderFactory
+ * Author:              vjaasti
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                Mar 6, 2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A durable cache interface through which access to this cache is given
+ * <Purpose>
  *
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache;
+package org.anon.smart.d2cache.segment;
 
-import java.util.UUID;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.anon.smart.d2cache.store.StoreItem;
-
+import org.anon.smart.d2cache.BrowsableReader;
+import org.anon.smart.d2cache.D2CacheScheme;
+import org.anon.smart.d2cache.Reader;
+import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.utilities.exception.CtxException;
 
-public interface D2Cache
-{
-    public D2CacheTransaction startTransaction(UUID txnid)
-        throws CtxException;
+public class ReaderFactory {
 
-    public Reader myReader()
-        throws CtxException;
-
-    public void cleanupMemory()
-        throws CtxException;
-
-    public boolean isEnabled(int flags);
+	public static Reader getReaderFor(CSegment[] segments, int flags, StoreConfig cfg) throws CtxException {
+		if( (flags & D2CacheScheme.BROWSABLE_CACHE) == D2CacheScheme.BROWSABLE_CACHE)
+			return new BrowsableReaderImpl(segments, cfg);
+		else 
+			return new DefualtReader(segments, cfg); //TODO
+	}
 }
-

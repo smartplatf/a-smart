@@ -62,7 +62,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
-public class HBaseCRUD
+public class HBaseCRUD implements Constants
 {
     private Configuration _config;
 
@@ -83,6 +83,17 @@ public class HBaseCRUD
             admin.createTable(desc);
         }
     }
+    void deleteTable(String tableName)
+    	throws Exception
+    {
+    	HBaseAdmin admin = new HBaseAdmin(_config);
+    	if(admin.tableExists(tableName))
+    	{
+    		admin.disableTable(tableName);
+    		admin.deleteTable(tableName);
+    	}
+    	
+    }
 
 	Map<String, byte[]> oneRecord(String tableName, String rowKey) 
         throws IOException
@@ -94,7 +105,10 @@ public class HBaseCRUD
         Result rs = table.get(get);
         Map<String, byte[]> ret = new HashMap<String, byte[]>();
         for(KeyValue kv : rs.raw())
+        {
+        	System.out.println(new String(kv.getQualifier())+"--->"+new String(kv.getValue()));
             ret.put(new String(kv.getQualifier()), kv.getValue());
+        }
 
         return ret;
     }
@@ -107,6 +121,7 @@ public class HBaseCRUD
         //Maybe we can have same put object with multiple adds. Check. TODO
 	    Put put = new Put(Bytes.toBytes(rowKey));
         put.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(convert().objectToString(value)));
+        
         return put;
 	}
 

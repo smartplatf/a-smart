@@ -41,6 +41,7 @@
 
 package org.anon.smart.d2cache.store.repository.hbase;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.Put;
 
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.smart.d2cache.store.StoreTransaction;
@@ -92,6 +94,7 @@ public class HBaseConnection implements StoreConnection, Constants
             }
 
             HBaseAdmin.checkHBaseAvailable(_hadoopConf);
+            _crud = new HBaseCRUD(_hadoopConf);
         }
         catch (Exception e)
         {
@@ -126,6 +129,20 @@ public class HBaseConnection implements StoreConnection, Constants
             except().rt(e, new CtxException.Context("HBaseConnection.createMetadata", "Exception"));
         }
     }
+    
+    public void deleteMetadata(String name)
+    	throws CtxException
+    {
+    	try
+    	{
+    		String tableName = getTableName(name);
+    		_crud.deleteTable(tableName);
+    	}
+    	catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("HBaseConnection.deleteMetadata", "Exception"));
+        }
+    }
 
     public StoreTransaction startTransaction(UUID txn)
         throws CtxException
@@ -138,7 +155,22 @@ public class HBaseConnection implements StoreConnection, Constants
     {
         //nothing to do?
     }
-
+  /*  public void put(String group, Object key, Object obj)
+    		throws CtxException
+    {
+    	try
+    	{
+    		String tableName = getTableName(group);
+    		Put p = _crud.newRecord((String) key, DATA_COL_FAMILY, "DATA", obj);
+    		List<Put> recordList = new ArrayList<Put>();
+    		recordList.add(p);
+    		_crud.putRecords(tableName, recordList);
+    	}
+    	catch(Exception ex)
+    	{
+    		except().rt(ex, new CtxException.Context("HBaseConnection.put", "Exception"));
+    	}
+    }*/
     public Object find(String group, Object key)
         throws CtxException
     {
@@ -146,9 +178,10 @@ public class HBaseConnection implements StoreConnection, Constants
         {
             String tablename = getTableName(group);
             //assumption is that the key passed here is the primary key
-            //retrieval by anyother means is not supported currently>
+            //retrieval by any other means is not supported currently>
             Map<String, byte[]> obj = _crud.oneRecord(tablename, key.toString());
             //this will have to be changed correctly. TODO: this has to be corrected
+            
             String clsName = new String(obj.get(CLASSNAME));
             Object ret = convert().mapToObject(Class.forName(clsName), obj);
             return ret;

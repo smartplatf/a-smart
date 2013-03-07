@@ -62,6 +62,8 @@ public class JCSRecord extends AbstractStoreRecord
         super(group, primarykey, curr);
         _inCache = incache;
         _keys = new ArrayList<Object>();
+        _keys.add(getRowId());
+	_currRecord = curr;
     }
 
     public void append(DataContext ctx)
@@ -78,7 +80,7 @@ public class JCSRecord extends AbstractStoreRecord
         }
     }
 
-    Object getModified() { return _currRecord; }
+    Object getModified() { return _currRecord; } 
     List<Object> getKeys() { return _keys; }
 }
 

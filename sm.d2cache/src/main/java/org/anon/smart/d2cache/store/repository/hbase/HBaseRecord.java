@@ -64,11 +64,14 @@ public class HBaseRecord extends AbstractStoreRecord implements Constants
 
         try
         {
-            String cls = curr.getClass().getName();
-            _table = _conn.getTableName(group);
+        	_conn = conn;
+        	String cls = curr.getClass().getName();
+        	_table = _conn.getTableName(group);
             HBaseCRUD crud = conn.getCRUD();
             _putRecord = crud.newRecord(primarykey.toString(), SYNTHETIC_COL_FAMILY, CLASSNAME, cls);
             _keyCount = 0;
+            //vinay
+            //crud.addTo(_putRecord, DATA_COL_FAMILY, "DATA", curr);
         }
         catch (Exception e)
         {

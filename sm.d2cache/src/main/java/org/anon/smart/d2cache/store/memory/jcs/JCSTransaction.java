@@ -51,6 +51,7 @@ import org.anon.smart.d2cache.store.AbstractStoreTransaction;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.reflect.ObjectTraversal;
 
 public class JCSTransaction extends AbstractStoreTransaction
 {
@@ -64,30 +65,29 @@ public class JCSTransaction extends AbstractStoreTransaction
     {
         JCSConnection conn = (JCSConnection)_connection;
         Object obj = conn.find(group, primarykey);
-        return new JCSRecord(group, primarykey, curr, obj);
+        
+        JCSRecord rec = new JCSRecord(group, primarykey, curr, obj);
+        
+        //Do We need this for JCS?
+        /*
+        JCSObjectTraversal jot = new JCSObjectTraversal(rec);
+        ObjectTraversal ot = new ObjectTraversal(jot, curr, false, null);
+        ot.traverse();
+        */
+        return rec;
     }
 
     private void putOneRecord(StoreRecord record)
         throws Exception
     {
         JCSConnection conn = (JCSConnection)_connection;
-        JCSRecord rec = (JCSRecord)record;
-        String group = rec.getGroup();
-        Object mod = rec.getModified();
-        List<Object> keys = rec.getKeys();
-        for (Object k : keys)
-        {
-            if (group != null)
-                conn.cache().putInGroup(k, group, mod);
-            else
-                conn.cache().put(k, mod);
-        }
+        conn.store().writeRecord((JCSRecord)record);
     }
 
     public void commit()
         throws CtxException
     {
-        try
+    	try
         {
             for (String group : _recordsInTxn.keySet())
             {

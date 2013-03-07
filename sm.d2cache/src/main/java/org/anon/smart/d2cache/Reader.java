@@ -26,40 +26,33 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.D2Cache
+ * File:                org.anon.smart.d2cache.Reader
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                16-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A durable cache interface through which access to this cache is given
+ * A reader for the cache
  *
  * ************************************************************
  * */
 
 package org.anon.smart.d2cache;
 
-import java.util.UUID;
-import java.util.List;
 import java.util.Set;
-
-import org.anon.smart.d2cache.store.StoreItem;
+import java.util.List;
 
 import org.anon.utilities.exception.CtxException;
 
-public interface D2Cache
+public interface Reader
 {
-    public D2CacheTransaction startTransaction(UUID txnid)
+    public Object lookup(String group, Object key)
         throws CtxException;
 
-    public Reader myReader()
+    public List<Object> search(String group, Object query)
         throws CtxException;
 
-    public void cleanupMemory()
-        throws CtxException;
-
-    public boolean isEnabled(int flags);
 }
 

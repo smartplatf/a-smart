@@ -66,7 +66,7 @@ public class HBaseTransaction extends AbstractStoreTransaction
     protected StoreRecord createNewRecord(String group, Object primarykey, Object curr)
         throws CtxException
     {
-        return new HBaseRecord(group, primarykey, curr, (HBaseConnection)_connection);
+    	return new HBaseRecord(group, primarykey, curr, (HBaseConnection)_connection);
     }
 
     public void commit()

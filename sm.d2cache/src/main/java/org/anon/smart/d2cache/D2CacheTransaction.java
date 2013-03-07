@@ -26,40 +26,37 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.D2Cache
+ * File:                org.anon.smart.d2cache.D2CacheTransaction
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                15-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A durable cache interface through which access to this cache is given
+ * A transaction to start in d2cache
  *
  * ************************************************************
  * */
 
 package org.anon.smart.d2cache;
 
-import java.util.UUID;
 import java.util.List;
-import java.util.Set;
 
+import org.anon.smart.d2cache.segment.CSegment;
 import org.anon.smart.d2cache.store.StoreItem;
 
 import org.anon.utilities.exception.CtxException;
 
-public interface D2Cache
+public interface D2CacheTransaction
 {
-    public D2CacheTransaction startTransaction(UUID txnid)
+    public void add(String qname, StoreItem item)
         throws CtxException;
 
-    public Reader myReader()
+    public void commit()
         throws CtxException;
 
-    public void cleanupMemory()
+    public void rollback()
         throws CtxException;
-
-    public boolean isEnabled(int flags);
 }
 

@@ -52,7 +52,7 @@ import org.anon.smart.d2cache.store.StoreItem;
 
 import org.anon.utilities.exception.CtxException;
 
-public class SegmentedCache implements D2Cache
+public abstract class SegmentedCache implements D2Cache
 {
     private List<CSegment> _segments;
     private SegmentWriter _writer;

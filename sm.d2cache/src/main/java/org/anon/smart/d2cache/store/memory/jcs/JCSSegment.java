@@ -26,87 +26,86 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.store.memory.jcs.JCSConnection
+ * File:                org.anon.smart.d2cache.store.memory.jcs.JCSSegment
  * Author:              vjaasti
  * Revision:            1.0
- * Date:                Mar 7, 2013
+ * Date:                Mar 6, 2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * <Purpose>
+ *  JCS Implementation for CSegment
  *
  * ************************************************************
  * */
 
 package org.anon.smart.d2cache.store.memory.jcs;
 
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.anon.smart.d2cache.segment.CSegment;
+import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.smart.d2cache.store.StoreConnection;
+import org.anon.smart.d2cache.store.StoreItem;
+import org.anon.smart.d2cache.store.StoreRecord;
 import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.utilities.exception.CtxException;
-import org.anon.utilities.utils.Repeatable;
-import org.anon.utilities.utils.RepeaterVariants;
 
-public class JCSConnection implements StoreConnection {
 
-	private JCSStore _store;
+public class JCSSegment implements CSegment {
+
+	//JCS Store instance
+	private Store _store; // TODO Can have array of Stores in a single segment
+	private StoreConnection _connection;
 	
-	public JCSConnection(JCSStore store)
-	{
-		_store = store;
-	}
 	@Override
-	public Repeatable repeatMe(RepeaterVariants parms) throws CtxException {
-		return new JCSConnection(_store);
+	public Store getStore() {
+		return _store;
 	}
 
 	@Override
-	public void connect(StoreConfig cfg) throws CtxException {
+	public void setupSegment(String name, String related, StoreConfig cfg)
+			throws CtxException {
+		_store = new JCSStore();
+		_store.setup(name, related, cfg);
+		
+		_connection = new JCSConnection((JCSStore)_store);
+	}
+
+	@Override
+	public void storeItem(StoreItem item) throws CtxException {
+		storeItem(Arrays.asList(item));
+	}
+
+	@Override
+	public void storeItem(List<StoreItem> items) throws CtxException {
+		UUID txnID = UUID.randomUUID();
+		StoreTransaction txn = _connection.startTransaction(txnID);
+		for(StoreItem item : items)
+		{
+			for(Object key : item.keys()) {
+				txn.addRecord(item.group(), key, item.item());
+			}
+			
+		}
+		txn.commit();
+	}
+
+
+	@Override
+	public Object get(String group, Object key) throws CtxException {
 		// TODO Auto-generated method stub
-
+		return _store.read(group, key);
 	}
 
 	@Override
-	public void open(String related, String name) throws CtxException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void createMetadata(String name, Class cls) throws CtxException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public StoreTransaction startTransaction(UUID txn) throws CtxException {
-		return new JCSTransaction(txn, this);
-	}
-
-	@Override
-	public void close() throws CtxException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Object find(String group, Object key) throws CtxException {
+	public List<Object> search(String group, Object query) throws CtxException {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public List<Object> search(String group, String query) throws CtxException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public JCSStore store() { return _store; }
-	
-	
 
 }

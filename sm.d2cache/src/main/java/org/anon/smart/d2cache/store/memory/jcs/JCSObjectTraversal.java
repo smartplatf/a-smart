@@ -26,40 +26,56 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.D2Cache
- * Author:              rsankar
+ * File:                org.anon.smart.d2cache.store.memory.jcs.JCSObjectTraversal
+ * Author:              vjaasti
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                Mar 7, 2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A durable cache interface through which access to this cache is given
+ * <Purpose>
  *
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache;
+package org.anon.smart.d2cache.store.memory.jcs;
 
-import java.util.UUID;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
-import org.anon.smart.d2cache.store.StoreItem;
-
+import org.anon.smart.d2cache.store.StoreRecord;
 import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.reflect.DataContext;
+import org.anon.utilities.reflect.TVisitor;
 
-public interface D2Cache
-{
-    public D2CacheTransaction startTransaction(UUID txnid)
-        throws CtxException;
+public class JCSObjectTraversal implements TVisitor{
 
-    public Reader myReader()
-        throws CtxException;
+	  private Map<String, List<Object>> _traversed;
+	  private StoreRecord _rec;
 
-    public void cleanupMemory()
-        throws CtxException;
+	public JCSObjectTraversal(StoreRecord rec)
+	{
+		_traversed = new HashMap<String, List<Object>>();
+        _rec = rec;
+	}
+	@Override
+	public Object visit(DataContext ctx) throws CtxException {
+		Object ret = null;
+        List<Object> lst = null;
+        if (ctx.field() != null)
+        {
+            ret = ctx.fieldVal();
+        }
+        else
+        {
+        	ret = ctx.traversingObject();
+        }
+        _rec.append(ctx);
+        
+        return ret;
 
-    public boolean isEnabled(int flags);
+	}
+
 }
-

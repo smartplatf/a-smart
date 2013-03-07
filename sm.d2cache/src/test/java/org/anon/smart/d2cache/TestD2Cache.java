@@ -26,40 +26,56 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.D2Cache
- * Author:              rsankar
+ * File:                org.anon.smart.d2cache.TestD2Cache
+ * Author:              vjaasti
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                Mar 7, 2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A durable cache interface through which access to this cache is given
+ * <Purpose>
  *
  * ************************************************************
  * */
 
 package org.anon.smart.d2cache;
 
+import static org.junit.Assert.*;
+
 import java.util.UUID;
-import java.util.List;
-import java.util.Set;
 
+import org.anon.smart.d2cache.D2CacheScheme.scheme;
 import org.anon.smart.d2cache.store.StoreItem;
-
 import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.test.reflect.SimpleTestObject;
+import org.junit.Test;
 
-public interface D2Cache
-{
-    public D2CacheTransaction startTransaction(UUID txnid)
-        throws CtxException;
+public class TestD2Cache {
 
-    public Reader myReader()
-        throws CtxException;
-
-    public void cleanupMemory()
-        throws CtxException;
-
-    public boolean isEnabled(int flags);
+	@Test
+	public void testCreateCache() throws CtxException
+	{
+		int flags = D2CacheScheme.BROWSABLE_CACHE;
+		String name = "TestCache";
+		D2Cache cache = D2CacheScheme.getCache(scheme.mem, name, flags);
+		UUID cacheTxn = UUID.randomUUID();
+		D2CacheTransaction txn =  cache.startTransaction(cacheTxn);
+		
+		SimpleTestObject obj = new SimpleTestObject();
+		Object[] keys = new String[]{"myObj"};
+		StoreItem item = new StoreItem(keys, obj, "SimpleTestObject");
+		txn.add(null, item);
+		txn.commit();
+		
+		Reader reader = cache.myReader();
+		Object fromCache = reader.lookup("SimpleTestObject", "myObj");
+		
+		assertTrue(fromCache != null);
+		
+		System.out.println("Read from Mem Only Cache:"+fromCache);
+		
+		
+	}
+	
 }
-

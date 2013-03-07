@@ -49,23 +49,62 @@ import org.anon.utilities.exception.CtxException;
 
 public class D2CacheScheme
 {
-    public D2CacheScheme()
+    public static enum scheme
+    {
+        mem, memind, memstoreind;
+    }
+
+    public static final int BROWSABLE_CACHE = 0x01;
+    public static final int REPLICATION_CACHE = 0x02;
+    public static final int DISTRIBUTED_CACHE = 0x04;
+    public static final int LAYEREDREAD_CACHE = 0x08;
+
+    private D2CacheScheme()
     {
     }
 
-    public D2Cache memoryOnlyCache()
+    protected static D2Cache memoryOnlyCache(String name, int flags)
+        throws CtxException
+    {
+        return new MemOnlyCache(name, null, flags);
+    }
+
+    protected static D2Cache memIndexedCache(String name, int flags)
         throws CtxException
     {
         return null;
     }
 
-    public D2Cache MICache()
+    protected static D2Cache memStoreIndexedCache(String name, int flags)
         throws CtxException
     {
         return null;
     }
 
-    public D2Cache MSIRCache()
+    public static D2Cache getCache(scheme s, String name, int flags)
+        throws CtxException
+    {
+        D2Cache ret = null;
+        switch (s)
+        {
+        case mem:
+            ret = memoryOnlyCache(name, flags);
+            break;
+        case memind:
+            ret = memIndexedCache(name, flags);
+            break;
+        case memstoreind:
+        default:
+            ret = memStoreIndexedCache(name, flags);
+            break;
+        }
+
+        return ret;
+    }
+
+    //this has to get the appropriate reader based on the flags
+    //passed during cache creation
+    public static Reader readerFor(D2Cache[] cache)
         throws CtxException
     {
         return null;

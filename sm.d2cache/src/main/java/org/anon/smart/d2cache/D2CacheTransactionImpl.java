@@ -26,40 +26,62 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.D2Cache
- * Author:              rsankar
+ * File:                org.anon.smart.d2cache.D2CacheTransactionImpl
+ * Author:              vjaasti
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                Mar 6, 2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A durable cache interface through which access to this cache is given
+ * <Purpose>
  *
  * ************************************************************
  * */
 
 package org.anon.smart.d2cache;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
-import java.util.Set;
+import java.util.UUID;
 
+import org.anon.smart.d2cache.segment.CSegment;
 import org.anon.smart.d2cache.store.StoreItem;
-
+import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.utilities.exception.CtxException;
 
-public interface D2Cache
-{
-    public D2CacheTransaction startTransaction(UUID txnid)
-        throws CtxException;
+import com.google.common.collect.Lists;
 
-    public Reader myReader()
-        throws CtxException;
 
-    public void cleanupMemory()
-        throws CtxException;
+public class D2CacheTransactionImpl implements D2CacheTransaction {
 
-    public boolean isEnabled(int flags);
+	private Map<String, StoreItem> _itemMap = new HashMap<String, StoreItem>();
+	private UUID _txnID;
+	private CSegment[] _segments;
+	
+	public D2CacheTransactionImpl(UUID id, CSegment[] segments)
+	{
+		_txnID = id;
+		_segments = segments;
+	}
+	@Override
+	public void add(String qname, StoreItem item) throws CtxException {
+		_itemMap.put(qname,  item);
+	}
+
+	@Override
+	public void commit() throws CtxException {
+		for(CSegment segment : _segments){
+			segment.storeItem(Lists.newArrayList(_itemMap.values()));
+		}
+	}
+
+	@Override
+	public void rollback() throws CtxException {
+		_itemMap.clear();
+
+	}
+
 }
-
