@@ -90,5 +90,8 @@
     <module>sm.d2cache</module>
     <module>sm.atomicity</module>
     <module>sm.channels</module>
+    <module>sm.deployment</module>
+    <module>sm.smcore</module>
+    <module>sm.kernel</module>
   </modules>
 </project>

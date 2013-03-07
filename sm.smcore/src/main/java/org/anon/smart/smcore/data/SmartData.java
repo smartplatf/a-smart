@@ -26,68 +26,29 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.test.loader.ObjectStereoType
+ * File:                org.anon.smart.smcore.data.SmartData
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                15-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A stereotype to test multiple types
+ * An interface for smart data implemented by all data objects
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.test.loader;
+package org.anon.smart.smcore.data;
 
-import org.anon.smart.base.stt.annot.MethodExit;
+import java.util.UUID;
 
-import org.anon.utilities.fsm.FiniteState;
 import org.anon.utilities.fsm.StateEntity;
-import org.anon.utilities.exception.CtxException;
 
-public class ObjectStereoType implements StateEntity
+public interface SmartData extends StateEntity, TaggedData
 {
-    private String __object__type__;
-    private FiniteState __current__state__;
-
-
-    public ObjectStereoType()
-    {
-    }
-
-    @MethodExit("constructor")
-    private void initializeObject()
-    {
-        __object__type__ = "New";
-    }
-
-    public String utilities___stateEntityType()
-    {
-        return __object__type__;
-    }
-
-    public void utilities___setCurrentState(FiniteState state)
-    {
-        __current__state__ = state;
-    }
-
-    public FiniteState utilities___currentState()
-    {
-        return __current__state__;
-    }
-
-    public StateEntity utilities___parent()
-        throws CtxException
-    {
-        return null;
-    }
-
-    public StateEntity[] utilities___children(String setype)
-        throws CtxException
-    {
-        return null;
-    }
+    public UUID smart___id();
+    public String smart___owner();
+    public String mart___group();
 }
 

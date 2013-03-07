@@ -26,68 +26,62 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.test.loader.ObjectStereoType
+ * File:                org.anon.smart.deployment.MacroDeployments
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                12-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A stereotype to test multiple types
+ * All deployments in the system
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.test.loader;
+package org.anon.smart.deployment;
 
-import org.anon.smart.base.stt.annot.MethodExit;
+import java.util.Map;
+import java.io.InputStream;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.anon.utilities.fsm.FiniteState;
-import org.anon.utilities.fsm.StateEntity;
 import org.anon.utilities.exception.CtxException;
 
-public class ObjectStereoType implements StateEntity
+public class MacroDeployments<T extends Deployment>
 {
-    private String __object__type__;
-    private FiniteState __current__state__;
+    private Map<String, T> _deployments;
+    private Class<T> _handleClass;
 
-
-    public ObjectStereoType()
+    MacroDeployments()
     {
+        _deployments = new ConcurrentHashMap<String, T>();
     }
 
-    @MethodExit("constructor")
-    private void initializeObject()
+    void setHandleDeployment(Class<T> dep)
     {
-        __object__type__ = "New";
+        _handleClass = dep;
     }
 
-    public String utilities___stateEntityType()
-    {
-        return __object__type__;
-    }
-
-    public void utilities___setCurrentState(FiniteState state)
-    {
-        __current__state__ = state;
-    }
-
-    public FiniteState utilities___currentState()
-    {
-        return __current__state__;
-    }
-
-    public StateEntity utilities___parent()
+    public T addDeployment(String name, Artefact[] artefacts)
         throws CtxException
     {
-        return null;
+        T dep = _deployments.get(name);
+        if (dep == null)
+            dep = Deployment.deploymentFor(name, artefacts, _handleClass);
+        else
+            dep.addArtefacts(artefacts);
+        _deployments.put(name, dep);
+        return dep;
     }
 
-    public StateEntity[] utilities___children(String setype)
+    public Deployment deploymentFor(String dep)
+    {
+        return _deployments.get(dep);
+    }
+
+    public void addDeployment(String file)
         throws CtxException
     {
-        return null;
     }
 }
 

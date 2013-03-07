@@ -26,68 +26,44 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.test.loader.ObjectStereoType
+ * File:                org.anon.smart.deployment.Relation
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                13-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A stereotype to test multiple types
+ * A relation between objects
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.test.loader;
+package org.anon.smart.deployment;
 
-import org.anon.smart.base.stt.annot.MethodExit;
-
-import org.anon.utilities.fsm.FiniteState;
-import org.anon.utilities.fsm.StateEntity;
+import org.anon.utilities.verify.VerifiableObject;
 import org.anon.utilities.exception.CtxException;
 
-public class ObjectStereoType implements StateEntity
+public class Relation implements VerifiableObject
 {
-    private String __object__type__;
-    private FiniteState __current__state__;
+    private String data;
+    private String dataKey;
+    private String relatedTo;
+    private String relatedBy;
 
+    private boolean _verified;
 
-    public ObjectStereoType()
+    public Relation()
     {
     }
 
-    @MethodExit("constructor")
-    private void initializeObject()
-    {
-        __object__type__ = "New";
-    }
-
-    public String utilities___stateEntityType()
-    {
-        return __object__type__;
-    }
-
-    public void utilities___setCurrentState(FiniteState state)
-    {
-        __current__state__ = state;
-    }
-
-    public FiniteState utilities___currentState()
-    {
-        return __current__state__;
-    }
-
-    public StateEntity utilities___parent()
+    public boolean isVerified() { return _verified; }
+    public boolean verify()
         throws CtxException
     {
-        return null;
-    }
-
-    public StateEntity[] utilities___children(String setype)
-        throws CtxException
-    {
-        return null;
+        //TODO:
+        _verified = true;
+        return _verified;
     }
 }
 

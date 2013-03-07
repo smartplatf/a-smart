@@ -26,68 +26,82 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.test.loader.ObjectStereoType
+ * File:                org.anon.smart.deployment.Feature
  * Author:              rsankar
  * Revision:            1.0
- * Date:                31-12-2012
+ * Date:                12-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A stereotype to test multiple types
+ * A feature of Artefacts
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.test.loader;
+package org.anon.smart.deployment;
 
-import org.anon.smart.base.stt.annot.MethodExit;
+import java.util.List;
 
-import org.anon.utilities.fsm.FiniteState;
-import org.anon.utilities.fsm.StateEntity;
+import org.anon.utilities.verify.VerifiableObject;
 import org.anon.utilities.exception.CtxException;
 
-public class ObjectStereoType implements StateEntity
+public class Feature implements Deployable, VerifiableObject
 {
-    private String __object__type__;
-    private FiniteState __current__state__;
+    private String name;
+    private String depends;
+    private List<String> artefacts;
+    private List<String> subFeatures;
+    private boolean _verified;
+    private Deployment _belongsTo;
 
-
-    public ObjectStereoType()
+    private Feature()
     {
     }
 
-    @MethodExit("constructor")
-    private void initializeObject()
+    public String getName()
     {
-        __object__type__ = "New";
+        return name;
     }
 
-    public String utilities___stateEntityType()
+    void setBelongsTo(Deployment dep)
     {
-        return __object__type__;
+        _belongsTo = dep;
     }
 
-    public void utilities___setCurrentState(FiniteState state)
+    public String deployedURI()
     {
-        __current__state__ = state;
+        return _belongsTo.deployedURI() + "/" + name;
     }
 
-    public FiniteState utilities___currentState()
+    public String deployedName()
     {
-        return __current__state__;
+        return name;
     }
 
-    public StateEntity utilities___parent()
+    public boolean belongsToMe(Class cls)
+    {
+        String clsname = cls.getName();
+        boolean ret = artefacts.contains(clsname);
+        //we have assumed that sub features are also a part of the same deployment
+        for (int i = 0; (!ret) && (i < subFeatures.size()); i++)
+        {
+            Feature f = _belongsTo.featureFor(subFeatures.get(i));
+            if (f != null)
+                ret = f.belongsToMe(cls);
+        }
+
+        return ret;
+    }
+
+    public boolean isVerified() { return _verified; }
+
+    public boolean verify()
         throws CtxException
     {
-        return null;
-    }
-
-    public StateEntity[] utilities___children(String setype)
-        throws CtxException
-    {
-        return null;
+        //TODO:
+        _verified = true;
+        return _verified;
     }
 }
 

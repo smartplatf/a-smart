@@ -50,6 +50,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SmartDataAnnotate
 {
+    public String name();
     public String merge();
     public String config();
 }
