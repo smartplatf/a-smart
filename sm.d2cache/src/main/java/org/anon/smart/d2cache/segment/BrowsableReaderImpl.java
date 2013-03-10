@@ -41,34 +41,34 @@
 
 package org.anon.smart.d2cache.segment;
 
-import java.awt.Stroke;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Set;
 
 import org.anon.smart.d2cache.BrowsableReader;
 import org.anon.smart.d2cache.store.BrowsableStore;
+import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.utilities.exception.CtxException;
 
-public class BrowsableReaderImpl extends DefualtReader implements BrowsableReader{
+public class BrowsableReaderImpl extends DefaultReader implements BrowsableReader{
 
 	
-	public BrowsableReaderImpl(CSegment[] segments, StoreConfig cfg)
+	public BrowsableReaderImpl(Store store, StoreConfig cfg)
 	{
-		super(segments, cfg);
+		super(store, cfg);
 	}
 	
 
 	@Override
 	public Set<Object> currentKeySet(String group) throws CtxException {
 		// TODO Auto-generated method stub
-		return ((BrowsableStore)_segments[0].getStore()).keySet(group);
+		return ((BrowsableStore)_store).keySet(group);
 	}
 
 	@Override
 	public Map<String, Set<Object>> currentKeySet() throws CtxException {
 		// TODO Auto-generated method stub
-		return ((BrowsableStore)_segments[0].getStore()).keySet();
+		return ((BrowsableStore)_store).keySet();
 	}
 }

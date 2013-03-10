@@ -62,10 +62,12 @@ public interface CSegment
     public void storeItem(List<StoreItem> items)
         throws CtxException;
 
+    /*
     public Object get(String group, Object key)
         throws CtxException;
 
     public List<Object> search(String group, Object query)
         throws CtxException;
+        */
 }
 

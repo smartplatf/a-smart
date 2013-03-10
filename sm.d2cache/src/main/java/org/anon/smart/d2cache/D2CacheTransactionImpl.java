@@ -41,13 +41,11 @@
 
 package org.anon.smart.d2cache;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
+
 import java.util.UUID;
 
 import org.anon.smart.d2cache.segment.CSegment;
+import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreItem;
 import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.utilities.exception.CtxException;
@@ -57,31 +55,44 @@ import com.google.common.collect.Lists;
 
 public class D2CacheTransactionImpl implements D2CacheTransaction {
 
-	private Map<String, StoreItem> _itemMap = new HashMap<String, StoreItem>();
 	private UUID _txnID;
-	private CSegment[] _segments;
+	private StoreTransaction[] _storeTransactions;
 	
-	public D2CacheTransactionImpl(UUID id, CSegment[] segments)
+	
+	public D2CacheTransactionImpl(UUID id, StoreConnection[] storeConnections)
 	{
 		_txnID = id;
-		_segments = segments;
+		_storeTransactions = new StoreTransaction[storeConnections.length];
+		int i = 0;
+		for(StoreConnection conn : storeConnections) {
+			try {
+				_storeTransactions[i] = conn.startTransaction(UUID.randomUUID());
+			} catch (CtxException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	@Override
 	public void add(String qname, StoreItem item) throws CtxException {
-		_itemMap.put(qname,  item);
+		for (Object key : item.keys()) {
+			for (StoreTransaction txn : _storeTransactions) {
+				txn.addRecord(item.group(), key, item.item());
+			}
+		}
 	}
 
 	@Override
 	public void commit() throws CtxException {
-		for(CSegment segment : _segments){
-			segment.storeItem(Lists.newArrayList(_itemMap.values()));
+		for(StoreTransaction txn : _storeTransactions){
+			txn.commit();
 		}
 	}
 
 	@Override
 	public void rollback() throws CtxException {
-		_itemMap.clear();
-
+		for(StoreTransaction txn : _storeTransactions){
+			txn.rollback();
+		}
 	}
 
 }

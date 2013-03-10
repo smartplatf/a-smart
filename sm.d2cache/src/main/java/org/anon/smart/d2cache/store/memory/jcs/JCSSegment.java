@@ -59,7 +59,7 @@ import org.anon.utilities.exception.CtxException;
 public class JCSSegment implements CSegment {
 
 	//JCS Store instance
-	private Store _store; // TODO Can have array of Stores in a single segment
+	private Store _store; // TODO Can have array of Stores in a single segment???
 	private StoreConnection _connection;
 	
 	@Override
@@ -94,18 +94,5 @@ public class JCSSegment implements CSegment {
 		}
 		txn.commit();
 	}
-
-
-	@Override
-	public Object get(String group, Object key) throws CtxException {
-		// TODO Auto-generated method stub
-		return _store.read(group, key);
-	}
-
-	@Override
-	public List<Object> search(String group, Object query) throws CtxException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 }

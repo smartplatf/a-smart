@@ -41,22 +41,19 @@
 
 package org.anon.smart.d2cache.segment;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.anon.smart.d2cache.BrowsableReader;
 import org.anon.smart.d2cache.D2CacheScheme;
 import org.anon.smart.d2cache.Reader;
+import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.utilities.exception.CtxException;
 
 public class ReaderFactory {
 
-	public static Reader getReaderFor(CSegment[] segments, int flags, StoreConfig cfg) throws CtxException {
+	public static Reader getReaderFor(Store store, int flags, StoreConfig cfg) throws CtxException {
 		if( (flags & D2CacheScheme.BROWSABLE_CACHE) == D2CacheScheme.BROWSABLE_CACHE)
-			return new BrowsableReaderImpl(segments, cfg);
+			return new BrowsableReaderImpl(store, cfg);
 		else 
-			return new DefualtReader(segments, cfg); //TODO
+			return new DefaultReader(store, cfg); //TODO
 	}
 }
