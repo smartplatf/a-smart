@@ -21,15 +21,15 @@
  *
  *
  * */
-
+ 
 /**
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.store.memory.jcs.JCSStore
+ * File:                org.anon.smart.d2cache.store.index.solr.SolrStore
  * Author:              vjaasti
  * Revision:            1.0
- * Date:                Mar 6, 2013
+ * Date:                Mar 14, 2013
  *
  * ************************************************************
  * REVISIONS
@@ -39,49 +39,37 @@
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache.store.memory.jcs;
+package org.anon.smart.d2cache.store.index.solr;
 
-import static org.anon.utilities.services.ServiceLocator.except;
-
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.anon.smart.d2cache.store.AbstractStore;
-import org.anon.smart.d2cache.store.BrowsableStore;
-import org.anon.smart.d2cache.store.MemoryStore;
+import org.anon.smart.d2cache.store.IndexedStore;
+import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreItem;
 import org.anon.utilities.exception.CtxException;
 import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
 
-public class JCSStore extends AbstractStore implements BrowsableStore {
+public class SolrStore extends AbstractStore implements IndexedStore {
 
-	public JCSStore(StoreConnection conn) {
+	
+	public SolrStore(StoreConnection conn) {
 		super(conn);
 		// TODO Auto-generated constructor stub
 	}
 
-	
-	private Set<String> _groupNames;
+	@Override
+	public Repeatable repeatMe(RepeaterVariants parms) throws CtxException {
+		return new SolrStore(_connection);
+	}
 
 	@Override
 	public void setup(String name, String related, StoreConfig config)
 			throws CtxException {
-		try {
-			super.setup(name, related, config);
-			_groupNames = new HashSet<String>();
-
-		} catch (Exception e) {
-			except().rt(e,
-					new CtxException.Context("JCSStore.setup", "Exception"));
-		}
+		super.setup(name, related, config);
 
 	}
 
@@ -93,41 +81,27 @@ public class JCSStore extends AbstractStore implements BrowsableStore {
 
 	
 
-	
-	@Override
-	public Repeatable repeatMe(RepeaterVariants parms) throws CtxException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public void clear() throws CtxException {
-
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void remove(String group, Object key) throws CtxException {
-		((JCSConnection)_connection).cache().remove(key, group);
-
-	}
-
-	@Override
-	public Set<Object> keySet(String group) throws CtxException {
 		// TODO Auto-generated method stub
-		return ((JCSConnection)_connection).cache().getGroupKeys(group);
+		
 	}
 
 	@Override
-	public Map<String, Set<Object>> keySet() throws CtxException {
-		//TODO implements in  JCS 2.0, but not released 
-		//Set<String> groupNames = _cache.getGroupNames(); 
-		Map<String, Set<Object>> keySetMap = new HashMap<String, Set<Object>>();
-		for (String groupName : _groupNames) {
-			keySetMap.put(groupName, keySet(groupName));
-		}
-		return keySetMap;
+	public void index(List<StoreItem> obj) throws CtxException {
+		// TODO Auto-generated method stub
+		
 	}
 
-	
+	@Override
+	public List<Object> search(String group, Object query) throws CtxException {
+		return getConnection().search(group, query);
+	}
 
 }

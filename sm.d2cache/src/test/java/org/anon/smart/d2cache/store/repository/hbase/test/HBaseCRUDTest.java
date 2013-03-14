@@ -7,6 +7,7 @@ import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.smart.d2cache.store.repository.hbase.HBaseCRUD;
 import org.anon.smart.d2cache.store.repository.hbase.HBaseConfig;
 import org.anon.smart.d2cache.store.repository.hbase.HBaseConnection;
+import org.anon.smart.d2cache.store.repository.hbase.TestHBaseConfig;
 import org.anon.utilities.test.reflect.ComplexTestObject;
 import org.anon.utilities.test.reflect.SimpleTestObject;
 import org.junit.Test;

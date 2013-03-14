@@ -27,14 +27,14 @@
  * HEADERS
  * ************************************************************
  * File:                org.anon.smart.d2cache.store.memory.jcs.JCSConnection
- * Author:              vjaasti
+ * Author:              rsankar
  * Revision:            1.0
- * Date:                Mar 7, 2013
+ * Date:                02-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * <Purpose>
+ * A connection object for jcs cache
  *
  * ************************************************************
  * */
@@ -44,69 +44,112 @@ package org.anon.smart.d2cache.store.memory.jcs;
 import java.util.List;
 import java.util.UUID;
 
-import org.anon.smart.d2cache.store.StoreConfig;
-import org.anon.smart.d2cache.store.StoreConnection;
+import org.apache.jcs.JCS;
+
 import org.anon.smart.d2cache.store.StoreTransaction;
-import org.anon.utilities.exception.CtxException;
+import org.anon.smart.d2cache.store.StoreConnection;
+import org.anon.smart.d2cache.store.StoreConfig;
+
+import static org.anon.utilities.services.ServiceLocator.*;
 import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
+import org.anon.utilities.exception.CtxException;
 
-public class JCSConnection implements StoreConnection {
+public class JCSConnection implements StoreConnection
+{
+    private JCS _cache;
 
-	private JCSStore _store;
+    public JCSConnection()
+    {
+    }
+
+    public void open(String related, String name)
+        throws CtxException
+    {
+        try
+        {
+            _cache = JCS.getInstance(related + "_" + name);
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("JCSConnection.connect", "Exception"));
+        }
+    }
+
+    public void connect(StoreConfig cfg)
+        throws CtxException
+    {
+    }
+
+    public void createMetadata(String name, Class cls)
+        throws CtxException
+    {
+    }
+
+    public Repeatable repeatMe(RepeaterVariants vars)
+        throws CtxException
+    {
+        return new JCSConnection();
+    }
+
+    public JCS cache() { return _cache; }
+
+   
+
+    public Object find(String group, Object key)
+        throws CtxException
+    {
+        assertion().assertNotNull(_cache, "JCS region is Null");
+        System.out.println("FINDING:"+group+":::"+key);
+        Object ret = null;
+        try
+        {
+            if (group != null)
+                ret = _cache.getFromGroup(key, group);
+            else
+                ret = _cache.get(key);
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("JCSConnection.find", "Exception"));
+        }
+
+        return ret;
+    }
+
+    public StoreTransaction startTransaction(UUID txn)
+        throws CtxException
+    {
+        return new JCSTransaction(txn, this);
+    }
+
+    public void close()
+        throws CtxException
+    {
+        try
+        {
+            if (_cache != null)
+                _cache.clear();
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("JCSConnection.clear", "Exception"));
+        }
+    }
+
 	
-	public JCSConnection(JCSStore store)
-	{
-		_store = store;
-	}
-	@Override
-	public Repeatable repeatMe(RepeaterVariants parms) throws CtxException {
-		return new JCSConnection(_store);
-	}
-
-	@Override
-	public void connect(StoreConfig cfg) throws CtxException {
-		// TODO Auto-generated method stub
+    @Override
+	public void remove(String group, Object key) throws CtxException {
+		_cache.remove(key, group);
 
 	}
 
 	@Override
-	public void open(String related, String name) throws CtxException {
-		// TODO Auto-generated method stub
-
+	public List<Object> search(String group, Object query) throws CtxException {
+		return null; //Does not support
 	}
 
-	@Override
-	public void createMetadata(String name, Class cls) throws CtxException {
-		// TODO Auto-generated method stub
+    
 
-	}
-
-	@Override
-	public StoreTransaction startTransaction(UUID txn) throws CtxException {
-		return new JCSTransaction(txn, this);
-	}
-
-	@Override
-	public void close() throws CtxException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Object find(String group, Object key) throws CtxException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Object> search(String group, String query) throws CtxException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
-	public JCSStore store() { return _store; }
-	
-	
-
 }

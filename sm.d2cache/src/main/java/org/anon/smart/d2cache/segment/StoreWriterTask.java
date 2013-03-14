@@ -45,25 +45,24 @@ import java.util.List;
 
 import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreItem;
+import org.anon.smart.d2cache.store.StoreTransaction;
 
 import org.anon.utilities.concurrency.ExecutionUnit;
 import org.anon.utilities.exception.CtxException;
 
 public class StoreWriterTask implements ExecutionUnit
 {
-    private List<StoreItem> _writeItems;
-    private Store _store;
-
-    public StoreWriterTask(List<StoreItem> items, Store store)
+    private StoreTransaction _txn;
+    
+    public StoreWriterTask(StoreTransaction txn)
     {
-        _writeItems = items;
-        _store = store;
+        _txn = txn;
     }
 
     public void execute()
         throws CtxException
     {
-        _store.write(_writeItems);
+        _txn.commit();
     }
 }
 

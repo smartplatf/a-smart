@@ -51,6 +51,7 @@ public abstract class AbstractStore implements Store
     private String _related;
     protected StoreConfig _config;
     protected transient StoreConnection _connection;
+    
 
     public AbstractStore(StoreConnection conn)
     {

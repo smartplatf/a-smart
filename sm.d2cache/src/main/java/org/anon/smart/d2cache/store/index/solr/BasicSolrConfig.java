@@ -26,10 +26,10 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.store.memory.jcs.JCSObjectTraversal
+ * File:                org.anon.smart.d2cache.store.index.solr.BasicSolrConfig
  * Author:              vjaasti
  * Revision:            1.0
- * Date:                Mar 7, 2013
+ * Date:                Mar 12, 2013
  *
  * ************************************************************
  * REVISIONS
@@ -39,19 +39,15 @@
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache.store.memory.jcs;
+package org.anon.smart.d2cache.store.index.solr;
 
-import java.util.List;
+public class BasicSolrConfig implements SolrConfig {
 
-
-import org.anon.smart.d2cache.segment.CacheObjectTraversal;
-import org.anon.smart.d2cache.store.StoreRecord;
-
-
-public class JCSObjectTraversal extends CacheObjectTraversal{
-
-	public JCSObjectTraversal(List<StoreRecord> recList) {
-		super(recList);
+	private String _solrHome = "/home/vjaasti/mywork/solr";
+	@Override
+	public String getSolrHome() {
+		// TODO Auto-generated method stub
+		return _solrHome;
 	}
 
 }

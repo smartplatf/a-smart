@@ -44,55 +44,82 @@ package org.anon.smart.d2cache.segment;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.anon.smart.d2cache.QueryObject;
+import org.anon.smart.d2cache.Reader;
 import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.IndexedStore;
 import org.anon.smart.d2cache.store.StoreItem;
+import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.logger.Logger;
 
-public class LayeredReader implements SegmentReader
+public class LayeredReader implements Reader
 {
-    public LayeredReader()
+	private Store[] _stores;
+	private SegmentWriter _currWriter;
+	private transient Logger _logger;
+    
+	public void setCurrentWriter(SegmentWriter writer) {
+		this._currWriter = writer;
+	}
+
+	public LayeredReader(Store[] stores)
     {
+    	_stores = stores;
+    	_logger = logger().rlog(this);
     }
 
-    public Object read(String group, Object key, Store[] stores, SegmentWriter currWriter)
-        throws CtxException
-    {
-        //assumption is that the stores are passed in the order 
+
+
+	@Override
+	public Object lookup(String group, Object key) throws CtxException {
+		//assumption is that the stores are passed in the order 
         //they have to be searched?
         Object ret = null;
         int foundat = -1;
-        for (int i = 0; (ret == null) && (i < stores.length); i++)
+        for (int i = 0; (ret == null) && (i < _stores.length); i++)
         {
-            //read only in non-indexed reader, since this is a 
-            //keyed read
-            if (!(stores[i] instanceof IndexedStore))
-            {
-                ret = stores[i].read(group, key);
+        	if((_stores[i] == null) || (_stores[i] instanceof IndexedStore))
+        		continue;
+        		
+                ret = _stores[i].getConnection().find(group, key);
                 foundat = i;
-            }
         }
 
         if (ret != null)
         {
             List<StoreItem> item = new ArrayList<StoreItem>();
             item.add(new StoreItem(new Object[] { key }, ret, group));
-            currWriter.handleReadAt(item, stores, foundat);
+            if(_currWriter != null)
+            	_currWriter.handleReadAt(item, _stores, foundat);
+            else
+            	_logger.debug("Writer is not set in Layered Reader");
         }
 
         return ret;
-    }
+	}
 
-    public List<Object> search(String group, Object query, Store[] stores, SegmentWriter writer)
-        throws CtxException
-    {
-        List<Object> ret = null;
-        //assumption here is that the indexed readers return keys,
-        //this is read from the non-indexed readers?
-        //TODO
-        return ret;
-    }
+	@Override
+	public List<Object> search(String group, Object query) throws CtxException {
+		List<Object> ret = new ArrayList<Object>();
+		
+		assertion().assertTrue((query instanceof QueryObject), "query is NOT an instance of QueryObject");
+		List<Object> resultKeys = new ArrayList<Object>();
+		
+		for (int i = 0; (i < _stores.length); i++)
+        {
+			if(_stores[i] instanceof IndexedStore)
+			{
+				resultKeys.addAll(((IndexedStore)_stores[i]).search(group, query));
+			}
+        }
+		for(Object key : resultKeys)
+		{
+			ret.add(this.lookup(group, key));
+		}
+		return ret;
+	}
 
 }
 

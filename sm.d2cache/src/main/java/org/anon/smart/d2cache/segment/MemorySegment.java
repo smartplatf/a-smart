@@ -26,10 +26,10 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.store.memory.jcs.JCSObjectTraversal
+ * File:                org.anon.smart.d2cache.segment.MemorySegment
  * Author:              vjaasti
  * Revision:            1.0
- * Date:                Mar 7, 2013
+ * Date:                Mar 14, 2013
  *
  * ************************************************************
  * REVISIONS
@@ -39,19 +39,47 @@
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache.store.memory.jcs;
+package org.anon.smart.d2cache.segment;
 
 import java.util.List;
 
+import org.anon.smart.d2cache.store.Store;
+import org.anon.smart.d2cache.store.StoreConfig;
+import org.anon.smart.d2cache.store.StoreConnection;
+import org.anon.smart.d2cache.store.StoreItem;
+import org.anon.smart.d2cache.store.memory.jcs.JCSConnection;
+import org.anon.smart.d2cache.store.memory.jcs.JCSStore;
+import org.anon.utilities.exception.CtxException;
 
-import org.anon.smart.d2cache.segment.CacheObjectTraversal;
-import org.anon.smart.d2cache.store.StoreRecord;
+public class MemorySegment implements CSegment {
 
+	//JCS Store instance
+	private Store _store; // TODO Can have array of Stores in a single segment???
+		
+	@Override
+	public Store getStore() {
+		return _store;
+	}
 
-public class JCSObjectTraversal extends CacheObjectTraversal{
+	@Override
+	public void setupSegment(String name, String related, StoreConfig cfg)
+			throws CtxException {
+		/* based on storeConfig we may have diff Store instances like jcs, ehcache..etc */
+		_store = new JCSStore(new JCSConnection());
+		_store.setup(name, related, cfg);
+	
+	}
 
-	public JCSObjectTraversal(List<StoreRecord> recList) {
-		super(recList);
+	@Override
+	public void storeItem(StoreItem item) throws CtxException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void storeItem(List<StoreItem> items) throws CtxException {
+		// TODO Auto-generated method stub
+
 	}
 
 }

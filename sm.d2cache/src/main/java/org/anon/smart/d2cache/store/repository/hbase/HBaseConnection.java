@@ -41,7 +41,7 @@
 
 package org.anon.smart.d2cache.store.repository.hbase;
 
-import java.util.ArrayList;
+
 import java.util.UUID;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +49,7 @@ import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.Put;
+
 
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.smart.d2cache.store.StoreTransaction;
@@ -201,5 +201,17 @@ public class HBaseConnection implements StoreConnection, Constants
     }
 
     public HBaseCRUD getCRUD() { return _crud; }
+
+	@Override
+	public void remove(String group, Object key) throws CtxException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Object> search(String group, Object query) throws CtxException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

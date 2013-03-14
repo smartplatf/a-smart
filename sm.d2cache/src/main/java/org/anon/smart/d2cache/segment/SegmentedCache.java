@@ -103,7 +103,7 @@ public abstract class SegmentedCache implements D2Cache
             List<StoreItem> items = _queued.get(qname);
             _queued.remove(qname);
             Store[] stores = getStores();
-            _writer.write(items, stores);
+            //_writer.write(items, stores);
         }
     }
 

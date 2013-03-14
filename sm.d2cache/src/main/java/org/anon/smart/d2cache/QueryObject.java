@@ -26,35 +26,83 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.segment.SegmentWriter
+ * File:                org.anon.smart.d2cache.QueryObject
  * Author:              rsankar
  * Revision:            1.0
- * Date:                01-01-2013
+ * Date:                21-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A writer into the segments
+ * A query used to search objects
  *
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache.segment;
+package org.anon.smart.d2cache;
 
 import java.util.List;
-
-import org.anon.smart.d2cache.store.Store;
-import org.anon.smart.d2cache.store.StoreItem;
-import org.anon.smart.d2cache.store.StoreTransaction;
+import java.util.ArrayList;
 
 import org.anon.utilities.exception.CtxException;
 
-public interface SegmentWriter
+public class QueryObject
 {
-    public void write(StoreTransaction[] transactions)
-        throws CtxException;
+	public class QueryItem 
+    {
+		private String attribute;
+		private String value;
+		//private boolean mandatory;
+		
+		public QueryItem(String attr, String val) 
+        {
+			this(attr, val, true);
+		}
+		
+		public QueryItem(String attr, String val, boolean mandatory) 
+        {
+			attribute = attr;
+			value = val;
+		}
 
-    public void handleReadAt(List<StoreItem> items, Store[] stores, int foundat)
-        throws CtxException;
+		public String attribute()
+        {
+			return attribute;
+		}
+
+        public String value()
+        {
+            return value;
+        }
+	}
+
+	private List<QueryItem> query;
+	private Class resultType;
+	
+	public QueryObject() 
+    {
+		query = new ArrayList<QueryItem>();
+	}
+	
+	public void addCondition(String attr, String val, boolean mandatory)
+        throws CtxException 
+    {
+		query.add(new QueryItem(attr, val, mandatory));
+	}
+
+	public void addCondition(String cond, String val) 
+        throws CtxException 
+    {
+		addCondition(cond, val, true);
+	}
+	
+	public void setResultType(Class cls)
+	{
+		resultType = cls;
+	}
+	public Class getResultType() 
+	{
+		return resultType;
+	}
+	public List<QueryItem> getQuery() { return query;}
 }
-

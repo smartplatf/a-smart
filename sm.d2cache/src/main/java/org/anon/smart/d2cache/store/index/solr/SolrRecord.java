@@ -55,7 +55,7 @@ import org.anon.utilities.exception.CtxException;
 
 public class SolrRecord extends AbstractStoreRecord implements Constants
 {
-    private static Map<Class, String> SUFFIXES = new HashMap<Class, String>();
+    public  static Map<Class, String> SUFFIXES = new HashMap<Class, String>();
 
     static
     {
@@ -74,7 +74,9 @@ public class SolrRecord extends AbstractStoreRecord implements Constants
     {
         super(group, primaryKey, curr);
         _document = new SolrInputDocument();
-        _document.addField(ID_COLUMN, group + PART_SEPARATOR + primaryKey.toString());
+        //_document.addField(ID_COLUMN, group + PART_SEPARATOR + primaryKey.toString());
+        _document.addField(ID_COLUMN, primaryKey.toString());
+        System.out.println("---> ID:"+ID_COLUMN+"::"+ primaryKey.toString());
     }
 
 
@@ -91,6 +93,7 @@ public class SolrRecord extends AbstractStoreRecord implements Constants
                 {
                     key = key + SUFFIXES.get(ctx.field().getType());
                     _document.addField(key, fldval);
+                    System.out.println("----->Indexing:"+key+":"+fldval);
                 }
             }
         }

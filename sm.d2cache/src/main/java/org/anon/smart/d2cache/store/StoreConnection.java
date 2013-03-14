@@ -64,10 +64,14 @@ public interface StoreConnection extends Repeatable
     public void close()
         throws CtxException;
 
+    /* Data Access */
     public Object find(String group, Object key)
         throws CtxException;
 
-    public List<Object> search(String group, String query)
+    public List<Object> search(String group, Object query)
         throws CtxException;
+    
+    public void remove(String group, Object key)
+    	throws CtxException;
 }
 

@@ -44,6 +44,7 @@ package org.anon.smart.d2cache.segment;
 import java.util.List;
 
 import org.anon.smart.d2cache.store.Store;
+import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreItem;
 import org.anon.smart.d2cache.store.StoreConfig;
 
@@ -62,12 +63,5 @@ public interface CSegment
     public void storeItem(List<StoreItem> items)
         throws CtxException;
 
-    /*
-    public Object get(String group, Object key)
-        throws CtxException;
-
-    public List<Object> search(String group, Object query)
-        throws CtxException;
-        */
 }
 

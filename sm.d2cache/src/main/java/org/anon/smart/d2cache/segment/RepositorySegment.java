@@ -26,10 +26,10 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.TestD2Cache
+ * File:                org.anon.smart.d2cache.segment.RepositorySegment
  * Author:              vjaasti
  * Revision:            1.0
- * Date:                Mar 7, 2013
+ * Date:                Mar 14, 2013
  *
  * ************************************************************
  * REVISIONS
@@ -39,43 +39,45 @@
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache;
+package org.anon.smart.d2cache.segment;
 
-import static org.junit.Assert.*;
+import java.util.List;
 
-import java.util.UUID;
-
-import org.anon.smart.d2cache.D2CacheScheme.scheme;
+import org.anon.smart.d2cache.store.Store;
+import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.smart.d2cache.store.StoreItem;
+import org.anon.smart.d2cache.store.repository.hbase.HBaseConnection;
+import org.anon.smart.d2cache.store.repository.hbase.HBaseStore;
 import org.anon.utilities.exception.CtxException;
-import org.anon.utilities.test.reflect.SimpleTestObject;
-import org.junit.Test;
 
-public class TestD2Cache {
+public class RepositorySegment implements CSegment {
 
-	@Test
-	public void testCreateCache() throws CtxException
-	{
-		int flags = D2CacheScheme.BROWSABLE_CACHE;
-		String name = "TestCache";
-		D2Cache cache = D2CacheScheme.getCache(scheme.mem, name, flags);
-		UUID cacheTxn = UUID.randomUUID();
-		D2CacheTransaction txn =  cache.startTransaction(cacheTxn);
+	private Store _store;
+	@Override
+	public Store getStore() {
 		
-		SimpleTestObject obj = new SimpleTestObject();
-		Object[] keys = new String[]{"myObj"};
-		StoreItem item = new StoreItem(keys, obj, "SimpleTestObject");
-		txn.add(null, item);
-		txn.commit();
-		
-		Reader reader = cache.myReader();
-		Object fromCache = reader.lookup("SimpleTestObject", "myObj");
-		
-		assertTrue(fromCache != null);
-		
-		System.out.println("Read from Mem Only Cache:"+fromCache);
-		
-		
+		return _store;
 	}
-	
+
+	@Override
+	public void setupSegment(String name, String related, StoreConfig cfg)
+			throws CtxException {
+		_store = new HBaseStore(new HBaseConnection());
+		_store.setup(name, related, cfg);
+		
+
+	}
+
+	@Override
+	public void storeItem(StoreItem item) throws CtxException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void storeItem(List<StoreItem> items) throws CtxException {
+		// TODO Auto-generated method stub
+
+	}
+
 }

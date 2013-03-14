@@ -26,10 +26,10 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.store.memory.jcs.JCSObjectTraversal
+ * File:                org.anon.smart.d2cache.store.repository.hbase.HBaseStore
  * Author:              vjaasti
  * Revision:            1.0
- * Date:                Mar 7, 2013
+ * Date:                Mar 14, 2013
  *
  * ************************************************************
  * REVISIONS
@@ -39,19 +39,31 @@
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache.store.memory.jcs;
+package org.anon.smart.d2cache.store.repository.hbase;
 
-import java.util.List;
+import org.anon.smart.d2cache.store.AbstractStore;
+import org.anon.smart.d2cache.store.StoreConnection;
+import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.utils.Repeatable;
+import org.anon.utilities.utils.RepeaterVariants;
 
+public class HBaseStore extends AbstractStore {
 
-import org.anon.smart.d2cache.segment.CacheObjectTraversal;
-import org.anon.smart.d2cache.store.StoreRecord;
+	public HBaseStore(StoreConnection conn) {
+		super(conn);
+		// TODO Auto-generated constructor stub
+	}
 
+	@Override
+	public void create(String name, Class cls) throws CtxException {
+		// TODO Auto-generated method stub
 
-public class JCSObjectTraversal extends CacheObjectTraversal{
+	}
 
-	public JCSObjectTraversal(List<StoreRecord> recList) {
-		super(recList);
+	@Override
+	public Repeatable repeatMe(RepeaterVariants parms) throws CtxException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

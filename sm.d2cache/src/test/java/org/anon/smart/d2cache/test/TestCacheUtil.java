@@ -26,10 +26,10 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.store.memory.jcs.JCSObjectTraversal
+ * File:                org.anon.smart.d2cache.TestCacheUtil
  * Author:              vjaasti
  * Revision:            1.0
- * Date:                Mar 7, 2013
+ * Date:                Mar 14, 2013
  *
  * ************************************************************
  * REVISIONS
@@ -39,19 +39,36 @@
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache.store.memory.jcs;
+package org.anon.smart.d2cache.test;
 
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+import org.anon.smart.d2cache.D2Cache;
+import org.anon.smart.d2cache.D2CacheTransaction;
+import org.anon.smart.d2cache.store.StoreItem;
+import org.anon.utilities.exception.CtxException;
 
-import org.anon.smart.d2cache.segment.CacheObjectTraversal;
-import org.anon.smart.d2cache.store.StoreRecord;
+public class TestCacheUtil {
 
-
-public class JCSObjectTraversal extends CacheObjectTraversal{
-
-	public JCSObjectTraversal(List<StoreRecord> recList) {
-		super(recList);
+	public static void setTestData(D2Cache cache, Object obj, Object[] keys, String group)
+	throws CtxException {
+		D2CacheTransaction txn =  cache.startTransaction(UUID.randomUUID());
+		StoreItem item = new StoreItem(keys, obj, group);
+		txn.add(null, item);
+		txn.commit();
+		
 	}
-
+	
+	public static void setTestData(D2Cache cache, Map<Object, Object[]> data, String group)
+		throws CtxException {
+		
+		D2CacheTransaction txn =  cache.startTransaction(UUID.randomUUID());
+		for(Map.Entry<Object, Object[]> e : data.entrySet()) {
+			StoreItem item = new StoreItem(e.getValue(), e.getKey(), group);
+			txn.add(null, item);
+		}
+		
+		txn.commit();
+	}
 }

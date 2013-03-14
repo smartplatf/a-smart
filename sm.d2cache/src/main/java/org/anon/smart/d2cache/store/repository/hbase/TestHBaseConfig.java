@@ -1,6 +1,5 @@
-package org.anon.smart.d2cache.store.repository.hbase.test;
+package org.anon.smart.d2cache.store.repository.hbase;
  
-import org.anon.smart.d2cache.store.repository.hbase.HBaseConfig;
 public class TestHBaseConfig implements HBaseConfig {
 
 	private String _zoo;

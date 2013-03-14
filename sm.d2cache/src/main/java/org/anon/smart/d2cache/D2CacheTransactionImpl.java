@@ -42,13 +42,19 @@
 package org.anon.smart.d2cache;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.anon.smart.d2cache.segment.CSegment;
+import org.anon.smart.d2cache.segment.CacheObjectTraversal;
+import org.anon.smart.d2cache.segment.SegmentWriter;
 import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreItem;
+import org.anon.smart.d2cache.store.StoreRecord;
 import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.reflect.ObjectTraversal;
 
 import com.google.common.collect.Lists;
 
@@ -57,16 +63,20 @@ public class D2CacheTransactionImpl implements D2CacheTransaction {
 
 	private UUID _txnID;
 	private StoreTransaction[] _storeTransactions;
+	private SegmentWriter _writer;
 	
 	
-	public D2CacheTransactionImpl(UUID id, StoreConnection[] storeConnections)
+	
+	public D2CacheTransactionImpl(UUID id, StoreConnection[] storeConnections, SegmentWriter writer)
 	{
 		_txnID = id;
 		_storeTransactions = new StoreTransaction[storeConnections.length];
+		_writer = writer;
 		int i = 0;
 		for(StoreConnection conn : storeConnections) {
 			try {
-				_storeTransactions[i] = conn.startTransaction(UUID.randomUUID());
+				_storeTransactions[i++] = conn.startTransaction(UUID.randomUUID());
+				
 			} catch (CtxException e) {
 				e.printStackTrace();
 			}
@@ -74,18 +84,22 @@ public class D2CacheTransactionImpl implements D2CacheTransaction {
 	}
 	@Override
 	public void add(String qname, StoreItem item) throws CtxException {
+		List<StoreRecord> recList = new ArrayList<StoreRecord>();
 		for (Object key : item.keys()) {
 			for (StoreTransaction txn : _storeTransactions) {
-				txn.addRecord(item.group(), key, item.item());
+				System.out.println(txn);
+				recList.add(txn.addRecord(item.group(), key, item.item()));
 			}
 		}
+		
+		CacheObjectTraversal cot = new CacheObjectTraversal(recList);
+		ObjectTraversal ot = new ObjectTraversal(cot, item.item(), false, null);
+		ot.traverse();
 	}
 
 	@Override
 	public void commit() throws CtxException {
-		for(StoreTransaction txn : _storeTransactions){
-			txn.commit();
-		}
+		_writer.write(_storeTransactions);
 	}
 
 	@Override

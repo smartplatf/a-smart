@@ -44,21 +44,31 @@ package org.anon.smart.d2cache.store.index.solr;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
 
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.core.CoreContainer;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.request.CoreAdminRequest;
+import org.apache.solr.client.solrj.response.QueryResponse;
 
+import org.anon.smart.d2cache.QueryObject;
 import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreConfig;
 
 import static org.anon.utilities.services.ServiceLocator.*;
+
+import org.anon.utilities.objservices.ConvertService.translator;
 import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
 import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.logger.Logger;
 
 public class SolrConnection implements StoreConnection, Constants
 {
@@ -66,9 +76,11 @@ public class SolrConnection implements StoreConnection, Constants
     private CoreContainer _container;
     private StoreConfig _config;
     private File _home;
-
+    
+    private transient Logger _logger;
     public SolrConnection()
     {
+    	_logger = logger().rlog(this);
     }
 
     public void connect(StoreConfig cfg)
@@ -100,7 +112,7 @@ public class SolrConnection implements StoreConnection, Constants
         {
             String corename = related + "_" + name;
             File f = new File(_home, corename);
-            if (!f.exists())
+            //if (!f.exists())
             {
                 //has not yet been created. Create again.
                 URL url = getClass().getClassLoader().getResource(SOLR_CONFIG);
@@ -113,16 +125,18 @@ public class SolrConnection implements StoreConnection, Constants
                 _server = new EmbeddedSolrServer(_container, DEFAULT_CORE);
                 CoreAdminRequest.createCore(corename, corename, _server, SOLR_CONFIG, SCHEMA_CONFIG);
                 CoreAdminRequest.persist(SOLR_CONFIG, _server);
-                _server = new EmbeddedSolrServer(_container, corename);
-            }
+               // _server = new EmbeddedSolrServer(_container, corename);
+                _logger.info("Solr server opened for connections:"+_server+"::"+corename);
+             }
         }
         catch (Exception e)
         {
             except().rt(e, new CtxException.Context("SolrConnection.open", "Exception"));
         }
+        
     }
 
-    public EmbeddedSolrServer server() { return _server; }
+    public EmbeddedSolrServer server() {System.out.println("Returning Server:"+_server); return _server; }
 
     public Repeatable repeatMe(RepeaterVariants vars)
         throws CtxException
@@ -157,12 +171,32 @@ public class SolrConnection implements StoreConnection, Constants
         return null;
     }
 
-    public List<Object> search(String group, String query)
-        throws CtxException
-    {
-        //search is impleneted here?
-        //TODO
-        return null;
-    }
+   
+
+	@Override
+	public void remove(String group, Object key) throws CtxException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Object> search(String group, Object query) throws CtxException {
+		List<Object> resultSet = new ArrayList<Object>();
+		QueryObject qo = (QueryObject)query;
+		SolrQuery solrQuery = SolrQueryConstructor.getQuery(group, qo);
+		try {
+			QueryResponse qr = _server.query(solrQuery);
+			SolrDocumentList docList = qr.getResults();
+			for(SolrDocument doc : docList)
+			{
+				resultSet.add(doc.getFieldValue(ID_COLUMN));
+			}
+			
+		} catch (SolrServerException e) {
+			except().rt(e, new CtxException.Context("SolrConnection.search", "Exception while querying"));
+		}
+		System.out.println("DOC ID:"+resultSet);
+		return resultSet;
+	}
 }
 

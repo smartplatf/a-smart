@@ -93,7 +93,12 @@ public class HBaseTransaction extends AbstractStoreTransaction
             {
                 HBaseConnection conn = (HBaseConnection)_connection;
                 for (String table : docs.keySet())
+                {
+                	if(!conn.getCRUD().isTableExists(table))
+                		conn.createMetadata(table, null);
+                	
                     conn.getCRUD().putRecords(table, docs.get(table));
+                }
             }
         }
         catch (Exception e)
@@ -102,7 +107,9 @@ public class HBaseTransaction extends AbstractStoreTransaction
         }
     }
 
-    public void rollback()
+
+
+	public void rollback()
         throws CtxException
     {
         //nothing to do, it is not yet committed.

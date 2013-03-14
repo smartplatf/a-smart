@@ -54,12 +54,7 @@ public interface Store extends Repeatable
     public void create(String name, Class cls)
         throws CtxException;
 
-    public void write(List<StoreItem> items)
-        throws CtxException;
-
-    public Object read(String group, Object key)
-        throws CtxException;
-
-    public StoreConnection getConnection();
+    public StoreConnection getConnection()
+    	throws CtxException;
 }
 

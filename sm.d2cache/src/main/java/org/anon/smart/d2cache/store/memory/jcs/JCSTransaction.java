@@ -48,10 +48,13 @@ import java.util.Map;
 import org.anon.smart.d2cache.store.StoreRecord;
 import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.AbstractStoreTransaction;
+import org.anon.smart.d2cache.store.index.solr.Constants;
 
 import static org.anon.utilities.services.ServiceLocator.*;
+
 import org.anon.utilities.exception.CtxException;
 import org.anon.utilities.reflect.ObjectTraversal;
+import org.apache.jcs.access.exception.CacheException;
 
 public class JCSTransaction extends AbstractStoreTransaction
 {
@@ -80,8 +83,25 @@ public class JCSTransaction extends AbstractStoreTransaction
     private void putOneRecord(StoreRecord record)
         throws Exception
     {
+    	JCSRecord rec = (JCSRecord)record;
         JCSConnection conn = (JCSConnection)_connection;
-        conn.store().writeRecord((JCSRecord)record);
+        String group = rec.getGroup();
+	    Object mod = rec.getModified();
+	    List<Object> keys = rec.getKeys();
+	    for (Object k : keys) {
+			try {
+				if (group != null){
+					conn.cache().putInGroup(k, group, mod);
+				}
+				else
+					conn.cache().put(k, mod);
+			} catch (CacheException ex) {
+				except().rt(
+						ex,
+						new CtxException.Context("JCSStore.writeRecord",
+								"Exception"));
+			}
+		}
     }
 
     public void commit()

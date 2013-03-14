@@ -26,42 +26,33 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.d2cache.store.memory.jcs.JCSSegment
+ * File:                org.anon.smart.d2cache.segment.IndexSegment
  * Author:              vjaasti
  * Revision:            1.0
- * Date:                Mar 6, 2013
+ * Date:                Mar 14, 2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- *  JCS Implementation for CSegment
+ * <Purpose>
  *
  * ************************************************************
  * */
 
-package org.anon.smart.d2cache.store.memory.jcs;
+package org.anon.smart.d2cache.segment;
 
-
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
-import org.anon.smart.d2cache.segment.CSegment;
 import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreConfig;
-import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreItem;
-import org.anon.smart.d2cache.store.StoreRecord;
-import org.anon.smart.d2cache.store.StoreTransaction;
+import org.anon.smart.d2cache.store.index.solr.SolrConnection;
+import org.anon.smart.d2cache.store.index.solr.SolrStore;
 import org.anon.utilities.exception.CtxException;
 
+public class IndexSegment implements CSegment {
 
-public class JCSSegment implements CSegment {
-
-	//JCS Store instance
-	private Store _store; // TODO Can have array of Stores in a single segment???
-	private StoreConnection _connection;
-	
+	private Store _store;
 	@Override
 	public Store getStore() {
 		return _store;
@@ -70,29 +61,21 @@ public class JCSSegment implements CSegment {
 	@Override
 	public void setupSegment(String name, String related, StoreConfig cfg)
 			throws CtxException {
-		_store = new JCSStore();
+		_store = new SolrStore(new SolrConnection());
 		_store.setup(name, related, cfg);
-		
-		_connection = new JCSConnection((JCSStore)_store);
+
 	}
 
 	@Override
 	public void storeItem(StoreItem item) throws CtxException {
-		storeItem(Arrays.asList(item));
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void storeItem(List<StoreItem> items) throws CtxException {
-		UUID txnID = UUID.randomUUID();
-		StoreTransaction txn = _connection.startTransaction(txnID);
-		for(StoreItem item : items)
-		{
-			for(Object key : item.keys()) {
-				txn.addRecord(item.group(), key, item.item());
-			}
-			
-		}
-		txn.commit();
+		// TODO Auto-generated method stub
+
 	}
-	
+
 }

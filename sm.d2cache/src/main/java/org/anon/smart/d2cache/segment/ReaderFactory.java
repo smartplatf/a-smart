@@ -56,4 +56,10 @@ public class ReaderFactory {
 		else 
 			return new DefaultReader(store, cfg); //TODO
 	}
+	
+	public static Reader getReaderFor(Store[] stores, int flags)
+		throws CtxException {
+		return new LayeredReader(stores);
+		
+	}
 }

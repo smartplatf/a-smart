@@ -46,10 +46,13 @@ import java.util.List;
 import java.util.HashMap;
 import java.io.IOException;
 
+import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.services.ServiceLocator;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
@@ -135,10 +138,19 @@ public class HBaseCRUD implements Constants
     void putRecords(String tableName, List<Put> puts)
         throws Exception
     {
-        HTable table = new HTable(_config, tableName);
+    	HTable table = new HTable(_config, tableName);
         table.put(puts);
     }
 
+    public boolean isTableExists(String tableName) throws CtxException
+    {
+    	//HTable table = new HTable(_config, tableName);
+		return false;
+    	
+    	
+    	
+    	
+    }
 
 }
 

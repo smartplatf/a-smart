@@ -41,9 +41,6 @@
 
 package org.anon.smart.d2cache;
 
-import org.anon.smart.d2cache.store.Store;
-import org.anon.smart.d2cache.store.MemoryStore;
-import org.anon.smart.d2cache.store.IndexedStore;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -72,13 +69,13 @@ public class D2CacheScheme
     protected static D2Cache memIndexedCache(String name, int flags)
         throws CtxException
     {
-        return null;
+        return new MemIndCache(name, null, flags);
     }
 
     protected static D2Cache memStoreIndexedCache(String name, int flags)
         throws CtxException
     {
-        return null;
+        return new MemStoreIndCache(name, null, flags);
     }
 
     public static D2Cache getCache(scheme s, String name, int flags)

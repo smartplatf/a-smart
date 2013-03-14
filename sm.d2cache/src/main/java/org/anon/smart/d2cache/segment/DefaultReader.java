@@ -41,13 +41,14 @@
 
 package org.anon.smart.d2cache.segment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.anon.smart.d2cache.Reader;
 import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.utilities.exception.CtxException;
+import static org.anon.utilities.services.ServiceLocator.*;
+
 
 public class DefaultReader implements Reader {
 
@@ -62,15 +63,14 @@ public class DefaultReader implements Reader {
 	@Override
 	public Object lookup(String group, Object key) throws CtxException {
 		Object ret = null;
-		ret = _store.read(group, key);
+		ret = _store.getConnection().find(group, key);
 		return ret;
 	}
 
 	@Override
 	public List<Object> search(String group, Object query) throws CtxException {
-		List<Object> resultSet = new ArrayList<Object>();
-		//TODO
-		return resultSet;
+		except().te(null, "Search is NOT suppoerted in Mem Only cache schema");
+		return null;
 	}
 	
 	
