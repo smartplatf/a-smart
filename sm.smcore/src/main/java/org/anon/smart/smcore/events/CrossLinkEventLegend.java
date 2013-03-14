@@ -26,49 +26,39 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.deployment.DeploymentService
+ * File:                org.anon.smart.smcore.events.CrossLinkEventLegend
  * Author:              rsankar
  * Revision:            1.0
- * Date:                14-01-2013
+ * Date:                21-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A service that works with deployment suites
+ * A crosslinker for event legend
  *
  * ************************************************************
  * */
 
-package org.anon.smart.deployment;
+package org.anon.smart.smcore.events;
 
-public class DeploymentService
+import java.util.UUID;
+
+import org.anon.utilities.crosslink.CrossLinker;
+import org.anon.utilities.exception.CtxException;
+
+public class CrossLinkEventLegend extends CrossLinker
 {
-    private DeploymentService()
-    {
-    }
-
-    /*
-    public static Artefact[] deployClazz(Class cls)
+    public CrossLinkEventLegend(UUID sess, String origin, ClassLoader ldr)
         throws CtxException
     {
-        DeploymentSuite suite = getAppInstance();
-        Artefact[] artefacts = _microArtefacts.deployClazz(cls);
-        return artefacts;
+        super(ldr);
+        create(sess, origin);
     }
 
-    Deployment deployClazz(Class cls, String dep)
+    public void stampReceived(long recvd)
         throws CtxException
     {
-        Artefact[] artefacts = _microArtefacts.deployClazz(cls);
-        return _macroDeployments.addDeployment(dep, artefacts);
+        linkMethod("stampReceived", recvd);
     }
-
-    Map<String, String> deployFile(String file)
-        throws CtxException
-    {
-        Deployer deployer = Deployer.deployers.deployerFor(file);
-        return deployer.deploy(file, this);
-    }
-    */
 }
 

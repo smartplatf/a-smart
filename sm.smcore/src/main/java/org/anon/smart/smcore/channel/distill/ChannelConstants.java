@@ -26,29 +26,33 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.tenant.dspace.TransactDSpace
+ * File:                org.anon.smart.smcore.channel.distill.ChannelConstants
  * Author:              rsankar
  * Revision:            1.0
- * Date:                04-01-2013
+ * Date:                20-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A space where transactions can occur
+ * A set of constants for commn
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.tenant.dspace;
+package org.anon.smart.smcore.channel.distill;
 
-import java.util.UUID;
-
-import org.anon.utilities.exception.CtxException;
-
-public interface TransactDSpace extends DSpace
+public interface ChannelConstants
 {
-    public void startTransaction(UUID id)
-        throws CtxException;
+    public static final String ACTION = "___smart_action___";
+    public static final String KEY_TYPE = "___key_type___";
 
+    public static final String LOOKUP_ACTION = "lookup";
+    public static final String SEARCH_ACTION = "search";
+
+    //standard fields in event
+    public static final String EVENT_LEGEND_FLD = "___smart_legend___";
+    public static final String FLOW_FLD = "___smart_flow___";
+    public static final String PRIMEDATA_FLD = "___smart_primeData___";
+    public static final String SESSION_FLD = "___smart_session___";
 }
 

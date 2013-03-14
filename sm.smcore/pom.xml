@@ -26,5 +26,20 @@
       <artifactId>sm.base</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.anon.smart</groupId>
+      <artifactId>sm.channels</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.anon.smart</groupId>
+      <artifactId>sm.atomicity</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.anon.smart</groupId>
+      <artifactId>sm.d2cache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

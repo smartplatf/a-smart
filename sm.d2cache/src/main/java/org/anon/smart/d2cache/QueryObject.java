@@ -77,7 +77,7 @@ public class QueryObject
 	}
 
 	private List<QueryItem> query;
-	private Class resultType;
+	private Class _resultType;
 	
 	public QueryObject() 
     {
@@ -98,11 +98,13 @@ public class QueryObject
 	
 	public void setResultType(Class cls)
 	{
-		resultType = cls;
+		_resultType = cls;
 	}
 	public Class getResultType() 
 	{
-		return resultType;
+		return _resultType;
 	}
 	public List<QueryItem> getQuery() { return query;}
 }
+
+

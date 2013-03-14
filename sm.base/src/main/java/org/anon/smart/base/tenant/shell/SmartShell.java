@@ -45,7 +45,9 @@ import org.anon.utilities.exception.CtxException;
 
 public interface SmartShell
 {
-    public void initializeShell(String name)
+    public void initializeShell()
+        throws CtxException;
+    public void cleanup()
         throws CtxException;
 }
 

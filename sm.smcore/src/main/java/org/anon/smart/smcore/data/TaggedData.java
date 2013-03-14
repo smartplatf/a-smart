@@ -45,7 +45,7 @@ import org.anon.utilities.exception.CtxException;
 
 public interface TaggedData
 {
-    public String[] tags()
+    public String[] smart___tags()
         throws CtxException;
 }
 

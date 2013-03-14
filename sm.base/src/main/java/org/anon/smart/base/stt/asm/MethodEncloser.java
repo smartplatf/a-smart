@@ -55,7 +55,7 @@ public class MethodEncloser extends AdviceAdapter
 
     public MethodEncloser(ASMMethodContext ctx)
     {
-        super(2, ctx.visitor(), ctx.access(), ctx.name(), ctx.description());
+        super(Opcodes.ASM4, ctx.visitor(), ctx.access(), ctx.name(), ctx.description());
         _context = ctx;
     }
 

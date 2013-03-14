@@ -43,6 +43,7 @@ package org.anon.smart.deployment;
 
 import java.util.Map;
 import java.util.List;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -77,6 +78,13 @@ public class MicroArtefacts
 
         Artefact[] artefacts = Artefact.artefactsFor(clazz);
         _clsArtefacts.put(clazz.getName(), artefacts);
+        addToArtefacts(artefacts);
+        return artefacts;
+    }
+
+    private void addToArtefacts(Artefact[] artefacts)
+        throws CtxException
+    {
         for (int i = 0; i < artefacts.length; i++)
         {
             String[] keys = artefacts[i].getKeys();
@@ -87,7 +95,46 @@ public class MicroArtefacts
                 _artefacts.put(keys[j], artefacts[i]);
             }
         }
-        return artefacts;
+    }
+
+    public Artefact[] deployArtefacts(Artefact[] arts)
+        throws CtxException
+    {
+        if (arts == null)
+            return arts;
+
+        List<Artefact> ret = new ArrayList<Artefact>();
+        Artefact[] artefacts = Artefact.artefactsFor(arts);
+        Map<String, List<Artefact>> group = new HashMap<String, List<Artefact>>();
+        for (int i = 0; i < artefacts.length; i++)
+        {
+            List<Artefact> lart = group.get(artefacts[i].getClazz().getName());
+            if (lart == null)
+                lart = new ArrayList<Artefact>();
+
+            lart.add(artefacts[i]);
+            group.put(artefacts[i].getClazz().getName(), lart);
+        }
+
+        for (String clzName : group.keySet())
+        {
+            if (!_clsArtefacts.containsKey(clzName))
+            {
+                List<Artefact> lclsarts = group.get(clzName);
+                Artefact[] clsarts = lclsarts.toArray(new Artefact[0]);
+                _clsArtefacts.put(clzName, clsarts);
+                addToArtefacts(clsarts);
+                ret.addAll(lclsarts);
+            }
+            else
+            {
+                Artefact[] clsarts = _clsArtefacts.get(clzName);
+                for (int i = 0; i < clsarts.length; i++)
+                    ret.add(clsarts[i]);
+            }
+        }
+
+        return ret.toArray(new Artefact[0]);
     }
 
     public Artefact[] artefactsForClazz(String clsname)

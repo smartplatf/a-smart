@@ -80,6 +80,41 @@ public class Deployment implements Deployable, VerifiableObject
         addArtefacts(a);
     }
 
+    protected Deployment(Deployment dep, String[] feats)
+    {
+        //by default enable the default feature
+        name = dep.name;
+        initializer = dep.initializer;
+        defaultEnable = dep.defaultEnable;
+        relations = dep.relations;
+        _runClass = dep._runClass;
+        _runMethod = dep._runMethod;
+        _verified = true;
+
+        features = new ArrayList<Feature>();
+        addFeatureFrom(dep, dep.defaultEnable);
+        for (int i = 0; (feats != null) && (i < feats.length); i++)
+            addFeatureFrom(dep, feats[i]);
+    }
+
+    public void addFeatureFrom(Deployment dep, String feature)
+    {
+        if (_features.containsKey(feature))
+            return;
+
+        Feature f = dep._features.get(feature);
+        features.add(f);
+        _features.put(f.getName(), f);
+        List<String> sub = f.mysubs();
+        for (int i = 0; (sub != null) && (i < sub.size()); i++)
+            addFeatureFrom(dep, sub.get(i));
+    }
+
+    public <T extends Deployment> T createDefault(String[] features, Class<T> cls)
+    {
+        return cls.cast(new Deployment(this, features));
+    }
+
     public void addArtefacts(Artefact[] artefacts)
     {
     }
@@ -117,6 +152,11 @@ public class Deployment implements Deployable, VerifiableObject
         return _features.get(fn);
     }
 
+    public Feature[] features()
+    {
+        return features.toArray(new Feature[0]);
+    }
+
     protected void setup()
         throws CtxException
     {
@@ -134,6 +174,23 @@ public class Deployment implements Deployable, VerifiableObject
             f.setBelongsTo(this);
             _features.put(f.getName(), f);
         }
+    }
+
+    public List<String> featureArtefacts(String nm)
+        throws CtxException
+    {
+        Feature f = featureFor(nm);
+        return f.allArtefacts();
+    }
+
+    public List<String> featureArtefacts()
+        throws CtxException
+    {
+        List<String> ret = new ArrayList<String>();
+        for (Feature f : features)
+            ret.addAll(f.allArtefacts());
+
+        return ret;
     }
 
     public List<String> artefacts()
@@ -156,6 +213,12 @@ public class Deployment implements Deployable, VerifiableObject
     {
         CrossLinkAny cla = new CrossLinkAny(cls.getName(), cls.getClassLoader());
         return cls.cast(cla.create(new Class[] { String.class, Artefact[].class }, new Object[] { dep, a }));
+    }
+
+    public static <T extends Deployment> T deploymentFrom(T dep, String[] features, Class<T> cls)
+        throws CtxException
+    {
+        return dep.createDefault(features, cls);
     }
 }
 

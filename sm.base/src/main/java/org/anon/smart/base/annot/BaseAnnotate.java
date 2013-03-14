@@ -52,5 +52,6 @@ public @interface BaseAnnotate
 {
     public String name();
     public String type();
+    public String flow();
 }
 

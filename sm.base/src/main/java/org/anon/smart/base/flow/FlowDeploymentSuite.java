@@ -26,7 +26,7 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.deployment.FlowDeploymentSuite
+ * File:                org.anon.smart.base.flow.FlowDeploymentSuite
  * Author:              rsankar
  * Revision:            1.0
  * Date:                14-01-2013
@@ -34,12 +34,12 @@
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A deployment service for flows
+ * A flow service for flows
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.deployment;
+package org.anon.smart.base.flow;
 
 import org.anon.smart.deployment.DeploymentSuite;
 import org.anon.smart.deployment.ArtefactType;
@@ -50,8 +50,7 @@ public class FlowDeploymentSuite extends DeploymentSuite<FlowDeployment>
 {
     private static FlowDeploymentSuite APP_INSTANCE = null;
 
-
-    public FlowDeploymentSuite()
+    protected FlowDeploymentSuite()
         throws CtxException
     {
         super();
@@ -68,5 +67,6 @@ public class FlowDeploymentSuite extends DeploymentSuite<FlowDeployment>
     {
         return APP_INSTANCE;
     }
+
 }
 

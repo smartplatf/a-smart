@@ -49,6 +49,6 @@ public interface SmartData extends StateEntity, TaggedData
 {
     public UUID smart___id();
     public String smart___owner();
-    public String mart___group();
+    public String smart___group();
 }
 

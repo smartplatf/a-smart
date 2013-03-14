@@ -41,10 +41,21 @@
 
 package org.anon.smart.base.flow;
 
-public class BasicFlow implements java.io.Serializable
+import java.util.UUID;
+
+public class BasicFlow implements FlowObject, java.io.Serializable
 {
-    public BasicFlow()
+    private FlowModel _model;
+    private UUID _id;
+
+    public BasicFlow(FlowModel model)
     {
+        _model = model;
+        _id = UUID.randomUUID();
     }
+
+    public UUID flowID() { return _id; }
+    public String flowName() { return _model.name(); }
+    public FlowModel model() { return _model; }
 }
 

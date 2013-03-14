@@ -50,5 +50,46 @@ public class CrossLinkDataShell extends CrossLinker
     {
         super(obj);
     }
+
+    public CrossLinkDataShell(int start, ClassLoader ldr)
+        throws CtxException
+    {
+        super(ldr);
+        create(start);
+    }
+
+    protected Class[] parmTypes(String method, Object ... params)
+    {
+        if (method.equals("addSpace"))
+            return new Class[] { Object.class };
+
+        return super.parmTypes(method, params);
+    }
+
+    public int addStandardSpaces()
+        throws CtxException
+    {
+        Integer ret = (Integer)linkMethod("addStandardSpaces");
+        return ret.intValue();
+    }
+
+    public int addWorkingSpaces()
+        throws CtxException
+    {
+        Integer ret = (Integer)linkMethod("addWorkingSpaces");
+        return ret.intValue();
+    }
+
+    public Object addSpace(Object model)
+        throws CtxException
+    {
+        return linkMethod("addSpace");
+    }
+
+    public void cleanup()
+        throws CtxException
+    {
+        linkMethod("cleanup");
+    }
 }
 

@@ -47,8 +47,8 @@ import org.anon.smart.base.stt.annot.MethodExit;
 import org.anon.smart.base.stt.annot.MethodEnter;
 import org.anon.smart.base.stt.annot.IncludeSTT;
 
-@IncludeSTT(types={"TagObject"})
-public class SmartDataStereoType
+@IncludeSTT(types={"TagObject", "Base"})
+public class SmartDataStereoType extends BaseStereoType
 {
     private UUID __smart__id__;
 

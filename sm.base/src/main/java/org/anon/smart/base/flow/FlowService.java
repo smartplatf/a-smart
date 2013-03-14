@@ -26,7 +26,7 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.deployment.DeploymentService
+ * File:                org.anon.smart.base.flow.FlowService
  * Author:              rsankar
  * Revision:            1.0
  * Date:                14-01-2013
@@ -39,38 +39,40 @@
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.deployment;
+package org.anon.smart.base.flow;
 
 import java.lang.annotation.Annotation;
 
 import org.anon.smart.deployment.ArtefactType;
-import org.anon.smart.base.annot.SmartDataAnnotate;
 import org.anon.smart.base.annot.EventAnnotate;
+import org.anon.smart.base.annot.PrimeDataAnnotate;
+import org.anon.smart.base.annot.SmartDataAnnotate;
 import org.anon.smart.base.annot.TransitionAnnotate;
 import org.anon.smart.base.annot.ResponseAnnotate;
 import org.anon.smart.base.annot.MessageAnnotate;
 
-public class DeploymentService
+import org.anon.utilities.exception.CtxException;
+
+public class FlowService implements FlowConstants
 {
-    static
+    public static void initialize()
+        throws CtxException
     {
-        try
-        {
-            ArtefactType.registerArtefactType(dataRecognizer(), "name", "name");
-            ArtefactType.registerArtefactType(eventRecognizer(), "name", "name");
-            ArtefactType.registerArtefactType(transitionRecognizer(), "name", "data", "event");
-            ArtefactType.registerArtefactType(responseRecognizer(), "name", "name");
-            ArtefactType.registerArtefactType(messageRecognizer(), "name", "name");
-        }
-        catch (Exception e)
-        {
-            //TODO: logger
-            e.printStackTrace();
-        }
+        ArtefactType.registerArtefactType(PRIMEDATA, primeDataRecognizer(), "name", "name");
+        ArtefactType.registerArtefactType(DATA, dataRecognizer(), "name", "name");
+        ArtefactType.registerArtefactType(EVENT, eventRecognizer(), "name", "name");
+        ArtefactType.registerArtefactType(TRANSITION, transitionRecognizer(), "name", "flow", "event");
+        ArtefactType.registerArtefactType(RESPONSE, responseRecognizer(), "name", "name");
+        ArtefactType.registerArtefactType(MESSAGE, messageRecognizer(), "name", "name");
     }
 
-    private DeploymentService()
+    private FlowService()
     {
+    }
+
+    public static Class<? extends Annotation> primeDataRecognizer()
+    {
+        return PrimeDataAnnotate.class;
     }
 
     public static Class<? extends Annotation> dataRecognizer()

@@ -26,29 +26,31 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.tenant.dspace.DSpace
+ * File:                org.anon.smart.base.flow.CrossLinkFlowModel
  * Author:              rsankar
  * Revision:            1.0
- * Date:                04-01-2013
+ * Date:                20-01-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A data space where data is stored
+ * A crosslink for FlowModel
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.tenant.dspace;
+package org.anon.smart.base.flow;
 
+import org.anon.utilities.crosslink.CrossLinker;
 import org.anon.utilities.exception.CtxException;
 
-public interface DSpace
+public class CrossLinkFlowModel extends CrossLinker
 {
-    public void put(Object obj)
-        throws CtxException;
-
-    public Object get(Object key)
-        throws CtxException;
+    public CrossLinkFlowModel(String name, ClassLoader ldr)
+        throws CtxException
+    {
+        super(ldr);
+        create(name);
+    }
 }
 
