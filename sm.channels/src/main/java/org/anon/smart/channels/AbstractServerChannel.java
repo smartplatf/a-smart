@@ -41,22 +41,57 @@
 
 package org.anon.smart.channels;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+
+import org.anon.smart.channels.data.RData;
 import org.anon.smart.channels.shell.SCShell;
 import org.anon.smart.channels.shell.SCConfig;
+
+import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.exception.CtxException;
 
 public abstract class AbstractServerChannel extends AbstractChannel implements SmartServerChannel
 {
+    protected ExecutorService _responder; //the responses are sent via this to the client back
+
     public AbstractServerChannel(SCShell shell, SCConfig cfg)
         throws CtxException
     {
         super(shell, cfg);
+        _responder = Executors.newCachedThreadPool(); //note this cannot be a distributed pool.
         initialize(shell, cfg);
+    }
+
+    public void sendResponses(RData data)
+        throws CtxException
+    {
+        assertion().assertNotNull(data, "Cannot send responses for null data.");
+        Runnable run = new ResponseSender(data);
+        _responder.execute(run);
     }
 
     protected abstract void initialize(SCShell shell, SCConfig cfg)
         throws CtxException;
 
+    protected void shutdown()
+        throws CtxException
+    {
+        try
+        {
+            _responder.shutdown();
+            if (!_responder.awaitTermination(120, TimeUnit.SECONDS))
+                _responder.shutdownNow();
+            if (!_responder.awaitTermination(60, TimeUnit.SECONDS))
+                except().te("Error shutting down the responder.");
+        }
+        catch (Exception e)
+        {
+            _responder.shutdownNow();
+            except().rt(e, new CtxException.Context("Error in shutdown.", "Exception"));
+        }
+    }
 }
 

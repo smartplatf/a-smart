@@ -52,11 +52,11 @@ public @interface MethodAnnotate
 {
     public String name();
     public String method();
-    public String parms();
     public String foreach();
     public String from();
     public String to();
-    public String runAfter();
-    public String runBefore();
+    public String parms() default "";
+    public String runAfter() default "";
+    public String runBefore() default "";
 }
 

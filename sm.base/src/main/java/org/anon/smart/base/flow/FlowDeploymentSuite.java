@@ -41,9 +41,13 @@
 
 package org.anon.smart.base.flow;
 
+import java.util.List;
+
 import org.anon.smart.deployment.DeploymentSuite;
 import org.anon.smart.deployment.SuiteAssistant;
 import org.anon.smart.deployment.ArtefactType;
+import org.anon.smart.base.loader.SmartLoader;
+import org.anon.smart.base.loader.LoaderVars;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -75,6 +79,31 @@ public class FlowDeploymentSuite extends DeploymentSuite<FlowDeployment>
     {
         FlowDeploymentSuite suite = (FlowDeploymentSuite)getAppInstance(FLOWSUITE);
         return suite.assistant();
+    }
+
+    public static ClassLoader newDeploymentLoader(String name, String[] jars)
+        throws CtxException
+    {
+        FlowDeploymentSuite suite = (FlowDeploymentSuite)getAppInstance(FLOWSUITE);
+        return suite.deploymentClassLoader(name, jars);
+    }
+
+    public ClassLoader deploymentClassLoader(String name, String[] jars)
+        throws CtxException
+    {
+        SmartLoader ldr = (SmartLoader)this.getClass().getClassLoader();
+        LoaderVars vars = new LoaderVars(name);
+        SmartLoader newldr = ldr.repeatMe(vars);
+        for (int i = 0; i < jars.length; i++)
+            newldr.addJar(jars[i]);
+        return newldr;
+    }
+
+    public static List<String> getAllDeployments()
+        throws CtxException
+    {
+        SuiteAssistant<FlowDeployment> assist = getAssistant();
+        return assist.allDeployments();
     }
 }
 

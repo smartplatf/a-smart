@@ -45,6 +45,10 @@ import java.util.UUID;
 
 import org.anon.smart.base.stt.annot.MethodExit;
 import org.anon.smart.smcore.events.SmartEventResponse;
+import org.anon.smart.smcore.transition.TransitionContext;
+
+import static org.anon.smart.base.utils.AnnotationUtils.*;
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -61,8 +65,17 @@ public class EventResponseSTT implements SmartEventResponse
         throws CtxException
     {
         ___smart_responseid___ = UUID.randomUUID();
+        //include into txn
+        if (threads().threadContext() instanceof TransitionContext)
+        {
+            //can hve errored even before this.
+            TransitionContext ctx = (TransitionContext)threads().threadContext();
+            if (ctx != null)
+                ctx.atomicity().includeResponse(this);
+        }
     }
 
     public UUID smart___eventID() { return ___smart_responseid___; }
+
 }
 

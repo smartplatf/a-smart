@@ -64,6 +64,8 @@ public class CrossLinkRuntimeShell extends CrossLinker
     {
         if (method.equals("lookupFor") || method.equals("searchFor"))
             return new Class[] { String.class, String.class, Object.class };
+        else if (method.equals("enabledFlowClazzez"))
+            return new Class[] { Object.class, Class[].class };
 
         return super.parmTypes(method, params);
     }
@@ -84,6 +86,12 @@ public class CrossLinkRuntimeShell extends CrossLinker
         throws CtxException
     {
         return (List<Object>)linkMethod("searchFor", spacemodel, group, query);
+    }
+
+    public void enabledFlowClazzez(Object model, Class[] clazzez)
+        throws CtxException
+    {
+        linkMethod("enabledFlowClazzez", model, clazzez);
     }
 }
 

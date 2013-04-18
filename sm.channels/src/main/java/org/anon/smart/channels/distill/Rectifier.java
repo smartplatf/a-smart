@@ -60,6 +60,7 @@ public class Rectifier
 
     public void addStep(Distillation distill)
     {
+        distill.setRectifier(this);
         _steps.add(distill);
     }
 

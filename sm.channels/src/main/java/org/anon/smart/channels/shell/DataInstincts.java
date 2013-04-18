@@ -51,7 +51,7 @@ public interface DataInstincts
     public void whenConnect(Route chnl)
         throws CtxException;
 
-    public void whenMessage(Route chnl, Object msg, MessageReader reader)
+    public boolean whenMessage(Route chnl, Object msg, MessageReader reader)
         throws CtxException;
 }
 

@@ -68,6 +68,7 @@ public class SearchedData extends Isotope implements ChannelConstants
     }
 
     private SmartTenant _tenant;
+    private String _flow;
     private FlowDeployment _flowDeployment;
     //private Object _session;
     private Map<String, List<Object>> _searchedData;
@@ -94,6 +95,13 @@ public class SearchedData extends Isotope implements ChannelConstants
     }
 
     public SmartTenant tenant() { return _tenant; }
+
+    void setupFlow(String flow)
+    {
+        _flow = flow;
+    }
+
+    public String getFlow() { return _flow; }
 
     void setupFlowDeployment(FlowDeployment flow)
     {
@@ -159,6 +167,7 @@ public class SearchedData extends Isotope implements ChannelConstants
         _values.put(EVENT_LEGEND_FLD, _eventLegend);
         _values.put(FLOW_FLD, flow._flowObject);
         _values.put(PRIMEDATA_FLD, flow._primeObject);
+        _values.put(FLOW_NAME_FLD, _flowDeployment.deployedName());
         //_values.put(SESSION_FLD, _session);
         for (String key : _searchedData.keySet())
         {

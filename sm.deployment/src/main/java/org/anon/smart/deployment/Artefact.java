@@ -43,6 +43,7 @@ package org.anon.smart.deployment;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
+import org.anon.utilities.crosslink.CrossLinkAny;
 import org.anon.utilities.exception.CtxException;
 
 public class Artefact implements Deployable
@@ -73,12 +74,16 @@ public class Artefact implements Deployable
     public String getName() { return _name; }
     public Class getClazz() { return _clazz; }
     public ArtefactType getType() { return _type; }
-    public Class getClazz(ClassLoader ldr) 
+    public Class getClazz(ClassLoader ldr, Deployment d) 
         throws CtxException
     { 
         try
         {
-            return ldr.loadClass(_clazz.getName()); 
+            CrossLinkAny cldeprt = new CrossLinkAny(DeployRuntime.class.getName(), ldr);
+            cldeprt.invoke("setupDeploying", new Class[] { Object.class }, new Object[] { d });
+            Class ret = ldr.loadClass(_clazz.getName()); 
+            cldeprt.invoke("setupDeploying", new Class[] { Object.class }, new Object[] { null });
+            return ret;
         }
         catch (Exception e)
         {

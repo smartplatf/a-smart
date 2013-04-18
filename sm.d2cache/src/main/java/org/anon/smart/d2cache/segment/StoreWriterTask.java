@@ -41,22 +41,24 @@
 
 package org.anon.smart.d2cache.segment;
 
-import java.util.List;
-
-import org.anon.smart.d2cache.store.Store;
-import org.anon.smart.d2cache.store.StoreItem;
 import org.anon.smart.d2cache.store.StoreTransaction;
-
-import org.anon.utilities.concurrency.ExecutionUnit;
+import org.anon.utilities.concurrency.ConfigurableUnit;
 import org.anon.utilities.exception.CtxException;
 
-public class StoreWriterTask implements ExecutionUnit
+public class StoreWriterTask implements ConfigurableUnit
 {
     private StoreTransaction _txn;
+    private boolean _wait;
     
     public StoreWriterTask(StoreTransaction txn)
     {
         _txn = txn;
+        _wait = txn.waitToComplete();
+    }
+
+    public boolean waitToComplete()
+    {
+        return _wait;
     }
 
     public void execute()

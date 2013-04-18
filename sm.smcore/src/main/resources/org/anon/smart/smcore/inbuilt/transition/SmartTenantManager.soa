@@ -1,0 +1,16 @@
+name:       SmartTenantManager
+type:       Transition
+flow:       AdminSmartFlow
+foreach:        TenantAdmin|NewTenant,TenantAdmin|EnableFlow
+actions:
+    - name:     newTenant
+      method:   newTenant
+      foreach:  TenantAdmin|NewTenant
+      from:     active
+      to:       active
+    - name:     enableFlow
+      method:   enableFlow
+      foreach:  TenantAdmin|EnableFlow
+      from:     active
+      to:       active
+

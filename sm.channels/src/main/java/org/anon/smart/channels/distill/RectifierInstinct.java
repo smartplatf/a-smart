@@ -71,14 +71,18 @@ public abstract class RectifierInstinct implements DataInstincts
         //I have nothing here
     }
 
-    public void whenMessage(Route chnl, Object msg, MessageReader rdr)
+    public boolean whenMessage(Route chnl, Object msg, MessageReader rdr)
         throws CtxException
     {
         Distillate start = createStart(chnl, msg, rdr);
+        if (start == null)
+            return true; //transmit default
+
         RectifierUnit unit = new RectifierUnit(_rectifier, start, true);
         List<ExecutionUnit> exec = new ArrayList<ExecutionUnit>();
         exec.add(unit);
         execute().synch(exec);
+        return false;
     }
 }
 

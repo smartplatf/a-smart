@@ -41,11 +41,17 @@
 
 package org.anon.smart.base.monitor;
 
+import java.util.List;
+
 import org.anon.utilities.exception.CtxException;
 
 public interface MonitorableObject
 {
     public void cleanup()
         throws CtxException;
+    /*
+    public List<MetricCounter> getMetricCounters()
+    		throws CtxException;
+    public void resetCounters() throws CtxException;*/
 }
 

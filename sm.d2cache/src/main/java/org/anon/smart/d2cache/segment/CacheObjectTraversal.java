@@ -41,6 +41,7 @@
 
 package org.anon.smart.d2cache.segment;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,11 +64,15 @@ public class CacheObjectTraversal implements TVisitor {
 	@Override
 	public Object visit(DataContext ctx)
 	        throws CtxException
-	    {
+	{
 	        Object ret = null;
 	        List<Object> lst = null;
 	        if (ctx.field() != null)
 	        {
+                int modifiers = ctx.field().getModifiers();
+                if (Modifier.isTransient(modifiers) || (Modifier.isStatic(modifiers)))
+                    return null; //do not continue further
+
 	            lst = _traversed.get(ctx.field().getName());
 	            if (lst == null)
 	                lst = new ArrayList<Object>();

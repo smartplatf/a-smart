@@ -86,6 +86,15 @@ public class SmartFlow extends BasicFlow
     public void postExternal(Object event)
         throws CtxException
     {
+    	
+	//Adding this check: TODO
+    	if(_externalQueue == null)
+    	{
+    	    String tenant = CrossLinkSmartTenant.currentTenant().getName();
+            FlowEventListener eelsnr = new FlowEventListener();
+            _externalQueue = anatomy().jvmEnv().jitQueueFor(tenant, model().name() + "-External", this, eelsnr);
+            eelsnr.setQueue(_externalQueue);
+    	}
         _externalQueue.add(event);
     }
 

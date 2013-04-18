@@ -41,19 +41,22 @@
 
 package org.anon.smart.deployment;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.exception.CtxException;
 
 public class LicensedDeploymentSuite<T extends Deployment> implements DSuite<T>
 {
-    private MicroArtefacts _licensedClazzez;
+    private Map<String, MicroArtefacts> _licensedClazzez;
     private MacroDeployments<T> _licensedDeployments;
     private SuiteAssistant<T> _assistant;
 
     public LicensedDeploymentSuite()
     {
-        _licensedClazzez = new MicroArtefacts();
+        _licensedClazzez = new ConcurrentHashMap<String, MicroArtefacts>();
         _licensedDeployments = new MacroDeployments<T>();
         _assistant = new SuiteAssistant<T>(this);
     }
@@ -64,9 +67,18 @@ public class LicensedDeploymentSuite<T extends Deployment> implements DSuite<T>
         _licensedDeployments.setHandleDeployment(cls);
     }
 
-    public MicroArtefacts artefacts()
+    public MicroArtefacts artefacts(String dep)
     {
-        return _licensedClazzez;
+        return _licensedClazzez.get(dep);
+    }
+
+    public MicroArtefacts artefactsCreate(String dep)
+    {
+        MicroArtefacts marts = _licensedClazzez.get(dep);
+        if (marts == null)
+            marts = new MicroArtefacts();
+        _licensedClazzez.put(dep, marts);
+        return marts;
     }
 
     public MacroDeployments<T> deployments()
@@ -79,16 +91,21 @@ public class LicensedDeploymentSuite<T extends Deployment> implements DSuite<T>
         return _assistant;
     }
 
-    public void deployArtefacts(Artefact[] artefacts)
+    public void deployArtefacts(String dep, Artefact[] artefacts)
         throws CtxException
     {
-        _licensedClazzez.deployArtefacts(artefacts);
+        MicroArtefacts m = _licensedClazzez.get(dep);
+        if (m == null)
+            m = new MicroArtefacts();
+        m.deployArtefacts(artefacts);
+        _licensedClazzez.put(dep, m);
     }
 
-    public void enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
+    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
         throws CtxException
     {
         except().te(this, "Enabling from an already licensed suite is not supported");
+        return null;
     }
 }
 

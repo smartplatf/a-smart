@@ -44,6 +44,10 @@ package org.anon.smart.smcore.transition.graph;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.anon.smart.smcore.data.SmartDataED;
+import org.anon.smart.smcore.transition.TransitionContext;
+import org.anon.smart.smcore.inbuilt.responses.ErrorResponse;
+
 import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
 import org.anon.utilities.cthreads.CtxRunnable;
@@ -74,6 +78,12 @@ public class TransitionGraphExecutor extends ExecuteGraph implements CtxRunnable
         throws CtxException
     {
         //TODO:
+        //for now record it against the prime always?
+        TransitionContext ctx = (TransitionContext)_graphContext;
+        SmartDataED ed = ctx.primeED();
+        ctx.atomicity().recordException(ed);
+        //create an ErrorResponse
+        ErrorResponse response = new ErrorResponse(ErrorResponse.servererrors.exception, e);
         e.printStackTrace();
     }
 

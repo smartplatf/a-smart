@@ -76,6 +76,7 @@ public class TemplateReader extends VMSingleton
         super();
         //in the order it will be searched
         __search__templates__.add(new ClassTemplate());
+        __search__templates__.add(new DefaultTemplate());
     }
 
     public static void registerTemplate(String name, Class<? extends BaseTL> type)
@@ -83,6 +84,13 @@ public class TemplateReader extends VMSingleton
     {
         TemplateReader reader = getTemplateReader();
         reader.__type__mapping__.put(name, type);
+    }
+
+    public static Class<? extends BaseTL> getTemplateMapping(String name)
+        throws CtxException
+    {
+        TemplateReader reader = getTemplateReader();
+        return reader.__type__mapping__.get(name);
     }
 
     public static BaseTL[] readConfig(Map values)
@@ -131,7 +139,7 @@ public class TemplateReader extends VMSingleton
         {
             SearchTemplate temp = __search__templates__.get(i);
             SearchTemplate stemp = (SearchTemplate)temp.repeatMe(null);
-            BaseTL[] templates = stemp.searchFor(cls, ldr);
+            BaseTL[] templates = stemp.searchFor(cls, ldr, null);
             if (templates != null)
                 return templates;
         }

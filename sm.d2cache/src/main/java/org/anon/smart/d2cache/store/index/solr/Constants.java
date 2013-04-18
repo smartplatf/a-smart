@@ -49,6 +49,6 @@ public interface Constants
     public final String CORE_CONFIG = "solr.xml";
     public final String SOLR_CONFIG = "solrconfig.xml";
     public final String SCHEMA_CONFIG = "schema.xml";
-    public final String DEFAULT_CORE = "empty";
+    public final String DEFAULT_CORE = "core0";
 }
 

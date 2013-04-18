@@ -70,13 +70,13 @@ public class SolrRecord extends AbstractStoreRecord implements Constants
 
     private SolrInputDocument _document;
 
-    public SolrRecord(String group, Object primaryKey, Object curr)
+    public SolrRecord(String group, Object primaryKey, Object curr, Object orig)
     {
-        super(group, primaryKey, curr);
+        super(group, primaryKey, curr, orig);
         _document = new SolrInputDocument();
         //_document.addField(ID_COLUMN, group + PART_SEPARATOR + primaryKey.toString());
         _document.addField(ID_COLUMN, primaryKey.toString());
-        System.out.println("---> ID:"+ID_COLUMN+"::"+ primaryKey.toString());
+        //System.out.println("---> ID:"+ID_COLUMN+"::"+ primaryKey.toString());
     }
 
 
@@ -87,13 +87,20 @@ public class SolrRecord extends AbstractStoreRecord implements Constants
         {
             if (ctx.field() != null)
             {
-                String key = _group + PART_SEPARATOR + ctx.fieldpath();
+            	String fieldPath = ctx.fieldpath();
+            	String type = ctx.getType();
+            	//remove type from path
+            	if((type != null) && (type.length()>0))
+            	{
+            		fieldPath = fieldPath.replaceAll("."+type, "");
+            	}
+                String key = _group + PART_SEPARATOR + fieldPath ;
                 Object fldval = ctx.fieldVal();
                 if ((fldval != null) && (SUFFIXES.containsKey(ctx.field().getType())))
                 {
                     key = key + SUFFIXES.get(ctx.field().getType());
                     _document.addField(key, fldval);
-                    System.out.println("----->Indexing:"+key+":"+fldval);
+                    //System.out.println("----->Indexing:"+key+":"+fldval);
                 }
             }
         }

@@ -90,7 +90,7 @@ public class MicroArtefacts
             String[] keys = artefacts[i].getKeys();
             for (int j = 0; j < keys.length; j++)
             {
-                if (_artefacts.containsKey(keys[i]))
+	            if (_artefacts.containsKey(keys[j]))
                     except().te(this, "An artefact for key: " + keys[j] + " already exists, duplicate deployment.");
                 _artefacts.put(keys[j], artefacts[i]);
             }
@@ -147,20 +147,20 @@ public class MicroArtefacts
         return _artefacts.get(key);
     }
 
-    public Class clazzFor(String key, ArtefactType type, ClassLoader ldr)
+    public Class clazzFor(String key, ArtefactType type, ClassLoader ldr, Deployment d)
         throws CtxException
     {
         if (_artefacts.containsKey(key))
         {
             Artefact a = _artefacts.get(key);
             if (a.getType().equals(type))
-                return a.getClazz(ldr);
+                return a.getClazz(ldr, d);
         }
 
         return null;
     }
 
-    public List<Class> clazzezFor(String wild, ArtefactType type, ClassLoader ldr)
+    public List<Class> clazzezFor(String wild, ArtefactType type, ClassLoader ldr, Deployment d)
         throws CtxException
     {
         List<Class> ret = new ArrayList<Class>();
@@ -172,7 +172,7 @@ public class MicroArtefacts
             {
                 Artefact a = _artefacts.get(k);
                 if (a.getType().equals(type))
-                    ret.add(a.getClazz(ldr));
+                    ret.add(a.getClazz(ldr, d));
             }
         }
 

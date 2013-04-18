@@ -67,9 +67,9 @@ public abstract class BaseTL implements Constants
         }
     }
 
-    private String name;
-    private String type;
-    private String flow;
+    protected String name;
+    protected String type;
+    protected String flow;
 
     protected BaseTL()
     {
@@ -115,6 +115,16 @@ public abstract class BaseTL implements Constants
         assertion().assertTrue(values.containsKey(TYPE_CONFIG), "Not a valid config to be read");
         String str = values.get(TYPE_CONFIG).toString();
         return value().rangeAsString(str);
+    }
+
+    protected static String populateDefault(BaseTL tl, String clsname, String t, String f)
+    {
+        int ind = clsname.lastIndexOf(".");
+        tl.name = clsname.substring(ind + 1);
+        tl.type = t;
+        tl.flow = f;
+
+        return tl.name;
     }
 }
 

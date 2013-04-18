@@ -58,27 +58,31 @@ public class TransitionGraphs
     private Map<String, Graph> _graphs;         //graphs for each set of transitions grouped by fromstate
     private long _lastUpdated;                  //last updated time, so can be changed if deployment has changed
 
-    private TransitionGraphs(String prime, String event)
+    private TransitionGraphs(String flow, String prime, String event, String extras)
         throws CtxException
     {
         GraphCreator creator = new GraphCreator();
-        _graphs = creator.graphFor(prime, event);
+        _graphs = creator.graphFor(flow, prime, event, extras);
         _lastUpdated = System.nanoTime();
         //TODO: have to invalidate and recreate if deployments changed
     }
 
-    public static Graph getGraph(String prime, String event, String fromstate)
+    public static Graph getGraph(String flow, String prime, String event, String extras, String fromstate)
         throws CtxException
     {
-        String groupKey = ArtefactType.createKey(prime, event);
+        String groupKey = ArtefactType.createKey(flow, prime, event);
+        if ((extras != null) && (extras.length() > 0))
+            groupKey = ArtefactType.createKey(flow, prime, event, extras);
+
         if (!TRANSITIONS.containsKey(groupKey))
         {
-            TransitionGraphs graphs = new TransitionGraphs(prime, event);
+            TransitionGraphs graphs = new TransitionGraphs(flow, prime, event, extras);
             TRANSITIONS.put(groupKey, graphs);
         }
 
         TransitionGraphs graphs = TRANSITIONS.get(groupKey);
         assertion().assertNotNull(graphs, "No transitions found for state: " + prime + ":" + event + ":" + fromstate);
+        System.out.println("Got graph: " + graphs._graphs);
         return graphs._graphs.get(fromstate);
     }
 }

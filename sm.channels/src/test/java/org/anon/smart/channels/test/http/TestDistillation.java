@@ -42,6 +42,7 @@
 package org.anon.smart.channels.test.http;
 
 import org.anon.smart.channels.distill.Distillation;
+import org.anon.smart.channels.distill.Rectifier;
 import org.anon.smart.channels.distill.Distillate;
 import org.anon.smart.channels.data.PData;
 
@@ -50,10 +51,16 @@ import org.anon.utilities.exception.CtxException;
 public class TestDistillation implements Distillation
 {
     private boolean _respond;
+    private Rectifier _myRectifier;
 
     public TestDistillation(boolean resp)
     {
         _respond = resp;
+    }
+
+    public void setRectifier(Rectifier parent)
+    {
+        _myRectifier = parent;
     }
 
     public Distillate distill(Distillate prev)

@@ -69,5 +69,10 @@ public class TransitionTL extends BaseTL
         annons.add(TransitionAnnotate.class);
         return annons.toArray(new Class[0]);
     }
+
+    public static TransitionTL defaultFor(String clsname, String type, String flow, String[] parms)
+    {
+        return null; //no defaults, has to be provided.
+    }
 }
 

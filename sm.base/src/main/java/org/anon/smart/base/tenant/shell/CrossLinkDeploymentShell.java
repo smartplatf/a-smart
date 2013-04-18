@@ -45,6 +45,8 @@ import java.util.List;
 
 import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 
+import static org.anon.utilities.services.ServiceLocator.*;
+
 import org.anon.utilities.crosslink.CrossLinker;
 import org.anon.utilities.exception.CtxException;
 
@@ -67,23 +69,25 @@ public class CrossLinkDeploymentShell extends CrossLinker
         return (Class)linkMethod("deployment", name, type);
     }
 
-    public List<Class> searchDeployment(String wild, String type)
+    public List<Class> searchDeployment(String dep, String wild, String type)
         throws CtxException
     {
-        return (List<Class>)linkMethod("searchDeployment", wild, type);
+        return (List<Class>)linkMethod("searchDeployment", dep, wild, type);
     }
 
     public CrossLinkFlowDeployment deploymentFor(String flow)
         throws CtxException
     {
         Object dep = linkMethod("deploymentFor", flow);
+        assertion().assertNotNull(dep, "There is no deployment found for: " + dep);
         return new CrossLinkFlowDeployment(dep);
     }
 
-    public CrossLinkFlowDeployment flowForPrimeType(String name)
+    public CrossLinkFlowDeployment flowForPrimeType(String flow, String name)
         throws CtxException
     {
-        Object obj = linkMethod("flowForPrimeType", name);
+        Object obj = linkMethod("flowForPrimeType", flow, name);
+        assertion().assertNotNull(obj, "There is no deployment found for: " + flow + ":" + name);
         return new CrossLinkFlowDeployment(obj);
     }
 
@@ -91,13 +95,28 @@ public class CrossLinkDeploymentShell extends CrossLinker
         throws CtxException
     {
         Object obj = linkMethod("flowForType", name);
+        assertion().assertNotNull(obj, "There is no deployment found for: " + name);
         return new CrossLinkFlowDeployment(obj);
     }
 
-    public List<Class> transitionsFor(String prime, String event)
+    public List<Class> transitionsFor(String dep, String prime, String event, String extra)
         throws CtxException
     {
-        return (List<Class>)linkMethod("transitionsFor", prime, event);
+        if (extra == null)
+            extra = "";
+        return (List<Class>)linkMethod("transitionsFor", dep, prime, event, extra);
+    }
+
+    public Class primeClass(String dep, String type)
+        throws CtxException
+    {
+        return (Class)linkMethod("primeClass", dep, type);
+    }
+
+    public void enableForMe(String name, String[] features)
+        throws CtxException
+    {
+        linkMethod("enableForMe", name, features);
     }
 }
 

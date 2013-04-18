@@ -49,5 +49,9 @@ public interface MessageReader
 {
     public Object transmitObject(PData[] data)
         throws CtxException;
+    public Object transmitDefault()
+        throws CtxException;
+    public Object transmitException(Throwable t)
+        throws CtxException;
 }
 

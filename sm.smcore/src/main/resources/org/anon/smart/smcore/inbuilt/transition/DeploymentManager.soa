@@ -1,0 +1,16 @@
+name:       DeploymentManager
+type:       Transition
+flow:       AdminSmartFlow
+foreach:    TenantAdmin|DeployEvent,FlowAdmin|ListDeployments
+actions:
+    - name:     deployJar
+      method:   deployJar
+      foreach:  TenantAdmin|DeployEvent
+      from:     active
+      to:       active
+    - name:     retrieveDeployments
+      method:   retrieveDeployments
+      foreach:  FlowAdmin|ListDeployments
+      from:     active
+      to:       active
+

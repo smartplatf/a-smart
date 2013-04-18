@@ -67,9 +67,9 @@ public class SolrStore extends AbstractStore implements IndexedStore {
 	}
 
 	@Override
-	public void setup(String name, String related, StoreConfig config)
+	public void setup(String name, StoreConfig config)
 			throws CtxException {
-		super.setup(name, related, config);
+		super.setup(name, config);
 
 	}
 

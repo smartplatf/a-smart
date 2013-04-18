@@ -41,12 +41,14 @@
 
 package org.anon.smart.d2cache.store.index.solr;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.List;
 import java.util.UUID;
 import java.util.ArrayList;
 
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.core.SolrCore;
 
 import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreRecord;
@@ -62,10 +64,10 @@ public class SolrTransaction extends AbstractStoreTransaction
         super(txnid, conn);
     }
 
-    protected StoreRecord createNewRecord(String group, Object primarykey, Object curr)
+    protected StoreRecord createNewRecord(String group, Object primarykey, Object curr, Object orig)
         throws CtxException
     {
-        return new SolrRecord(group, primarykey, curr);
+        return new SolrRecord(group, primarykey, curr, orig);
     }
 
     public void commit()
@@ -86,9 +88,9 @@ public class SolrTransaction extends AbstractStoreTransaction
 
             if (docs.size() > 0)
             {
-                SolrConnection conn = (SolrConnection)_connection;
-                conn.server().add(docs);
-                conn.server().commit();
+               SolrConnection conn = (SolrConnection)_connection;
+               conn.server().add(docs);
+               conn.server().commit();
             }
         }
         catch (Exception e)
@@ -101,6 +103,12 @@ public class SolrTransaction extends AbstractStoreTransaction
         throws CtxException
     {
         //nothing to do, it is not yet committed.
+    }
+
+    @Override
+    public boolean waitToComplete()
+    {
+        return false;
     }
 }
 

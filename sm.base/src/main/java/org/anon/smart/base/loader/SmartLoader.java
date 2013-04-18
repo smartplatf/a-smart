@@ -45,18 +45,16 @@ import java.net.URL;
 
 import org.anon.smart.base.stt.Templatizer;
 
-import org.anon.utilities.utils.RepeaterVariants;
-import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.loader.RelatedLoader;
 import org.anon.utilities.exception.CtxException;
 
-public class SmartLoader extends RelatedLoader implements Repeatable
+public class SmartLoader extends RelatedLoader
 {
     static
     {
         addForceLoadSuper("org.anon.smart.base.stt.*");
         addForceLoadSuper("org.anon.smart.base.loader.*");
-        addForceLoadSuper("org.anon.smart.base.annot.*");
+        //addForceLoadSuper("org.anon.smart.base.annot.*");
     }
 
     public SmartLoader(URL[] urls, String name, String[] comps)
@@ -72,10 +70,9 @@ public class SmartLoader extends RelatedLoader implements Repeatable
         this(urls, "unreferenced:SmartLoader", comps);
     }
 
-    public Repeatable repeatMe(RepeaterVariants vars)
+    public SmartLoader repeatMe(LoaderVars lvars)
         throws CtxException
     {
-        LoaderVars lvars = (LoaderVars)vars;
         SmartLoader ldr = new SmartLoader(this.getURLs(), lvars.getName(), _initComps);
         return ldr;
     }

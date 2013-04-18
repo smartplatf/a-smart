@@ -66,15 +66,20 @@ public class GraphCreator
     {
     }
 
-    public Map<String, Graph> graphFor(String prime, String event)
+    public Map<String, Graph> graphFor(String flow, String prime, String event, String extra)
         throws CtxException
     {
+        String keyextra = null;
         String key = ArtefactType.createKey(prime, event);
+        if ((extra != null) && (extra.length() > 0))
+            keyextra = ArtefactType.createKey(prime, event, extra);
         CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
         assertion().assertNotNull(tenant, "Not running in tenant context. Error.");
         CrossLinkDeploymentShell shell = tenant.deploymentShell();
         assertion().assertNotNull(shell, "Not a Valid deployment shell.");
-        List<Class> transitions = shell.transitionsFor(prime, event);
+        List<Class> transitions = shell.transitionsFor(flow, prime, event, extra);
+        List<Class> atransitions = shell.transitionsFor("AllFlows", prime, event, extra);
+        transitions.addAll(atransitions); //that which runs for all flows.
         Map<String, Graph> ret = new ConcurrentHashMap<String, Graph>();
         try
         {
@@ -82,7 +87,7 @@ public class GraphCreator
             {
                 Class cls = transitions.get(i);
                 Method[] methods = cls.getDeclaredMethods();
-                addMethods(key, cls, methods, ret);
+                addMethods(key, keyextra, cls, methods, ret);
             }
 
             //now add dependencies
@@ -119,10 +124,10 @@ public class GraphCreator
         {
             TransitionNodeDetails det = (TransitionNodeDetails)nde.details();
             nmap.put(det.name(), nde);
-            if (det.after() != null)
+            if ((det.after() != null) && (det.after().length() > 0))
                 setupparent(det.after(), det.name(), pmap);
 
-            if (det.before() != null)
+            if ((det.before() != null) && (det.before().length() > 0))
                 setupparent(det.name(), det.before(), pmap);
         }
 
@@ -138,7 +143,7 @@ public class GraphCreator
         }
     }
 
-    private GraphNode createNode(String key, Class cls, Method mthd)
+    private GraphNode createNode(String key, String keyextra, Class cls, Method mthd)
         throws CtxException
     {
         MethodAnnotate annot = (MethodAnnotate)mthd.getAnnotation(MethodAnnotate.class);
@@ -149,7 +154,7 @@ public class GraphCreator
             boolean isfor = false;
             for (int i = 0; (!isfor) && (i < per.length); i++)
             {
-                if (key.equals(per[i]))
+                if (key.equals(per[i]) || ((keyextra != null) && (keyextra.equals(per[i]))))
                     isfor = true;
             }
 
@@ -163,12 +168,12 @@ public class GraphCreator
         return null;
     }
 
-    private void addMethods(String key, Class cls, Method[] methods, Map<String, Graph> into)
+    private void addMethods(String key, String keyextra, Class cls, Method[] methods, Map<String, Graph> into)
         throws CtxException
     {
         for (int i = 0; i < methods.length; i++)
         {
-            GraphNode nde = createNode(key, cls, methods[i]);
+            GraphNode nde = createNode(key, keyextra, cls, methods[i]);
             if (nde == null)
                 continue;
             TransitionNodeDetails det = (TransitionNodeDetails)nde.details();
@@ -181,7 +186,7 @@ public class GraphCreator
                     graph = new Graph();
 
                 graph.addGraphNode(nde);
-                into.put(farray[i], graph);
+                into.put(farray[f], graph);
             }
         }
     }

@@ -1,0 +1,30 @@
+name:   AdminSmartFlow
+defaultEnable:  all
+primeData:
+    - org.anon.smart.base.tenant.TenantAdmin
+events:
+    - org.anon.smart.smcore.inbuilt.events.NewTenant
+    - org.anon.smart.smcore.inbuilt.events.EnableFlow
+    - org.anon.smart.smcore.inbuilt.events.DeployEvent
+    - org.anon.smart.smcore.inbuilt.events.ListDeployments
+responses:
+    - org.anon.smart.smcore.inbuilt.responses.SuccessCreated
+    - org.anon.smart.smcore.inbuilt.responses.ErrorResponse
+    - org.anon.smart.smcore.inbuilt.responses.DeploymentList
+transitions:
+    - org.anon.smart.smcore.inbuilt.transition.SmartTenantManager
+    - org.anon.smart.smcore.inbuilt.transition.DeploymentManager
+features:
+    - name: all
+      artefacts:
+        - org.anon.smart.base.tenant.TenantAdmin
+        - org.anon.smart.smcore.inbuilt.events.NewTenant
+        - org.anon.smart.smcore.inbuilt.events.EnableFlow
+        - org.anon.smart.smcore.inbuilt.events.DeployEvent
+        - org.anon.smart.smcore.inbuilt.events.ListDeployments
+        - org.anon.smart.smcore.inbuilt.responses.SuccessCreated
+        - org.anon.smart.smcore.inbuilt.responses.ErrorResponse
+        - org.anon.smart.smcore.inbuilt.responses.DeploymentList
+        - org.anon.smart.smcore.inbuilt.transition.SmartTenantManager
+        - org.anon.smart.smcore.inbuilt.transition.DeploymentManager
+

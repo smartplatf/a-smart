@@ -44,6 +44,7 @@ package org.anon.smart.smcore.channel.server;
 import org.anon.smart.smcore.inbuilt.responses.ErrorResponse;
 import org.anon.smart.channels.distill.Isotope;
 import org.anon.smart.channels.distill.Distillate;
+import org.anon.smart.channels.distill.Rectifier;
 import org.anon.smart.channels.distill.AbstractErrorHandler;
 
 public class EventErrorHandler extends AbstractErrorHandler
@@ -54,13 +55,13 @@ public class EventErrorHandler extends AbstractErrorHandler
     }
 
     @Override
-    protected Isotope[] createResponses(Throwable t, Distillate start)
+    protected Isotope[] createResponses(Rectifier rectifier, Throwable t, Distillate start)
     {
         try
         {
             ErrorResponse response = new ErrorResponse(ErrorResponse.servererrors.exception, t);
             EventPData pdata = (EventPData)start.current();
-            EventRData rdata = new EventRData(pdata, response, null, null);
+            EventRData rdata = new EventRData(rectifier, pdata, response, null, null);
             return new Isotope[] { rdata };
         }
         catch (Exception e)

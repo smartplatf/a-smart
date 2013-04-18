@@ -47,7 +47,9 @@ import java.util.ArrayList;
 
 import org.anon.smart.channels.distill.Isotope;
 import org.anon.smart.channels.distill.Distillate;
+import org.anon.smart.channels.distill.Rectifier;
 import org.anon.smart.channels.distill.Distillation;
+import org.anon.smart.smcore.events.CrossLinkSmartEvent;
 
 import org.anon.smart.smcore.channel.distill.sanitization.SearchedData;
 
@@ -58,8 +60,15 @@ import org.anon.utilities.exception.CtxException;
 
 public class AlterationStage implements Distillation
 {
+    private Rectifier _myRectifier;
+
     public AlterationStage()
     {
+    }
+
+    public void setRectifier(Rectifier rectifier)
+    {
+        _myRectifier = rectifier;
     }
 
     public Distillate distill(Distillate prev)
@@ -74,6 +83,8 @@ public class AlterationStage implements Distillation
             CreateEventVisitor visitor = new CreateEventVisitor(data, f);
             ClassTraversal traverse = new ClassTraversal(evtClazz, visitor);
             Object ret = traverse.traverse();
+            CrossLinkSmartEvent evt = new CrossLinkSmartEvent(ret);
+            evt.smarteventstt____init();
             AlteredData.FlowEvent add = new AlteredData.FlowEvent(f.flow(), ret);
             events.add(add);
         }
@@ -93,6 +104,7 @@ public class AlterationStage implements Distillation
         {
             Object resp = evt.event();
             Map<String, Object> m = convert().objectToMap(resp);
+            System.out.println("Got response map as: " + m + ":" + resp);
             sdata.setupSearchMap(m);
         }
         return new Distillate(prev, sdata);

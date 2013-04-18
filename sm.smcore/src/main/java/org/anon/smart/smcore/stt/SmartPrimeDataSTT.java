@@ -50,6 +50,7 @@ import org.anon.smart.base.stt.annot.IncludeSTT;
 import org.anon.smart.base.stt.annot.MethodExit;
 import org.anon.smart.base.flow.FlowModel;
 import org.anon.smart.base.flow.CrossLinkFlowDeployment;
+import org.anon.smart.base.utils.InternalData;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
 
@@ -71,7 +72,18 @@ public class SmartPrimeDataSTT extends SmartDataSTT implements SmartPrimeData
         CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
         CrossLinkDeploymentShell shell = tenant.deploymentShell();
         String name = objectName(this);
-        CrossLinkFlowDeployment dep = shell.flowForPrimeType(name);
+        Object check = this;
+        CrossLinkFlowDeployment dep = null;
+        if (check instanceof InternalData)
+        {
+            String flow = ((InternalData)check).myFlow();
+            dep = shell.deploymentFor(flow);
+        }
+        else
+        {
+            String flow = flowFor(this.getClass());
+            dep = shell.flowForPrimeType(flow, name);
+        }
         FlowModel model = (FlowModel)dep.model(tenant.getRelatedLoader());
         ___smart_flow___ = new SmartFlow(model);
     }
@@ -80,5 +92,12 @@ public class SmartPrimeDataSTT extends SmartDataSTT implements SmartPrimeData
     {
         return ___smart_flow___;
     }
+
+	public void intiPrimeObject()
+		throws CtxException
+	{
+		smart___initPrime();
+		
+	}
 }
 

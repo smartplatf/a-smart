@@ -51,6 +51,7 @@ import org.anon.smart.channels.data.PData;
 import org.anon.smart.channels.data.RData;
 import org.anon.smart.channels.data.ContentData;
 import org.anon.smart.channels.distill.Isotope;
+import org.anon.smart.channels.distill.Rectifier;
 import org.anon.smart.channels.distill.Distillation;
 import org.anon.smart.channels.distill.Distillate;
 import org.anon.smart.smcore.channel.server.EventPData;
@@ -64,10 +65,16 @@ import org.anon.utilities.exception.CtxException;
 public class TranslationStage implements Distillation
 {
     private translator _type;
+    private Rectifier _myRectifier;
 
     public TranslationStage(translator t)
     {
         _type = t;
+    }
+
+    public void setRectifier(Rectifier parent)
+    {
+        _myRectifier = parent;
     }
 
     public Distillate distill(Distillate prev)

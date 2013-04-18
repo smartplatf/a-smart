@@ -49,6 +49,8 @@ import org.anon.smart.base.annot.EventAnnotate;
 
 public class EventTL extends BaseTL
 {
+    private String filter;
+
     public EventTL()
     {
         super();
@@ -64,6 +66,13 @@ public class EventTL extends BaseTL
 
         annons.add(EventAnnotate.class);
         return annons.toArray(new Class[0]);
+    }
+
+    public static EventTL defaultFor(String clsname, String type, String flow, String[] parms)
+    {
+        EventTL ret = new EventTL();
+        BaseTL.populateDefault(ret, clsname, type, flow);
+        return ret;
     }
     
 }

@@ -42,11 +42,17 @@
 package org.anon.smart.atomicity;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.anon.utilities.exception.CtxException;
 
 public interface Hypothesis
 {
+    public EmpiricalData dataFor(TruthData truth)
+        throws CtxException;
+
+    public EmpiricalData collectError(EmpiricalData data)
+        throws CtxException;
     public EmpiricalData collect(EmpiricalData data)
         throws CtxException;
     public boolean outcome()
@@ -54,6 +60,17 @@ public interface Hypothesis
     public List<EmpiricalData> searchEmpiricalData(String[] regextag)
         throws CtxException;
     public List<EmpiricalData> empiricalDataFor(String tag)
+        throws CtxException;
+
+    public boolean startTxn(UUID txnid)
+        throws CtxException;
+    public boolean endTxn(UUID txnid)
+        throws CtxException;
+    public boolean simulate(UUID txnid)
+        throws CtxException;
+    public void accept(UUID txnid)
+        throws CtxException;
+    public void discard(UUID txnid)
         throws CtxException;
 }
 

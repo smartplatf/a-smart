@@ -48,7 +48,7 @@ import org.anon.utilities.exception.CtxException;
 
 public interface Store extends Repeatable
 {
-    public void setup(String name, String related, StoreConfig config)
+    public void setup(String name, StoreConfig config)
         throws CtxException;
 
     public void create(String name, Class cls)
@@ -56,5 +56,8 @@ public interface Store extends Repeatable
 
     public StoreConnection getConnection()
     	throws CtxException;
+
+    public void close()
+        throws CtxException;
 }
 

@@ -41,11 +41,13 @@
 
 package org.anon.smart.d2cache.segment;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
 import org.anon.smart.d2cache.QueryObject;
 import org.anon.smart.d2cache.Reader;
+import org.anon.smart.d2cache.store.MemoryStore;
 import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.IndexedStore;
 import org.anon.smart.d2cache.store.StoreItem;
@@ -116,9 +118,33 @@ public class LayeredReader implements Reader
         }
 		for(Object key : resultKeys)
 		{
-			ret.add(this.lookup(group, key));
+			Object obj = this.lookup(group, key);
+			if(obj != null)
+				ret.add(obj);
 		}
 		return ret;
+	}
+
+	@Override
+	public List<Object> listAll(String group, int size) throws CtxException {
+		
+		List<Object> resultSet = new ArrayList<Object>();
+		Iterator<Object> keyIter = null;
+		for(int i = 0; (i < _stores.length); i++)
+		{
+			if(!(_stores[i] instanceof IndexedStore))
+			{
+				keyIter = (_stores[i].getConnection().listAll(group, size));
+				if(keyIter != null)
+				{
+					while(keyIter.hasNext())
+					{
+						resultSet.add(keyIter.next());
+					}
+				}
+			}
+		}
+		return resultSet;
 	}
 
 }

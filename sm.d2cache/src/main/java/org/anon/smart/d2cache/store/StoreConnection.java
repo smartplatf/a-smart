@@ -41,6 +41,7 @@
 
 package org.anon.smart.d2cache.store;
 
+import java.util.Iterator;
 import java.util.UUID;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public interface StoreConnection extends Repeatable
     public void connect(StoreConfig cfg)
         throws CtxException;
 
-    public void open(String related, String name)
+    public void open(String name)
         throws CtxException;
 
     public void createMetadata(String name, Class cls)
@@ -71,6 +72,8 @@ public interface StoreConnection extends Repeatable
     public List<Object> search(String group, Object query)
         throws CtxException;
     
+    public Iterator<Object> listAll(String group, int size)
+    	throws CtxException;
     public void remove(String group, Object key)
     	throws CtxException;
 }

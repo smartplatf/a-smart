@@ -54,13 +54,16 @@ public interface CSegment
 {
     public Store getStore();
 
-    public void setupSegment(String name, String related, StoreConfig cfg)
+    public void setupSegment(String name, StoreConfig cfg)
         throws CtxException;
 
     public void storeItem(StoreItem item)
         throws CtxException;
 
     public void storeItem(List<StoreItem> items)
+        throws CtxException;
+
+    public void cleanup()
         throws CtxException;
 
 }

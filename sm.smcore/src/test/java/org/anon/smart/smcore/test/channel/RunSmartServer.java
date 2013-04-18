@@ -41,28 +41,26 @@
 
 package org.anon.smart.smcore.test.channel;
 
-import org.anon.smart.base.loader.SmartLoader;
+import java.util.Map;
+import java.util.HashMap;
+
+import org.anon.smart.base.test.testanatomy.BaseStartConfig;
+import org.anon.smart.smcore.test.StartCoreServerRunner;
 
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
-public class RunSmartServer implements Runnable
+public class RunSmartServer extends StartCoreServerRunner
 {
-    public RunSmartServer()
+    public RunSmartServer(boolean b, int port)
     {
+        super(b, port);
+        _tenants.add("newtenant");
+        _tenants.add("errortenant");
     }
 
-    public void run()
+    protected void addTenantConfigs(String[] tenants, BaseStartConfig cfg)
     {
-        try
-        {
-            TestStartConfig cfg = new TestStartConfig(new String[] { "ReviewFlow.soa" });
-            anatomy().startup(cfg);
-            //need to deploy a jar here?
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        cfg.addConfig(tenants[0], "org.anon.smart.smcore.test.channel.FirstTestConfig");
     }
 }
 

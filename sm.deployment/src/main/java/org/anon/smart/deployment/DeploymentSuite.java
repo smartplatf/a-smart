@@ -44,6 +44,7 @@ package org.anon.smart.deployment;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
@@ -52,13 +53,13 @@ import org.anon.utilities.exception.CtxException;
 
 public abstract class DeploymentSuite<T extends Deployment> extends ApplicationSingleton implements DSuite<T>
 {
-    private MicroArtefacts _microArtefacts;
+    private Map<String, MicroArtefacts> _microArtefacts;
     private MacroDeployments<T> _macroDeployments;
     private SuiteAssistant<T> _assistant;
 
     protected DeploymentSuite()
     {
-        _microArtefacts = new MicroArtefacts();
+        _microArtefacts = new ConcurrentHashMap<String, MicroArtefacts>();
         _macroDeployments = new MacroDeployments<T>();
         _assistant = new SuiteAssistant<T>(this);
     }
@@ -69,9 +70,18 @@ public abstract class DeploymentSuite<T extends Deployment> extends ApplicationS
         _macroDeployments.setHandleDeployment(cls);
     }
 
-    public MicroArtefacts artefacts()
+    public MicroArtefacts artefacts(String dep)
     {
-        return _microArtefacts;
+        return _microArtefacts.get(dep);
+    }
+
+    public MicroArtefacts artefactsCreate(String dep)
+    {
+        MicroArtefacts marts = _microArtefacts.get(dep);
+        if (marts == null)
+            marts = new MicroArtefacts();
+        _microArtefacts.put(dep, marts);
+        return marts;
     }
 
     public MacroDeployments<T> deployments()
@@ -91,7 +101,7 @@ public abstract class DeploymentSuite<T extends Deployment> extends ApplicationS
         return _assistant;
     }
 
-    public void enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
+    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
         throws CtxException
     {
         T deployment = _macroDeployments.deploymentFor(dep);
@@ -113,13 +123,21 @@ public abstract class DeploymentSuite<T extends Deployment> extends ApplicationS
             }
         }
 
-        for (int i = 0; (enable != null) && (i < enable.size()); i++)
+        List<Artefact> enabledartefacts = new ArrayList<Artefact>();
+        MicroArtefacts martefacts = _microArtefacts.get(dep);
+        for (int i = 0; (martefacts != null) && (enable != null) && (i < enable.size()); i++)
         {
-            Artefact[] artefacts = _microArtefacts.artefactsForClazz(enable.get(i));
+            Artefact[] artefacts = martefacts.artefactsForClazz(enable.get(i));
             assertion().assertNotNull(artefacts, "Wrong deployment details. No class deployed for: " + enable.get(i));
             ldeployment.addArtefacts(artefacts);
-            ldeploy.deployArtefacts(artefacts);
+            for (int j = 0; j < artefacts.length; j++)
+                enabledartefacts.add(artefacts[j]);
+            ldeploy.deployArtefacts(dep, artefacts);
         }
+        return enabledartefacts.toArray(new Artefact[0]);
     }
+
+    public abstract ClassLoader deploymentClassLoader(String name, String[] jars)
+        throws CtxException;
 }
 

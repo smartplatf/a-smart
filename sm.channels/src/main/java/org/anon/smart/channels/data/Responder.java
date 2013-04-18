@@ -49,5 +49,7 @@ public interface Responder
         throws CtxException;
     public Object[] responses()
         throws CtxException;
+    public void clearResponses()
+        throws CtxException;
 }
 

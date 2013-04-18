@@ -55,6 +55,16 @@ public class DeductiveHypothesis extends AbstractHypothesis
             collect(start);
     }
 
+    public DeductiveHypothesis(UUID id, EmpiricalData start, boolean error)
+        throws CtxException
+    {
+        super(id);
+        if ((start != null) && (error))
+            collectError(start);
+        else
+            collect(start);
+    }
+
     public boolean outcome()
         throws CtxException
     {

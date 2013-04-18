@@ -74,14 +74,21 @@ public class CreateEventVisitor extends CreatorFromMap
                 return val; //have to set to null.
 
             if (type().isAssignable(val.getClass(), ctx.fieldType()))
+            {
+                //directly set here, so we do not create a new one
+                ctx.modify(val);
                 return val;
+            }
             
             if ((val instanceof List) && (((List)val).size() > 0))
             {
                 List<Object> coll = (List<Object>)val;
                 Object collval = coll.get(0);
                 if (type().isAssignable(collval.getClass(), ctx.fieldType()))
+                {
+                    ctx.modify(collval);
                     return collval;
+                }
             }
         }
 

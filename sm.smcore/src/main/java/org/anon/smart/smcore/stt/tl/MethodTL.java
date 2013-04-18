@@ -51,6 +51,7 @@ public class MethodTL extends BaseTL
 {
     private String name;
     private String method;
+    private String foreach;
     private String parms;
     private String event;
     private String prime;
@@ -64,10 +65,11 @@ public class MethodTL extends BaseTL
     }
 
     @Override
-    public Class[] getAnnotations(String name)
+    public Class[] getAnnotations(String mName)
     {
         List<Class> annons = new ArrayList<Class>();
-        annons.add(MethodAnnotate.class);
+        if(mName.equals(method))
+        	annons.add(MethodAnnotate.class);
         return annons.toArray(new Class[0]);
     }
     

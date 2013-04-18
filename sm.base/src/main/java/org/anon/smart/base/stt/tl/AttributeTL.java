@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.lang.annotation.Annotation;
 
 import org.anon.smart.base.annot.DestinationAnnotate;
+import org.anon.smart.base.annot.KeyAnnotate;
 
 public class AttributeTL extends BaseTL
 {
@@ -59,6 +60,7 @@ public class AttributeTL extends BaseTL
         {
             _annotationMapping = new HashMap<String, Class>();
             _annotationMapping.put("destination", DestinationAnnotate.class);
+            _annotationMapping.put("key", KeyAnnotate.class);
         }
     }
 
@@ -90,6 +92,14 @@ public class AttributeTL extends BaseTL
         }
 
         return annons.toArray(new Class[0]);
+    }
+
+    public static AttributeTL getKeyAttribute(String key)
+    {
+        AttributeTL tl = new AttributeTL();
+        tl.attribute = key;
+        tl.type = "key";
+        return tl;
     }
 }
 

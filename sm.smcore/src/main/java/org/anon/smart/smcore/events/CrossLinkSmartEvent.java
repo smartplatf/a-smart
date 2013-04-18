@@ -58,5 +58,11 @@ public class CrossLinkSmartEvent extends CrossLinker
     {
         return (UUID)linkMethod("smart___eventID");
     }
+
+    public void smarteventstt____init()
+        throws CtxException
+    {
+        linkMethod("smarteventstt____init");
+    }
 }
 

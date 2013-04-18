@@ -72,10 +72,10 @@ public class JCSStore extends AbstractStore implements BrowsableStore {
 	private Set<String> _groupNames;
 
 	@Override
-	public void setup(String name, String related, StoreConfig config)
+	public void setup(String name, StoreConfig config)
 			throws CtxException {
 		try {
-			super.setup(name, related, config);
+			super.setup(name, config);
 			_groupNames = new HashSet<String>();
 
 		} catch (Exception e) {

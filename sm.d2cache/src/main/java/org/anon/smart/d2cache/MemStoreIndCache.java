@@ -21,7 +21,7 @@
  *
  *
  * */
- 
+
 /**
  * ************************************************************
  * HEADERS
@@ -41,81 +41,34 @@
 
 package org.anon.smart.d2cache;
 
-import java.util.UUID;
-
 import org.anon.smart.d2cache.segment.CSegment;
-import org.anon.smart.d2cache.segment.IndexSegment;
-import org.anon.smart.d2cache.segment.MemorySegment;
-import org.anon.smart.d2cache.segment.ReaderFactory;
-import org.anon.smart.d2cache.segment.ReplicationWriter;
-import org.anon.smart.d2cache.segment.RepositorySegment;
-import org.anon.smart.d2cache.store.Store;
-import org.anon.smart.d2cache.store.StoreConfig;
-import org.anon.smart.d2cache.store.StoreConnection;
-import org.anon.smart.d2cache.store.index.solr.BasicSolrConfig;
-import org.anon.smart.d2cache.store.index.solr.SolrConfig;
-import org.anon.smart.d2cache.store.repository.hbase.HBaseConfig;
-import org.anon.smart.d2cache.store.repository.hbase.TestHBaseConfig;
 import org.anon.utilities.exception.CtxException;
 
-import com.sleepycat.collections.StoredContainer;
+public class MemStoreIndCache extends AbstractD2Cache {
 
-public class MemStoreIndCache implements D2Cache {
-
-	private int _flags;
-	private CSegment[] _segments; 
-	private StoreConfig _config;
-	
-	public MemStoreIndCache(String name, String related, int flags) throws CtxException {
-		CSegment memSegment = new MemorySegment();
-		_config = null;//TODO
-		memSegment.setupSegment(name, related, _config);
-		
-		SolrConfig solrConfig = new BasicSolrConfig();
-		CSegment indexSegment = new IndexSegment();
-		indexSegment.setupSegment(name, related, solrConfig);
-		
-		HBaseConfig hbaseConfig = new TestHBaseConfig("hadoop", "2181", "hadoop:60000", false);
-		CSegment repoSegment = new RepositorySegment();
-		repoSegment.setupSegment(name, related, hbaseConfig);
-		
-		_segments = new CSegment[3];
-		_segments[0] = memSegment;
-		_segments[1] = indexSegment;
-		_segments[2] = repoSegment;
-		
-		_flags = flags;
+	public MemStoreIndCache(String name, int flags) throws CtxException {
+		this(name, flags, null);
 	}
 
-	@Override
-	public D2CacheTransaction startTransaction(UUID txnid) throws CtxException {
-		StoreConnection[] connections = new StoreConnection[_segments.length];
-		int i = 0;
-		for(CSegment seg : _segments){
-			connections[i++] = seg.getStore().getConnection();
-		}
-		return new D2CacheTransactionImpl(txnid, connections, new ReplicationWriter());//TODO
+	public MemStoreIndCache(String name, int flags, D2CacheConfig config)
+			throws CtxException {
+
+		super(name, flags, config);
+		_segments = new CSegment[2];
+		 int cnt = 0;
+		_segments[cnt++] = createMemSegment();
+		//_segments[cnt++] = createIndexSegment();
+		_segments[cnt++] = createStoreSegment();
 	}
 
-	@Override
-	public Reader myReader() throws CtxException {
-		Store[] stores = new Store[_segments.length];
-		for(int i = 0; i< _segments.length;i++){
-			stores[i] = _segments[i].getStore();
-		}
-		return ReaderFactory.getReaderFor(stores, _flags);
-	}
 
 	@Override
 	public void cleanupMemory() throws CtxException {
 		// TODO Auto-generated method stub
-
+        for (int i = 0; i < _segments.length; i++)
+            _segments[i].cleanup();
 	}
 
-	@Override
-	public boolean isEnabled(int flags) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+
 
 }

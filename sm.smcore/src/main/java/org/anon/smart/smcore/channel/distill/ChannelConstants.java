@@ -45,14 +45,18 @@ public interface ChannelConstants
 {
     public static final String ACTION = "___smart_action___";
     public static final String KEY_TYPE = "___key_type___";
+    public static final String VALUE = "___smart_value___";
+    public static final String SEARCH_FLOW = "___smart_flow___";
 
     public static final String LOOKUP_ACTION = "lookup";
     public static final String SEARCH_ACTION = "search";
+
 
     //standard fields in event
     public static final String EVENT_LEGEND_FLD = "___smart_legend___";
     public static final String FLOW_FLD = "___smart_flow___";
     public static final String PRIMEDATA_FLD = "___smart_primeData___";
     public static final String SESSION_FLD = "___smart_session___";
+    public static final String FLOW_NAME_FLD = "___smart_flow_name___";
 }
 

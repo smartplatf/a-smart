@@ -51,7 +51,9 @@ public interface EmpiricalData
     public TruthData truth()
         throws CtxException;
     public boolean isErrorData();
-    public String dataType();
-    public List<String> tags();
+    public String dataType()
+        throws CtxException;
+    public List<String> tags()
+        throws CtxException;
 }
 

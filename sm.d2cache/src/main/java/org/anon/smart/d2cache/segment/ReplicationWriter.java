@@ -89,7 +89,7 @@ public class ReplicationWriter implements SegmentWriter {
 						.startTransaction(UUID.randomUUID());
 				for (StoreItem item : items) {
 					for (Object key : item.keys()) {
-						txn.addRecord(item.group(), key, item.item());
+						txn.addRecord(item.group(), key, item.getModified(), item.getOriginal());
 					}
 				}
 

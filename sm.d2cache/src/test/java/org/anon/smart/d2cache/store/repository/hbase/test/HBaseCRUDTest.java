@@ -20,7 +20,7 @@ public class HBaseCRUDTest {
 		HBaseConfig config = new TestHBaseConfig("hadoop", "2181", "hadoop:60000", false);
 		StoreConnection connection = new HBaseConnection();
 		connection.connect(config);
-		connection.open("MyTenant", "global");
+		connection.open("global");
 		System.out.println("Connected to Store..");
 		connection.createMetadata("SimpleTestObject", null);
 		connection.createMetadata("ComplexTestObject", null);
@@ -30,7 +30,7 @@ public class HBaseCRUDTest {
 		for(int i = 0;i<1000;i++) 
 		{
 			SimpleTestObject obj = new SimpleTestObject();
-			hTxn.addRecord("SimpleTestObject", "mystr"+i, obj);
+			hTxn.addRecord("SimpleTestObject", "mystr"+i, obj, null);
 		}
 		
 		hTxn.commit();
@@ -43,7 +43,7 @@ public class HBaseCRUDTest {
 		for(int i= 0;i<1000;i++)
 		{
 			ComplexTestObject obj = new ComplexTestObject();
-			hTxn.addRecord("ComplexTestObject", "mycompobj"+i, obj);
+			hTxn.addRecord("ComplexTestObject", "mycompobj"+i, obj, null);
 		
 		}
 		hTxn.commit();

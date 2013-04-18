@@ -91,13 +91,33 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
                 new Class[] { String.class }, new Object[] { TenantsHosted.class.getName() });
     }
 
-    public static void initialize()
+    //Please note, this function is exposed purely for testing purposes. DO NOT USE IT ANYWHERE ELSE
+    public static SmartTenant addTenant(String tenant)
         throws CtxException
     {
         TenantsHosted ts = (TenantsHosted)tenantsSpace();
-        SmartTenant owner = new SmartTenant(PLATFORMOWNER);
-        addToSpace(ts._tenantSpace, new DSpaceObject[] { owner });
-        //need to enable flows here.
+        SmartTenant t = new SmartTenant(tenant);
+        addToSpace(ts._tenantSpace, new DSpaceObject[] { t });
+        return t;
+    }
+
+    public static void commitTenant(SmartTenant tenant)
+        throws CtxException
+    {
+        TenantsHosted ts = (TenantsHosted)tenantsSpace();
+        addToSpace(ts._tenantSpace, new DSpaceObject[] { tenant });
+    }
+
+    public static void initialize()
+        throws CtxException
+    {
+        addTenant(PLATFORMOWNER);
+    }
+
+    public static SmartTenant platformOwner()
+        throws CtxException
+    {
+        return tenantFor(PLATFORMOWNER);
     }
 
     public static SmartTenant tenantFor(String name)
@@ -114,9 +134,16 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
         return new CrossLinkSmartTenant(th.getTenant(name));
     }
 
+    public static CrossLinkSmartTenant crosslinkedPlatformOwner()
+        throws CtxException
+    {
+        return crosslinkedTenantFor(PLATFORMOWNER);
+    }
+
     public void cleanMe()
         throws CtxException
     {
+        /* TODO: gives an exception for browsablereader??
         BrowsableReader rdr = browsableReaderFor(_tenantSpace);
         Set tenants = rdr.currentKeySet(TENANTGROUP);
         for (Object tenant : tenants)
@@ -125,6 +152,11 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
             if (t != null)
                 t.cleanup();
         }
+        */
+        SmartTenant ts = tenantFor(PLATFORMOWNER);
+        if (ts != null)
+            ts.cleanup();
+        _tenantSpace.cleanup();
     }
 
     public static void cleanup()

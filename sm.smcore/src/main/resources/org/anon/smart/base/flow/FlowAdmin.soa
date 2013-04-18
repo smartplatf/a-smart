@@ -1,0 +1,12 @@
+name:   FlowAdmin
+type:   PrimeData
+flow:   AllFlows
+attributes:
+    - attribute:    _flow
+      type:         key
+states:
+    - name:         active
+      startState:   true
+    - name:         inactive
+      endState:     true
+

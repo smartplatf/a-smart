@@ -44,12 +44,15 @@ package org.anon.smart.base.flow;
 import java.lang.annotation.Annotation;
 
 import org.anon.smart.deployment.ArtefactType;
+import org.anon.smart.deployment.MacroDeployer;
 import org.anon.smart.base.annot.EventAnnotate;
 import org.anon.smart.base.annot.PrimeDataAnnotate;
 import org.anon.smart.base.annot.SmartDataAnnotate;
 import org.anon.smart.base.annot.TransitionAnnotate;
 import org.anon.smart.base.annot.ResponseAnnotate;
 import org.anon.smart.base.annot.MessageAnnotate;
+
+import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -64,6 +67,8 @@ public class FlowService implements FlowConstants
         ArtefactType.registerArtefactType(TRANSITION, transitionRecognizer(), "name", "name", "foreach");
         ArtefactType.registerArtefactType(RESPONSE, responseRecognizer(), "name", "name");
         ArtefactType.registerArtefactType(MESSAGE, messageRecognizer(), "name", "name");
+
+        MacroDeployer.registerDeploymentClazz(FLOW, FlowDeployment.class, FlowDeploymentSuite.class);
     }
 
     private FlowService()
@@ -113,6 +118,13 @@ public class FlowService implements FlowConstants
     public static boolean isTransition(ArtefactType type)
     {
         return type.isType(TransitionAnnotate.class);
+    }
+
+    public static boolean isData(Class clazz)
+    {
+        Annotation annot = reflect().getAnyAnnotation(clazz, dataRecognizer().getName());
+        Annotation pannot = reflect().getAnyAnnotation(clazz, primeDataRecognizer().getName());
+        return ((annot != null) || (pannot != null));
     }
 }
 

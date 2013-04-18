@@ -41,6 +41,9 @@
 
 package org.anon.smart.base.tenant;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public interface TenantConstants
 {
     public static final String PLATFORMOWNER = "SmartOwner";
@@ -57,5 +60,6 @@ public interface TenantConstants
     public static final String STANDARD_GROUP = "Standard";
     public static final String WORKING_GROUP = "Working";
     public static final String FLOW_GROUP = "Flow";
+    public static final Map<String, String> GROUP_MAPPING = new HashMap<String, String>();
 }
 

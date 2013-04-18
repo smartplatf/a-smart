@@ -42,6 +42,8 @@
 package org.anon.smart.deployment;
 
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -92,16 +94,16 @@ public class MacroDeployments<T extends Deployment>
         return _deployments.get(dep);
     }
 
-    public T deploymentFor(DeploymentFilter<T> filter)
+    public List<T> deploymentFor(DeploymentFilter<T> filter)
         throws CtxException
     {
-        T ret = null;
+        List<T> ret = new ArrayList<T>();
         for (T dep : _deployments.values())
         {
             if (filter.matches(dep))
             {
-                ret = dep;
-                break;
+                ret.add(dep);
+                //break;
             }
         }
 
@@ -119,6 +121,14 @@ public class MacroDeployments<T extends Deployment>
         }
 
         return dep;
+    }
+
+    public List<String> allDeployments()
+    {
+        List<String> ret = new ArrayList<String>();
+        for (String dep : _deployments.keySet())
+            ret.add(dep);
+        return ret;
     }
 }
 

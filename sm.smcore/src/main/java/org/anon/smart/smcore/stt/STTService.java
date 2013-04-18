@@ -44,13 +44,15 @@ package org.anon.smart.smcore.stt;
 import org.anon.smart.base.stt.STTRegister;
 import org.anon.smart.base.stt.tl.TemplateReader;
 import org.anon.smart.base.stt.tl.SmartObjectTL;
+import org.anon.smart.base.stt.tl.SmartPrimeObjectTL;
+import org.anon.smart.base.flow.FlowConstants;
 import org.anon.smart.smcore.stt.tl.EventTL;
 import org.anon.smart.smcore.stt.tl.EventResponseTL;
 import org.anon.smart.smcore.stt.tl.TransitionTL;
 
 import org.anon.utilities.exception.CtxException;
 
-public class STTService
+public class STTService implements FlowConstants
 {
     private STTService()
     {
@@ -59,17 +61,17 @@ public class STTService
     public static void initialize()
         throws CtxException
     {
-        STTRegister.registerSTT("PrimeData", "org.anon.smart.smcore.stt.SmartPrimeDataSTT");
-        STTRegister.registerSTT("Data", "org.anon.smart.smcore.stt.SmartDataSTT");
-        STTRegister.registerSTT("Event", "org.anon.smart.smcore.stt.EventSTT");
-        STTRegister.registerSTT("Response", "org.anon.smart.smcore.stt.EventResponseSTT");
-        STTRegister.registerSTT("Transition", "org.anon.smart.smcore.stt.TransitionSTT");
+        STTRegister.registerSTT(PRIMETYPE, "org.anon.smart.smcore.stt.SmartPrimeDataSTT");
+        STTRegister.registerSTT(DATATYPE, "org.anon.smart.smcore.stt.SmartDataSTT");
+        STTRegister.registerSTT(EVENTTYPE, "org.anon.smart.smcore.stt.EventSTT");
+        STTRegister.registerSTT(RESPONSETYPE, "org.anon.smart.smcore.stt.EventResponseSTT");
+        STTRegister.registerSTT(TRANSITIONTYPE, "org.anon.smart.smcore.stt.TransitionSTT");
 
-        TemplateReader.registerTemplate("PrimeData", SmartObjectTL.class);
-        TemplateReader.registerTemplate("Data", SmartObjectTL.class);
-        TemplateReader.registerTemplate("Event", EventTL.class);
-        TemplateReader.registerTemplate("Response", EventResponseTL.class);
-        TemplateReader.registerTemplate("Transition", TransitionTL.class);
+        TemplateReader.registerTemplate(PRIMETYPE, SmartPrimeObjectTL.class);
+        TemplateReader.registerTemplate(DATATYPE, SmartObjectTL.class);
+        TemplateReader.registerTemplate(EVENTTYPE, EventTL.class);
+        TemplateReader.registerTemplate(RESPONSETYPE, EventResponseTL.class);
+        TemplateReader.registerTemplate(TRANSITIONTYPE, TransitionTL.class);
                                              
     }
 }

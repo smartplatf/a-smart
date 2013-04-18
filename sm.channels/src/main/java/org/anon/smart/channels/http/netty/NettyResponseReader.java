@@ -126,6 +126,31 @@ public class NettyResponseReader implements HTTPMessageReader
         return request;
     }
 
+    public Object transmitDefault()
+        throws CtxException
+    {
+        HttpRequest request = new DefaultHttpRequest(HTTP_1_1, POST, _uri);
+        String buff = "";
+        request.setContent(ChannelBuffers.copiedBuffer(buff, CharsetUtil.UTF_8));
+        request.setHeader(CONTENT_TYPE, "application/json");
+        request.setHeader("Access-Control-Allow-Origin", "*");
+        request.setHeader(CONTENT_LENGTH, request.getContent().readableBytes());
+        return request;
+    }
+
+    public Object transmitException(Throwable t)
+        throws CtxException
+    {
+        HttpRequest request = new DefaultHttpRequest(HTTP_1_1, POST, _uri);
+        String buff = "<HTML><H>You have hit an Exception.</H><b>" + t.getMessage() + "</HTML>";
+        request.setContent(ChannelBuffers.copiedBuffer(buff, CharsetUtil.UTF_8));
+        request.setHeader(CONTENT_TYPE, "text/html");
+        request.setHeader("Access-Control-Allow-Origin", "*");
+        request.setHeader(CONTENT_LENGTH, request.getContent().readableBytes());
+
+        return request;
+    }
+
     public boolean isKeepAlive(Object msg)
     {
         HttpMessage request = (HttpMessage)msg;

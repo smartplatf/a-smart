@@ -41,5 +41,12 @@
       <artifactId>sm.d2cache</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.anon.smart</groupId>
+      <artifactId>sm.base</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+      <classifier>tests</classifier>
+    </dependency>
   </dependencies>
 </project>

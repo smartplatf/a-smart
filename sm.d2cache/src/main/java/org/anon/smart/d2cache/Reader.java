@@ -53,6 +53,8 @@ public interface Reader
 
     public List<Object> search(String group, Object query)
         throws CtxException;
-
+    
+    public List<Object> listAll(String group, int size)
+    	throws CtxException;
 }
 

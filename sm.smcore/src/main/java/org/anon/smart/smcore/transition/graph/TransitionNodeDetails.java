@@ -65,6 +65,7 @@ public class TransitionNodeDetails extends DefaultNodeDetails
         _after = annot.runAfter();
         _before = annot.runBefore();
         _name = annot.name();
+        System.out.println("Annotate is: " + annot + ":" + _after);
     }
 
     public String name() { return _name; }

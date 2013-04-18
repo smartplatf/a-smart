@@ -1,0 +1,13 @@
+name:   TenantAdmin
+type:   PrimeData
+flow:   AdminSmartFlow
+commit: commitTenant
+attributes:
+    - attribute:    _tenantName
+      type:         key
+states:
+    - name:         active
+      startState:   true
+    - name:         inactive
+      endState:     true
+

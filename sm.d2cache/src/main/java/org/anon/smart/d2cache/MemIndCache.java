@@ -41,70 +41,38 @@
 
 package org.anon.smart.d2cache;
 
-import java.util.UUID;
-
 import org.anon.smart.d2cache.segment.CSegment;
 import org.anon.smart.d2cache.segment.IndexSegment;
 import org.anon.smart.d2cache.segment.MemorySegment;
-import org.anon.smart.d2cache.segment.ReaderFactory;
-import org.anon.smart.d2cache.segment.ReplicationWriter;
 import org.anon.smart.d2cache.store.index.solr.BasicSolrConfig;
 import org.anon.smart.d2cache.store.index.solr.SolrConfig;
-import org.anon.smart.d2cache.store.Store;
-import org.anon.smart.d2cache.store.StoreConfig;
-import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.utilities.exception.CtxException;
 
-public class MemIndCache implements D2Cache {
+public class MemIndCache extends AbstractD2Cache {
 
-	private CSegment[] _segments; 
-	private int _flags;
-	private StoreConfig _config;
-	 public MemIndCache(String name, String related, int flags) throws CtxException {
-		CSegment memSegment = new MemorySegment();
-		_config = null;//TODO
-		memSegment.setupSegment(name, related, _config);
-		
-		SolrConfig solrConfig = new BasicSolrConfig();
-		CSegment indexSegment = new IndexSegment();
-		indexSegment.setupSegment(name, related, solrConfig);
-		
+	
+	
+	 public MemIndCache(String name, int flags) throws CtxException {
+		 this(name, flags, null);
+	 }
+	 public MemIndCache(String name, int flags, D2CacheConfig config) throws CtxException {
+
+		super(name, flags, config);
+
 		_segments = new CSegment[2];
-		_segments[0] = memSegment;
-		_segments[1] = indexSegment;
-		
-		_flags = flags;
+		_segments[0] = createMemSegment();
+		_segments[1] = createIndexSegment();
+	
 	}
 	
-	@Override
-	public D2CacheTransaction startTransaction(UUID txnid) throws CtxException {
-		StoreConnection[] connections = new StoreConnection[_segments.length];
-		int i = 0;
-		for(CSegment seg : _segments){
-			connections[i++] = seg.getStore().getConnection();
-		}
-		return new D2CacheTransactionImpl(txnid, connections, new ReplicationWriter());//TODO
-	}
-
-	@Override
-	public Reader myReader() throws CtxException {
-		Store[] stores = new Store[_segments.length];
-		for(int i = 0; i< _segments.length;i++){
-			stores[i] = _segments[i].getStore();
-		}
-		return ReaderFactory.getReaderFor(stores, _flags);
-		
-	}
+	
 
 	@Override
 	public void cleanupMemory() throws CtxException {
 		// TODO Auto-generated method stub
-
+        for (int i = 0; i < _segments.length; i++)
+            _segments[i].cleanup();
 	}
 
-	@Override
-	public boolean isEnabled(int flags) {
-		return true;
-	}
 
 }

@@ -56,7 +56,7 @@ public class TransactDSpaceImpl extends AbstractDSpace
     protected D2CacheScheme.scheme getScheme()
     {
         //TODO:
-        return D2CacheScheme.scheme.mem;
+        return D2CacheScheme.scheme.memstoreind;
     }
 }
 

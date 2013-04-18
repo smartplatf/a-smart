@@ -97,9 +97,11 @@ public class ArtefactType
     {
         try
         {
-            Annotation annot = cls.getAnnotation(_recognizer);
+            Class<? extends Annotation> recog = (Class<? extends Annotation>)cls.getClassLoader().loadClass(_recognizer.getName());
+            Annotation annot = cls.getAnnotation(recog);
             assertion().assertNotNull(annot, "The class does not have the recognizer annotation");
-            return (String)_nameMethod.invoke(annot);
+            Method nmthd = recog.getDeclaredMethod(_namekey);
+            return (String)nmthd.invoke(annot);
         }
         catch (Exception e)
         {
@@ -115,11 +117,15 @@ public class ArtefactType
         List<String> ret = new ArrayList<String>();
         try
         {
-            Annotation annot = cls.getAnnotation(_recognizer);
+            Class<? extends Annotation> recog = (Class<? extends Annotation>)cls.getClassLoader().loadClass(_recognizer.getName());
+            Annotation annot = cls.getAnnotation(recog);
             assertion().assertNotNull(annot, "The class does not have the recognizer annotation");
-            for (int i = 0; i < _keyMethods.length; i++)
+            Method[] kmthds = new Method[_keys.length];
+            for (int i = 0; i < _keys.length; i++)
+                kmthds[i] = recog.getDeclaredMethod(_keys[i]);
+            for (int i = 0; i < kmthds.length; i++)
             {
-                String val = (String)_keyMethods[i].invoke(annot);
+                String val = (String)kmthds[i].invoke(annot);
                 String[] str = value().listAsString(val);
                 if (ret.size() <= 0)
                 {
@@ -167,7 +173,7 @@ public class ArtefactType
 
         for (int i = 0; i < keyvals.length; i++)
         {
-            ret = add + keyvals[i];
+            ret += add + keyvals[i];
             add = useadd + KEY_SEPARATOR;
         }
 
@@ -204,11 +210,22 @@ public class ArtefactType
         Annotation[] annots = cls.getAnnotations();
         for (int i = 0; i < annots.length; i++)
         {
-            if (ARTEFACTS.containsKey(annots[i].annotationType()))
-                ret.add(ARTEFACTS.get(annots[i].annotationType()));
+            try
+            {
+                Class<? extends Annotation> check = (Class<? extends Annotation>)ArtefactType.class.getClassLoader().loadClass(annots[i].annotationType().getName());
+                if (ARTEFACTS.containsKey(check))
+                    ret.add(ARTEFACTS.get(check));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                except().rt(e, new CtxException.Context("", ""));
+            }
         }
 
         return ret.toArray(new ArtefactType[0]);
     }
+
+    public String toString() { return _typeName; }
 }
 

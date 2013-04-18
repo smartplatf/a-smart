@@ -63,10 +63,10 @@ public class HBaseTransaction extends AbstractStoreTransaction
         super(txn, conn);
     }
 
-    protected StoreRecord createNewRecord(String group, Object primarykey, Object curr)
+    protected StoreRecord createNewRecord(String group, Object primarykey, Object curr, Object orig)
         throws CtxException
     {
-    	return new HBaseRecord(group, primarykey, curr, (HBaseConnection)_connection);
+    	return new HBaseRecord(group, primarykey, curr, orig, (HBaseConnection)_connection);
     }
 
     public void commit()
@@ -94,10 +94,10 @@ public class HBaseTransaction extends AbstractStoreTransaction
                 HBaseConnection conn = (HBaseConnection)_connection;
                 for (String table : docs.keySet())
                 {
-                	if(!conn.getCRUD().isTableExists(table))
+                	if(!conn.getCRUD().tableExists(table))
                 		conn.createMetadata(table, null);
                 	
-                    conn.getCRUD().putRecords(table, docs.get(table));
+                    conn.getCRUD().putRecords(conn.getTableName(table), docs.get(table));
                 }
             }
         }

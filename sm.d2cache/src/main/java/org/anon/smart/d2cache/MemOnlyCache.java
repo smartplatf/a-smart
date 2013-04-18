@@ -42,56 +42,38 @@
 package org.anon.smart.d2cache;
 
 
-import java.util.UUID;
-
 import org.anon.smart.d2cache.segment.CSegment;
 import org.anon.smart.d2cache.segment.MemorySegment;
 import org.anon.smart.d2cache.segment.ReaderFactory;
-import org.anon.smart.d2cache.segment.ReplicationWriter;
-import org.anon.smart.d2cache.store.StoreConfig;
-import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.utilities.exception.CtxException;
 
-public class MemOnlyCache implements D2Cache {
+public class MemOnlyCache extends  AbstractD2Cache {
 
-	private CSegment[] _segments; 
-	private int _flags;
-	private StoreConfig _config;
-	public MemOnlyCache(String name, String related, int flags) throws CtxException {
-		CSegment segment = new MemorySegment();
-		_config = null;//TODO
-		segment.setupSegment(name, related, _config);
-		
+	public MemOnlyCache(String name, int flags) throws CtxException {
+		this(name, flags, null);
+	}
+	
+	public MemOnlyCache(String name, int flags, D2CacheConfig config) throws CtxException {
+		super(name, flags, config);
 		_segments = new CSegment[1];
-		_segments[0] = segment;
+		_segments[0] = createMemSegment();
 		
-		_flags = flags;
 	}
-	@Override
-	public D2CacheTransaction startTransaction(UUID txnid) throws CtxException {
-		StoreConnection[] connections = new StoreConnection[_segments.length];
-		int i = 0;
-		for(CSegment seg : _segments){
-			connections[i++] = seg.getStore().getConnection();
-		}
-		return new D2CacheTransactionImpl(txnid, connections, new ReplicationWriter());
-	}
+	
 
 	@Override
 	public Reader myReader() throws CtxException {
-		return ReaderFactory.getReaderFor(_segments[0].getStore(), _flags, _config);
+		return ReaderFactory.getReaderFor(_segments[0].getStore(), _flags, _config.getMemoryConfig());
 		
 	}
 
 	@Override
 	public void cleanupMemory() throws CtxException {
 		// TODO Auto-generated method stub
-
+        for (int i = 0; i < _segments.length; i++)
+            _segments[i].cleanup();
 	}
 
-	@Override
-	public boolean isEnabled(int flags) {
-		return true;
-	}
+
 
 }

@@ -63,13 +63,13 @@ public class JCSTransaction extends AbstractStoreTransaction
         super(txnid, conn);
     }
 
-    protected StoreRecord createNewRecord(String group, Object primarykey, Object curr)
+    protected StoreRecord createNewRecord(String group, Object primarykey, Object curr, Object orig)
         throws CtxException
     {
         JCSConnection conn = (JCSConnection)_connection;
         Object obj = conn.find(group, primarykey);
         
-        JCSRecord rec = new JCSRecord(group, primarykey, curr, obj);
+        JCSRecord rec = new JCSRecord(group, primarykey, curr, orig);
         
         //Do We need this for JCS?
         /*
@@ -86,16 +86,20 @@ public class JCSTransaction extends AbstractStoreTransaction
     	JCSRecord rec = (JCSRecord)record;
         JCSConnection conn = (JCSConnection)_connection;
         String group = rec.getGroup();
-	    Object mod = rec.getModified();
+        Object obj = null;
+        if(rec.getOriginal() != null)
+        	obj = rec.getOriginal();
+        else
+        	obj = rec.getModified();
+	    //Object mod = rec.getModified();
 	    List<Object> keys = rec.getKeys();
 	    for (Object k : keys) {
 			try {
 				if (group != null){
-					conn.cache().putInGroup(k, group, mod);
-                    System.out.println("Putting: " + mod + ":" + k + ":" + conn.cache() + ":" + conn.cache().getFromGroup(k, group));
+					conn.cache().putInGroup(k, group, obj);
 				}
 				else
-					conn.cache().put(k, mod);
+					conn.cache().put(k, obj);
 			} catch (CacheException ex) {
 				except().rt(
 						ex,

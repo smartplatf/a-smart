@@ -31,24 +31,24 @@
   <!-- realtime get handler, guaranteed to return the latest stored fields 
     of any document, without the need to commit or open a new searcher. The current 
     implementation relies on the updateLog feature being enabled. -->
-  <requestHandler name="/get" class="solr.RealTimeGetHandler">
+  <requestHandler name="/get" class="solr.handler.RealTimeGetHandler">
     <lst name="defaults">
       <str name="omitHeader">true</str>
     </lst>
   </requestHandler>  
   
-  <requestHandler name="/replication" class="solr.ReplicationHandler" startup="lazy" /> 
+  <requestHandler name="/replication" class="solr.handler.ReplicationHandler" startup="lazy" /> 
 
   <requestDispatcher handleSelect="true" >
     <requestParsers enableRemoteStreaming="false" multipartUploadLimitInKB="2048" />
   </requestDispatcher>
   
-  <requestHandler name="standard" class="solr.StandardRequestHandler" default="true" />
-  <requestHandler name="/analysis/field" startup="lazy" class="solr.FieldAnalysisRequestHandler" />
-  <requestHandler name="/update" class="solr.UpdateRequestHandler"  />
+  <requestHandler name="standard" class="solr.handler.StandardRequestHandler" default="true" />
+  <requestHandler name="/analysis/field" startup="lazy" class="solr.handler.FieldAnalysisRequestHandler" />
+  <requestHandler name="/update" class="solr.handler.UpdateRequestHandler"  />
   <requestHandler name="/admin/" class="org.apache.solr.handler.admin.AdminHandlers" />
      
-  <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
+  <requestHandler name="/admin/ping" class="solr.handler.PingRequestHandler">
     <lst name="invariants">
       <str name="q">solrpingquery</str>
     </lst>
@@ -61,6 +61,13 @@
   <admin>
     <defaultQuery>solr</defaultQuery>
   </admin>
-
+    <useCompoundFile>true</useCompoundFile>
+    <mergeFactor>5</mergeFactor>
+    <maxBufferedDocs>100</maxBufferedDocs>
+    <ramBufferSizeMB>10</ramBufferSizeMB>
+    <maxMergeDocs>2147483647</maxMergeDocs>
+    <maxFieldLength>20000</maxFieldLength>
+    <writeLockTimeout>20000</writeLockTimeout>
+    <commitLockTimeout>10000</commitLockTimeout>
 </config>
 

@@ -43,9 +43,10 @@ package org.anon.smart.base.dspace;
 
 import java.util.List;
 
+import org.anon.smart.d2cache.CacheableObject;
 import org.anon.utilities.exception.CtxException;
 
-public interface DSpaceObject
+public interface DSpaceObject extends CacheableObject
 {
     public List<Object> smart___keys()
         throws CtxException;

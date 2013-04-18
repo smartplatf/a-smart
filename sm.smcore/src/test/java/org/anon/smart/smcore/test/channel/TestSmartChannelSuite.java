@@ -51,7 +51,10 @@ import static org.junit.Assert.*;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    TestSmartChannel.class
+    TestSmartChannel.class,
+    TestCRUDEvents.class,
+    TestMultipleJar.class,
+    TestDefaultConfig.class
 })
 public class TestSmartChannelSuite
 {

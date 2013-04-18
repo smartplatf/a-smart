@@ -43,13 +43,21 @@ package org.anon.smart.smcore.data;
 
 import java.util.UUID;
 
-import org.anon.utilities.fsm.StateEntity;
+import org.anon.smart.base.dspace.DSpaceObject;
 
-public interface SmartData extends StateEntity, TaggedData
+import org.anon.utilities.fsm.StateEntity;
+import org.anon.utilities.exception.CtxException;
+
+public interface SmartData extends StateEntity, TaggedData, DSpaceObject
 {
-    public String smart___name();
+    public String smart___name()
+        throws CtxException;
     public UUID smart___id();
     public String smart___owner();
     public String smart___group();
+    public void smart___transition(String tostate)
+        throws CtxException;
+    public SmartDataTruth smart___myTruth()
+        throws CtxException;
 }
 

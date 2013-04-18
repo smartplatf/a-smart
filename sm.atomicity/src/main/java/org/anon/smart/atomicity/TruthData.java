@@ -48,12 +48,11 @@ import org.anon.utilities.exception.CtxException;
 public interface TruthData
 {
     public UUID truthID();
-    public boolean isNew();
     public boolean start(UUID txnid)
         throws CtxException;
-    public void simulate(UUID txnid, EmpiricalData edata)
+    public boolean simulate(UUID txnid, EmpiricalData edata)
         throws CtxException;
-    public void accept(UUID txnid, EmpiricalData edata)
+    public boolean accept(UUID txnid, EmpiricalData edata)
         throws CtxException;
     public void discard(UUID txnid, EmpiricalData edata)
         throws CtxException;

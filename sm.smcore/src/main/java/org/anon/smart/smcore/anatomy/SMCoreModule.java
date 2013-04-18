@@ -41,12 +41,22 @@
 
 package org.anon.smart.smcore.anatomy;
 
+import java.util.Map;
+
 import org.anon.smart.base.flow.FlowService;
+import org.anon.smart.base.flow.FlowConstants;
+import org.anon.smart.base.tenant.TenantAdmin;
+import org.anon.smart.base.tenant.SmartTenant;
 import org.anon.smart.base.tenant.TenantsHosted;
+import org.anon.smart.base.tenant.shell.RuntimeShell;
+import org.anon.smart.base.dspace.DSpaceObject;
 import org.anon.smart.channels.shell.SCShell;
 import org.anon.smart.channels.shell.ExternalConfig;
 import org.anon.smart.smcore.stt.STTService;
 import org.anon.smart.smcore.transition.TransitionService;
+import org.anon.smart.deployment.MacroDeployer;
+
+import static org.anon.smart.base.utils.AnnotationUtils.*;
 
 import org.anon.utilities.anatomy.AModule;
 import org.anon.utilities.anatomy.ModuleContext;
@@ -55,7 +65,7 @@ import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
 import org.anon.utilities.exception.CtxException;
 
-public class SMCoreModule extends AModule
+public class SMCoreModule extends AModule implements FlowConstants
 {
     public SMCoreModule(AModule parent)
         throws CtxException
@@ -93,7 +103,33 @@ public class SMCoreModule extends AModule
         shell.startAllChannels();
 
         if (ccfg.firstJVM())
+        {
             TenantsHosted.initialize();
+            Map<String, String[]> features = MacroDeployer.deployFile(FLOW, "AdminSmartFlow.soa", null);
+            Map<String, String[]> featuresForAllFlows = MacroDeployer.deployFile(FLOW, "AllFlows.soa", null);
+            features.putAll(featuresForAllFlows);
+            
+            SmartTenant powner = TenantsHosted.platformOwner();
+            //enable before committing, else the space will not be present
+            for (String flow : features.keySet())
+                powner.deploymentShell().enableForMe(flow, features.get(flow));
+            TenantAdmin tadmin = new TenantAdmin(powner.getName(), powner);
+            powner.setAdmin(tadmin);
+            Object admin = powner.getAdmin();
+            String flow = flowFor(admin.getClass());
+            RuntimeShell rshell = (RuntimeShell)powner.runtimeShell();
+            rshell.commitToSpace(flow, new DSpaceObject[] { (DSpaceObject)admin });
+        }
+    }
+
+    public void stop()
+        throws CtxException
+    {
+        SMCoreContext smctx = (SMCoreContext)_context;
+        SCShell shell = smctx.smartChannelShell();
+        shell.stopAllChannels();
+
+        TenantsHosted.cleanup();
     }
 }
 

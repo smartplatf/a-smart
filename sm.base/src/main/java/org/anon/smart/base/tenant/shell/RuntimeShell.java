@@ -46,11 +46,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
+import org.anon.smart.base.dspace.TransactDSpace;
+import org.anon.smart.base.dspace.DSpaceObject;
+import org.anon.smart.base.annot.StatesAnnotate;
+import org.anon.smart.base.annot.StateAnnotate;
+import org.anon.smart.base.flow.FlowService;
+import org.anon.smart.base.flow.FlowModel;
+import org.anon.smart.base.flow.FlowAdmin;
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
+
+import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.pool.Pool;
 import org.anon.utilities.pool.PoolEntity;
+import org.anon.utilities.fsm.FiniteStateMachine;
 import org.anon.utilities.exception.CtxException;
 
 public class RuntimeShell implements SmartShell
@@ -89,11 +100,33 @@ public class RuntimeShell implements SmartShell
         return ret;
     }
 
-    public List<Object> searchFor(String spacemodel, String group, Object query)
+    public List<Object> searchFor(String spacemodel, Class clz, Map<String, String> query)
         throws CtxException
     {
         DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
-        return shell.search(spacemodel, group, query);
+        return shell.search(spacemodel, clz, query);
+    }
+    
+    public List<Object> listAll(String spacemodel, String group, int size)
+    	throws CtxException
+    {
+    	DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
+        return shell.listAll(spacemodel, group, size);
+    }
+
+    public TransactDSpace getSpaceFor(String spacemodel)
+        throws CtxException
+    {
+        DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
+        return shell.getSpaceFor(spacemodel);
+    }
+
+    public void commitToSpace(String spacemodel, DSpaceObject[] objects)
+        throws CtxException
+    {
+        //Please DO NOT USE THIS ANYWHERE EXCEPT FOR TESTING
+        DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
+        shell.commitTo(spacemodel, objects);
     }
 
     public <T extends PoolEntity> T getTransition(Class<T> cls)
@@ -120,6 +153,70 @@ public class RuntimeShell implements SmartShell
     public ExecutorService transitionExecutor()
     {
         return _transitionExecutor;
+    }
+
+    public void enabledFlowClazzez(Object model, Class[] clazzez)
+        throws CtxException
+    {
+        for (int i = 0; i < clazzez.length; i++)
+        {
+            if (FlowService.isData(clazzez[i]))
+                createFSM(clazzez[i]);
+        }
+
+        //create a flow admin
+        FlowModel m = (FlowModel)model;
+        String flow = m.name();
+        Object admin = new FlowAdmin(flow);
+        if (admin instanceof DSpaceObject) //will only do if it has been stereotyped?
+        {
+            System.out.println("Creating flow for: " + flow + ":" + ((DSpaceObject)admin).smart___objectGroup());
+            commitToSpace(flow, new DSpaceObject[] { (DSpaceObject)admin });
+        }
+    }
+
+    public void createFSM(Class cls)
+        throws CtxException
+    {
+        String name = className(cls);
+        FiniteStateMachine mc = fsm().fsm(name);
+        if (mc == null)
+        {
+            assertion().assertNotNull(name, "Cannot create finite state machine for non-hosted objects: " + cls.getName());
+            assertion().assertTrue((name.length() > 0), "Cannot create finite state machine for non-hosted objects: " + cls.getName());
+            StatesAnnotate states = (StatesAnnotate)reflect().getAnyAnnotation(cls, StatesAnnotate.class.getName());
+            assertion().assertNotNull(states, "No states specified for the given class: ", cls.getName());
+            StateAnnotate[] state = states.states();
+            assertion().assertNotNull(state, "Not states specified for the given class: " + cls.getName());
+            assertion().assertTrue((state.length > 0), "No states specified for the given class: " + cls.getName());
+            String startstate = null;
+            for (int i = 0; (startstate == null) && (i < state.length); i++)
+            {
+                System.out.println(state[i]);
+                if (state[i].startState())
+                    startstate = state[i].name();
+            }
+            assertion().assertNotNull(startstate, "No start state specified for the class: " + cls.getName());
+            mc = fsm().create(name, startstate);
+            for (int i = 0; i < state.length; i++)
+            {
+                System.out.println(state[i]);
+                boolean start = state[i].startState();
+                boolean end = state[i].endState();
+                if ((!start) && (!end))
+                    mc.addState(state[i].name());
+                else if (end)
+                    mc.addEndState(state[i].name());
+            }
+            //TODO: create parent and child transition trees
+        }
+    }
+
+    public static RuntimeShell currentRuntimeShell()
+        throws CtxException
+    {
+        CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+        return (RuntimeShell)tenant.runtimeShell();
     }
 }
 

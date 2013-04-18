@@ -57,7 +57,7 @@ public class KeyTL extends BaseTL
 
     public Class[] getAnnotations(String name)
     {
-        return new Class[] { KeyAnnotate.class };
+        return null;
     }
 
 }

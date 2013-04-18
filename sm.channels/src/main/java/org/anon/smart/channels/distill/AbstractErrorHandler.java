@@ -51,14 +51,14 @@ public abstract class AbstractErrorHandler implements ErrorHandler
     {
     }
 
-    protected abstract Isotope[] createResponses(Throwable t, Distillate start);
+    protected abstract Isotope[] createResponses(Rectifier rectifier, Throwable t, Distillate start);
 
     public void handleError(Rectifier rectifier, Throwable t, Distillate start)
     {
         try
         {
             PData d = (PData)start.current();
-            Isotope[] responses = createResponses(t, start);
+            Isotope[] responses = createResponses(rectifier, t, start);
             if (responses != null)
             {
                 PData[] resp = new PData[responses.length];

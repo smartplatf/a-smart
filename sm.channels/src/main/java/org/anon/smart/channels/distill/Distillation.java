@@ -56,5 +56,7 @@ public interface Distillation
 
     public boolean condenseFrom(Distillate prev)
         throws CtxException;
+
+    public void setRectifier(Rectifier parent);
 }
 

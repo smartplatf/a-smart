@@ -47,14 +47,22 @@ import org.anon.smart.channels.data.PData;
 import org.anon.smart.channels.distill.Isotope;
 import org.anon.smart.channels.distill.Distillate;
 import org.anon.smart.channels.distill.Distillation;
+import org.anon.smart.channels.distill.Rectifier;
 import org.anon.smart.smcore.channel.distill.translation.MapData;
 
 import org.anon.utilities.exception.CtxException;
 
 public class SanitizationStage implements Distillation
 {
+    private Rectifier _myRectifier;
+
     public SanitizationStage()
     {
+    }
+
+    public void setRectifier(Rectifier rectifier)
+    {
+        _myRectifier = rectifier;
     }
 
     public Distillate distill(Distillate prev)

@@ -52,11 +52,12 @@ public interface StoreTransaction
     public Collection<StoreRecord> allRecords();
     public Collection<StoreRecord> getRecords(String group);
     public StoreRecord recordFor(Object primaryKey);
-    public StoreRecord addRecord(String group, Object primarykey, Object curr)
+    public StoreRecord addRecord(String group, Object primarykey, Object curr, Object orig)
         throws CtxException;
     public void commit()
         throws CtxException;
     public void rollback()
         throws CtxException;
+    public boolean waitToComplete();
 }
 

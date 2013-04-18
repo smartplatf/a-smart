@@ -41,20 +41,25 @@
 
 package org.anon.smart.base.dspace;
 
-import java.util.List;
-import java.util.UUID;
+import static org.anon.utilities.objservices.ObjectServiceLocator.anatomy;
+import static org.anon.utilities.services.ServiceLocator.assertion;
 
-import org.anon.smart.d2cache.Reader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.anon.smart.base.anatomy.SmartModuleContext;
+import org.anon.smart.base.flow.FlowConstants;
+import org.anon.smart.d2cache.BrowsableReader;
 import org.anon.smart.d2cache.D2Cache;
 import org.anon.smart.d2cache.D2CacheScheme;
-import org.anon.smart.d2cache.BrowsableReader;
 import org.anon.smart.d2cache.D2CacheTransaction;
+import org.anon.smart.d2cache.QueryObject;
+import org.anon.smart.d2cache.Reader;
 import org.anon.smart.d2cache.store.StoreItem;
-import org.anon.smart.base.anatomy.SmartModuleContext;
-
-import static org.anon.utilities.services.ServiceLocator.*;
-import static org.anon.utilities.objservices.ObjectServiceLocator.*;
-
+import org.anon.smart.deployment.ArtefactType;
 import org.anon.utilities.exception.CtxException;
 
 public class DSpaceService
@@ -66,7 +71,7 @@ public class DSpaceService
     public static DSpace spaceFor(String name, boolean browse)
         throws CtxException
     {
-        DSpace ret = null;
+    	DSpace ret = null;
         SmartModuleContext ctx = (SmartModuleContext)anatomy().overriddenContext(DSpaceService.class); 
         DSpaceAuthor author = null;
         if (ctx != null)
@@ -116,15 +121,48 @@ public class DSpaceService
         return ret;
     }
 
-    public static List<Object> searchIn(DSpace space, Object query, String group)
+    public static List<Object> searchIn(DSpace space, Map<String, String> query, Class clz)
         throws CtxException
     {
         List<Object> ret = null;
         Reader rdr = readerFor(space);
+        QueryObject qo = new QueryObject();
+        qo.setResultType(clz);
+        //qo.addCondition((String) query);
+        qo.addConditions(query);
         if (rdr != null)
-            ret = rdr.search(group, query);
+        {
+        	String group = ArtefactType.artefactTypeFor(FlowConstants.PRIMEDATA).getName(clz);
+        	ret = rdr.search(group, qo);
+        }
 
         return ret;
+    }
+    
+    public static List<Object> listAllIn(DSpace space, String group, int size)
+    		throws CtxException
+    {
+    	List<Object> keyList = null;
+    	List<Object> resultSet = new ArrayList<Object>();
+    	Reader rdr = readerFor(space);
+    	int totSize = 0;
+        if (rdr != null)
+        {
+            keyList = rdr.listAll(group, size); //Got keyList
+            //System.out.println("KEY LIST:"+keyList);
+            CopyOnWriteArrayList<Object> conKeyList = new CopyOnWriteArrayList<Object>(keyList);
+            System.out.println("Total Keys before filtering dups:"+keyList.size());
+        
+        for(int i = 0; ((totSize < size) && (i<conKeyList.size()));i++)
+        {
+        	Object obj = lookupIn(space, conKeyList.get(i), group);
+        	List<Object> keysForObject = ((DSpaceObject)obj).smart___keys();
+        	conKeyList.removeAll(keysForObject);
+        	resultSet.add(obj);
+        	totSize++;
+        }
+        }
+        return resultSet;
     }
 
     public static boolean isBrowsable(DSpace space)
@@ -139,8 +177,34 @@ public class DSpaceService
         throws CtxException
     {
         List<Object> keys = sobj.smart___keys();
-        StoreItem item = new StoreItem(keys.toArray(new Object[0]), sobj, sobj.smart___objectGroup());
+        //StoreItem item = new StoreItem(keys.toArray(new Object[0]), sobj, sobj.smart___objectGroup());
+        StoreItem item = new StoreItem(keys.toArray(new Object[0]), null, sobj.smart___objectGroup());
+        item.setModified(sobj);
         transaction.add(item);
+        Object compare = sobj;
+        if (compare instanceof RelatedObject)
+        {
+            DSpaceObject[] rel = ((RelatedObject)compare).relatedTo();
+            for (int r = 0; (rel != null) && (r < rel.length); r++)
+                addObject(transaction, rel[r]);
+        }
+    }
+    
+    public static void addObject(D2CacheTransaction transaction, DSpaceObject sobj, DSpaceObject modified, DSpaceObject orig)
+            throws CtxException
+    {
+            List<Object> keys = modified.smart___keys();
+            StoreItem item = new StoreItem(keys.toArray(new Object[0]), sobj, modified.smart___objectGroup());
+            item.setOriginal(orig);
+            item.setModified(modified);
+            transaction.add(item);
+            Object compare = sobj;
+            if (compare instanceof RelatedObject)
+            {
+                DSpaceObject[] rel = ((RelatedObject)compare).relatedTo();
+                for (int r = 0; (rel != null) && (r < rel.length); r++)
+                    addObject(transaction, rel[r]); //TODO
+            }
     }
 
     public static void addToSpace(TransactDSpace space, DSpaceObject[] sobj)
@@ -154,6 +218,12 @@ public class DSpaceService
         for (int i = 0; i < sobj.length; i++)
             addObject(transaction, sobj[i]);
         transaction.commit();
+    }
+
+    public static D2CacheTransaction startTransaction(TransactDSpace space, UUID txnid)
+        throws CtxException
+    {
+        return space.startTransaction(txnid);
     }
 }
 

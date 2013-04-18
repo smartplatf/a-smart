@@ -51,5 +51,6 @@ import java.lang.annotation.Target;
 public @interface EventAnnotate
 {
     public String name();
+    public String filter() default "";
 }
 

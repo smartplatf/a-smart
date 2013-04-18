@@ -65,6 +65,8 @@ public class Templatizer implements StereoTypist, ResourceMod
     public byte[] typecast(InputStream istr, String cls, ClassLoader ldr)
         throws CtxException
     {
+        //DO NOT USE THE parms field, can't getit correctly. Have to try other options such as
+        //threadlocals
         byte[] ret = io().readBytes(istr);
         BaseTL[] temp = TemplateReader.readTemplate(cls, ldr);
         if (temp != null)

@@ -41,7 +41,10 @@
 
 package org.anon.smart.d2cache.store.memory.jcs;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.jcs.JCS;
@@ -55,6 +58,8 @@ import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
 import org.anon.utilities.exception.CtxException;
 
+import com.sleepycat.je.util.DbSpace;
+
 public class JCSConnection implements StoreConnection
 {
     private JCS _cache;
@@ -63,12 +68,12 @@ public class JCSConnection implements StoreConnection
     {
     }
 
-    public void open(String related, String name)
+    public void open(String name)
         throws CtxException
     {
         try
         {
-            _cache = JCS.getInstance(related + "_" + name);
+            _cache = JCS.getInstance(name);
         }
         catch (Exception e)
         {
@@ -100,7 +105,6 @@ public class JCSConnection implements StoreConnection
         throws CtxException
     {
         assertion().assertNotNull(_cache, "JCS region is Null");
-        System.out.println("FINDING:"+group+":::"+key);
         Object ret = null;
         try
         {
@@ -148,5 +152,28 @@ public class JCSConnection implements StoreConnection
 	@Override
 	public List<Object> search(String group, Object query) throws CtxException {
 		return null; //Does not support
+	}
+
+	@Override
+	public Iterator<Object> listAll(String group, int size) throws CtxException {
+		assertion().assertNotNull(_cache, "JCS region is Null");
+        System.out.println("Listing:"+group+":::"+size);
+        List<Object> ret = new ArrayList<Object>();
+        try
+        {
+            if (group != null)
+            {
+            	Set<Object> keySet = _cache.getGroupKeys(group);
+            	return keySet.iterator();
+            }
+            
+            
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("JCSConnection.find", "Exception"));
+        }
+
+        return null;
 	}
 }

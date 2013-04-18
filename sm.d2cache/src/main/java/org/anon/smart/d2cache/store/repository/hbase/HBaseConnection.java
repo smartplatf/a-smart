@@ -42,6 +42,8 @@
 package org.anon.smart.d2cache.store.repository.hbase;
 
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 import java.util.List;
 import java.util.Map;
@@ -51,12 +53,16 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 
 
+import org.anon.smart.d2cache.CacheableObject;
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.smart.d2cache.store.StoreConnection;
 
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import static org.anon.utilities.services.ServiceLocator.*;
+
+import org.anon.utilities.reflect.CVisitor;
+import org.anon.utilities.services.ServiceLocator;
 import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
 import org.anon.utilities.exception.CtxException;
@@ -66,7 +72,6 @@ public class HBaseConnection implements StoreConnection, Constants
     private Configuration _hadoopConf;
     private HBaseConfig _config;
     private HBaseCRUD _crud;
-    private String _related; //this is the tenant?
     private String _name; //this is like global, user etc
 
     public HBaseConnection()
@@ -102,10 +107,9 @@ public class HBaseConnection implements StoreConnection, Constants
         }
     }
 
-    public void open(String related, String name)
+    public void open(String name)
         throws CtxException
     {
-        _related = related;
         _name = name;
     }
 
@@ -113,7 +117,7 @@ public class HBaseConnection implements StoreConnection, Constants
     {
         //The name will be in the format related__globalname__name
         //assumption is that the name contains the version in it.
-        return "__" + _related + "__" + _name + "__" + name;
+        return "__" + _name + "__" + name;
     }
 
     public void createMetadata(String name, Class cls)
@@ -182,9 +186,19 @@ public class HBaseConnection implements StoreConnection, Constants
             Map<String, byte[]> obj = _crud.oneRecord(tablename, key.toString());
             //this will have to be changed correctly. TODO: this has to be corrected
             
-            String clsName = new String(obj.get(CLASSNAME));
-            Object ret = convert().mapToObject(Class.forName(clsName), obj);
-            return ret;
+            System.out.println("Got this from Store:"+obj);
+            if ((obj != null) && (obj.containsKey(CLASSNAME)))
+            {
+                String clsName = new String(obj.get(CLASSNAME));
+                CVisitor visitor = new ObjectCreatorFromMap(obj);
+                Object ret = convert().recordMapToObject(Class.forName(clsName), visitor);
+                System.out.println("------>Created the Object:"+ret);
+                //Init transient here
+		ServiceLocator.assertion().assertTrue((ret instanceof CacheableObject), ret+" is NOT CacheObject instance");
+		((CacheableObject)ret).initOnLoad();
+				
+                return ret;
+            }
         }
         catch (Exception e)
         {
@@ -212,6 +226,24 @@ public class HBaseConnection implements StoreConnection, Constants
 	public List<Object> search(String group, Object query) throws CtxException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Iterator<Object> listAll(String group, int size) throws CtxException {
+		try
+        {
+            String tablename = getTableName(group);
+            //assumption is that the key passed here is the primary key
+            //retrieval by any other means is not supported currently>
+            Iterator<Object> keyIter = _crud.listAll(tablename, size);
+            return keyIter;
+            
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("HBaseConnection.find", "Exception"));
+        }
+        return null;
 	}
 }
 

@@ -42,30 +42,36 @@
 package org.anon.smart.base.tenant.shell;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
+import org.anon.smart.base.loader.SmartLoader;
+import org.anon.smart.base.tenant.SmartTenant;
 import org.anon.smart.base.flow.FlowDeployment;
 import org.anon.smart.base.flow.FlowDeploymentSuite;
 import org.anon.smart.base.flow.PrimeTypeFilter;
 import org.anon.smart.base.flow.ClassTypeFilter;
 import org.anon.smart.base.flow.FlowConstants;
 import org.anon.smart.deployment.ArtefactType;
+import org.anon.smart.deployment.Artefact;
 import org.anon.smart.deployment.LicensedDeploymentSuite;
 
 import org.anon.utilities.exception.CtxException;
 
 public class DeploymentShell implements SmartShell, FlowConstants
 {
+    private SmartTenant _tenant;
     private ClassLoader _loader;
     private LicensedDeploymentSuite<FlowDeployment> _licensed;
 
-    public DeploymentShell(ClassLoader ldr)
+    public DeploymentShell(SmartTenant tenant, ClassLoader ldr)
         throws CtxException
     {
         _licensed = new LicensedDeploymentSuite<FlowDeployment>();
         _licensed.setHandleDeployment(FlowDeployment.class);
         _loader = ldr;
+        _tenant = tenant;
     }
 
     public void enableForMe(String name, String[] features)
@@ -73,52 +79,75 @@ public class DeploymentShell implements SmartShell, FlowConstants
     {
         //this has to be run from the same classloader as the tenant which will be
         //the application class loader. Anything else should anyways give error.
-        FlowDeploymentSuite.getAssistant().enableFor(_licensed, name, features);
+        Artefact[] artefacts = FlowDeploymentSuite.getAssistant().enableFor(_licensed, name, features);
+        for (int i = 0; i < artefacts.length; i++)
+            System.out.println("Added artefact for " + name + ": " + artefacts[i].getName() + ":" + artefacts[i].getClazz());
+        FlowDeployment deploy = _licensed.assistant().deploymentFor(name);
+        List<String> jars = deploy.myJars();
+        for (String jar : jars)
+        {
+            System.out.println("Added jar to classpath: " + jar);
+            ((SmartLoader)_loader).addJar(jar);
+        }
+        Object model = deploy.model(_loader);
+        _tenant.enableFlow(model, artefacts, deploy);
+        _tenant.registerEnabledFlow(name, features);
     }
 
-    public Class deployment(String name, String type)
+    public Class deployment(String dep, String name, String type)
         throws CtxException
     {
         ArtefactType atype = ArtefactType.artefactTypeFor(type);
         assertion().assertNotNull(atype, "Cannot recognized artefactType: " + type);
-        return _licensed.assistant().clazzFor(name, atype, _loader);
+        return _licensed.assistant().clazzFor(dep, name, atype, _loader);
     }
 
-    public Class eventClass(String name)
+    public Class eventClass(String dep, String name)
         throws CtxException
     {
-        return deployment(name, EVENT);
+        return deployment(dep, name, EVENT);
     }
 
-    public Class dataClass(String name)
+    public Class dataClass(String dep, String name)
         throws CtxException
     {
-        Class cls = deployment(name, DATA);
+        Class cls = deployment(dep, name, DATA);
         if (cls == null)
-            cls = deployment(name, PRIMEDATA);
+            cls = deployment(dep, name, PRIMEDATA);
         return cls;
     }
 
-    public List<Class> transitionsFor(String prime, String event)
+    public List<Class> transitionsFor(String dep, String prime, String event, String extra)
         throws CtxException
     {
         ArtefactType atype = ArtefactType.artefactTypeFor(TRANSITION);
-        String srch = atype.createKey("*", prime, event);
-        return _licensed.assistant().clazzezFor(srch, atype, _loader);
+        String srch = atype.createKey(".*", prime, event);
+        List<Class> cls = _licensed.assistant().clazzezFor(dep, srch, atype, _loader);
+        if (cls == null)
+            cls = new ArrayList<Class>();
+        if ((extra != null) && (extra.length() > 0))
+        {
+            //Append the specific ones also
+            srch = atype.createKey(".*", prime, event, extra);
+            List<Class> extrats = _licensed.assistant().clazzezFor(dep, srch, atype, _loader);
+            cls.addAll(extrats);
+        }
+
+        return cls;
     }
 
-    public Class primeClass(String name)
+    public Class primeClass(String dep, String name)
         throws CtxException
     {
-        return deployment(name, PRIMEDATA);
+        return deployment(dep, name, PRIMEDATA);
     }
 
-    public List<Class> searchDeployment(String wild, String type)
+    public List<Class> searchDeployment(String dep, String wild, String type)
         throws CtxException
     {
         ArtefactType atype = ArtefactType.artefactTypeFor(type);
         assertion().assertNotNull(atype, "Cannot recognized artefactType: " + type);
-        return _licensed.assistant().clazzezFor(wild, atype, _loader);
+        return _licensed.assistant().clazzezFor(dep, wild, atype, _loader);
     }
 
     public FlowDeployment deploymentFor(String flow)
@@ -127,16 +156,28 @@ public class DeploymentShell implements SmartShell, FlowConstants
         return (FlowDeployment)_licensed.assistant().deploymentFor(flow);
     }
 
-    public FlowDeployment flowForPrimeType(String name)
+    public FlowDeployment flowForPrimeType(String flow, String name)
         throws CtxException
     {
-        return (FlowDeployment)_licensed.assistant().deploymentFor(new PrimeTypeFilter(name));
+        if (flow == null)
+            flow = "";
+        List<FlowDeployment> deps = (List<FlowDeployment>)_licensed.assistant().deploymentFor(new PrimeTypeFilter(name));
+        for (FlowDeployment dep : deps)
+        {
+            if (dep.deployedName().equals(flow))
+                return dep;
+        }
+
+        if (deps.size() > 0)
+            return deps.get(0);
+
+        return null;
     }
 
-    public FlowDeployment flowForType(String name)
+    public List<FlowDeployment> flowForType(String name)
         throws CtxException
     {
-        return (FlowDeployment)_licensed.assistant().deploymentFor(new ClassTypeFilter(name));
+        return (List<FlowDeployment>)_licensed.assistant().deploymentFor(new ClassTypeFilter(name));
     }
 
     public void initializeShell()

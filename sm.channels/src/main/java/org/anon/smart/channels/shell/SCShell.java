@@ -125,5 +125,10 @@ public class SCShell
 
         return -1;
     }
+
+    public SmartChannel channelFor(UUID id)
+    {
+        return _channels.get(id);
+    }
 }
 

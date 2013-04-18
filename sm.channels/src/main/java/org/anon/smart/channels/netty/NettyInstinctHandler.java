@@ -82,7 +82,12 @@ public class NettyInstinctHandler extends SimpleChannelUpstreamHandler
         throws Exception
     {
         NettyRoute route = new NettyRoute(e.getChannel(), _channelID);
-        _instinct.whenMessage(route, e.getMessage(), _reader);
+        boolean transmitdefault = _instinct.whenMessage(route, e.getMessage(), _reader);
+        if (transmitdefault)
+        {
+            Object send = _reader.transmitDefault();
+            route.send(send);
+        }
     }
 
     @Override
@@ -90,6 +95,17 @@ public class NettyInstinctHandler extends SimpleChannelUpstreamHandler
     {
         System.out.println("Exception: "+ e.getCause());
         e.getCause().printStackTrace();
+        try
+        {
+            Object send = _reader.transmitException(e.getCause());
+            NettyRoute route = new NettyRoute(ctx.getChannel(), _channelID);
+            route.send(send);
+        }
+        catch (Exception e1)
+        {
+            //can't help
+            e1.printStackTrace();
+        }
     }
 }
 

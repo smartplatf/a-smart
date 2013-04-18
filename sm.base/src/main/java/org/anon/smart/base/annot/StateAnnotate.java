@@ -54,7 +54,7 @@ public @interface StateAnnotate
     public int timeout() default -1;
     public String groups() default "";
     public boolean startState() default false;
-    public boolean endState() default false;
+    public boolean endState() default false ;
     public String parentState() default "";
     public ChildStateAnnotate[] children() default {};
 }

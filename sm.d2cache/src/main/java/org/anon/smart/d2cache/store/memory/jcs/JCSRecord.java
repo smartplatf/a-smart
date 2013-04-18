@@ -48,29 +48,27 @@ import org.anon.smart.d2cache.store.AbstractStoreRecord;
 import org.anon.smart.d2cache.annot.CacheKeyAnnotate;
 import org.anon.smart.d2cache.annot.PrimeKeyAnnotate;
 
+import org.anon.utilities.reflect.DFDataContext;
 import org.anon.utilities.reflect.DataContext;
 import org.anon.utilities.exception.CtxException;
 
 public class JCSRecord extends AbstractStoreRecord
 {
-    private Object _inCache;
-    private Object _currRecord;
     private List<Object> _keys;
 
-    public JCSRecord(String group, Object primarykey, Object curr, Object incache)
+    public JCSRecord(String group, Object primarykey, Object curr, Object orig)
     {
-        super(group, primarykey, curr);
-        _inCache = incache;
+        super(group, primarykey, curr, orig);
         _keys = new ArrayList<Object>();
         _keys.add(getRowId());
-	_currRecord = curr;
-    }
+	}
 
     public void append(DataContext ctx)
         throws CtxException
     {
         if (ctx.field() != null)
         {
+        	ctx.mergeToCoTraverse();
             if ((ctx.field().isAnnotationPresent(CacheKeyAnnotate.class) 
                     || ctx.field().isAnnotationPresent(PrimeKeyAnnotate.class)) &&
                 (ctx.fieldVal() != null))
@@ -80,7 +78,8 @@ public class JCSRecord extends AbstractStoreRecord
         }
     }
 
-    Object getModified() { return _currRecord; } 
+     
     List<Object> getKeys() { return _keys; }
+    Object getModified() { return _currentObject; }
 }
 

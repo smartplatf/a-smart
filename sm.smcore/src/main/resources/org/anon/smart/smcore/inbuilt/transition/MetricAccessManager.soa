@@ -1,0 +1,10 @@
+name:       MetricAccessManager
+type:       Transition
+flow:       AllFlows
+foreach:    FlowAdmin|MetricAccess
+actions:
+    - name:     getMetric
+      method:   getMetric
+      foreach:  FlowAdmin|MetricAccess
+      from:     active
+      to:       active

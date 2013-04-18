@@ -43,8 +43,11 @@ package org.anon.smart.d2cache;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.services.ServiceLocator;
+import org.omg.PortableServer.ServantLocator;
 
 public class QueryObject
 {
@@ -57,6 +60,13 @@ public class QueryObject
 		public QueryItem(String attr, String val) 
         {
 			this(attr, val, true);
+		}
+		public QueryItem(String q)
+		{
+			String[] tokens = q.split(":", 2);
+			attribute = tokens[0];
+			value = tokens[1];
+			
 		}
 		
 		public QueryItem(String attr, String val, boolean mandatory) 
@@ -95,7 +105,13 @@ public class QueryObject
     {
 		addCondition(cond, val, true);
 	}
-	
+	public void addConditions(Map<String, String> queryMap) throws CtxException
+	{
+		for(String s : queryMap.keySet())
+		{
+			addCondition(s, queryMap.get(s), true);
+		}
+	}
 	public void setResultType(Class cls)
 	{
 		_resultType = cls;
@@ -105,6 +121,19 @@ public class QueryObject
 		return _resultType;
 	}
 	public List<QueryItem> getQuery() { return query;}
+
+	public void setResultType(String group) throws CtxException {
+		try {
+			_resultType = Class.forName(group);
+		} catch (ClassNotFoundException e) {
+			ServiceLocator.except().rt(e, "Class"+ group + " not found", null);
+		}
+	}
+
+	public void addCondition(String q) {
+		query.add(new QueryItem(q));
+		
+	}
 }
 
 

@@ -48,10 +48,12 @@ import java.util.concurrent.ExecutorService;
 
 import org.anon.smart.atomicity.Atomicity;
 import org.anon.smart.smcore.events.SmartEvent;
+import org.anon.smart.smcore.data.SmartDataED;
 import org.anon.smart.smcore.data.SmartPrimeData;
 import org.anon.smart.smcore.channel.server.CrossLinkEventRData;
 import org.anon.smart.smcore.transition.graph.TransitionGraphExecutor;
 import org.anon.smart.smcore.transition.parms.TransitionProbeParms;
+import org.anon.smart.smcore.transition.atomicity.TAtomicity;
 
 import org.anon.utilities.cthreads.CThreadContext;
 import org.anon.utilities.exception.CtxException;
@@ -67,26 +69,38 @@ public class TransitionContext extends AbstractGraphContext implements CThreadCo
     private SmartEvent _event;
     private SmartPrimeData _prime;
     private CrossLinkEventRData _rData;
-    private Atomicity _atomicity;
+    private TAtomicity _atomicity;
+    private String _toState;
+    private TTransaction _transaction;
+    private MessageSource _source;
+    private SmartDataED _primeED;
+    private String _flow;
 
-    public TransitionContext(Object data, ExecutorService service, Graph graph)
+    public TransitionContext(Object data, ExecutorService service, Graph graph, MessageSource src)
         throws CtxException
     {
         super(graph, service);
-        _atomicity = new Atomicity();
         _rData = new CrossLinkEventRData(data);
         _event = _rData.event();
-        includeDataFrom(_event);
+        _prime = _event.smart___primeData();
+        _atomicity = new TAtomicity(this);
+        _transaction = new TTransaction(_atomicity.atomicID());
+        _source = src;
+        _flow = _rData.flow();
     }
 
-    private void includeDataFrom(SmartEvent evt)
-        throws CtxException
-    {
-    }
-
-    public Atomicity atomicity() { return _atomicity; }
+    public SmartDataED primeED() { return _primeED; }
+    public void setupPrimeED(SmartDataED ed) { _primeED = ed; }
+    public TAtomicity atomicity() { return _atomicity; }
     public SmartPrimeData primeData() { return _prime; }
     public SmartEvent event() { return _event; }
+    public CrossLinkEventRData rdata() { return _rData; }
+    public String flow() { return _flow; }
+    public void doneWithContext()
+        throws CtxException
+    {
+        _source.doneMessage();
+    }
 
     protected ExecuteGraph executorFor(GraphRuntimeNode rtnde, ProbeParms parms)
         throws CtxException
@@ -99,7 +113,7 @@ public class TransitionContext extends AbstractGraphContext implements CThreadCo
     {
         List<Object> parms = new ArrayList<Object>();
         parms.add(_event);
-        parms.add(_prime);
+        parms.add(_primeED.empirical());
         return new TransitionProbeParms(this, parms);
     }
 
@@ -112,5 +126,17 @@ public class TransitionContext extends AbstractGraphContext implements CThreadCo
     {
         return "null";
     }
+
+    public void modifyToState(String state)
+    {
+        _toState = state;
+    }
+
+    public String toState()
+    {
+        return _toState;
+    }
+
+    public TTransaction transaction() { return _transaction; }
 }
 

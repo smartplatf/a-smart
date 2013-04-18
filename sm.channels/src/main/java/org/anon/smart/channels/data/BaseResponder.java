@@ -71,5 +71,11 @@ public class BaseResponder implements Responder
     {
         return _responses.values().toArray();
     }
+
+    public void clearResponses()
+        throws CtxException
+    {
+        _responses.clear();
+    }
 }
 

@@ -57,6 +57,7 @@ import org.anon.utilities.exception.CtxException;
 
 public class Deployment implements Deployable, VerifiableObject
 {
+    private ClassLoader _loader;
     private String name;
     private String initializer;
     private String defaultEnable;
@@ -102,7 +103,12 @@ public class Deployment implements Deployable, VerifiableObject
         addFeatureFrom(dep, dep.defaultEnable);
         for (int i = 0; (feats != null) && (i < feats.length); i++)
             addFeatureFrom(dep, feats[i]);
+
+        _jars = new ArrayList<String>();
+        _jars.addAll(dep._jars);
     }
+
+    public List<String> myJars() { return _jars; }
 
     public void addFeatureFrom(Deployment dep, String feature)
         throws CtxException
@@ -211,12 +217,16 @@ public class Deployment implements Deployable, VerifiableObject
         return null; //default does not have any. Must be implemented in others
     }
 
-    public static <T extends Deployment> T deploymentFor(InputStream str, Class<T> cls)
+    public static <T extends Deployment> T deploymentFor(InputStream str, Class<T> cls, ClassLoader ldr, String[] jars)
         throws CtxException
     {
         Format fmt = config().readYMLConfig(str);
         Map vals = fmt.allValues();
         Deployment dep = (Deployment)convert().mapToVerifiedObject(cls, vals);
+        dep._loader = ldr;
+        dep._jars = new ArrayList<String>();
+        for (int i = 0; (jars != null) && (i < jars.length); i++)
+            dep._jars.add(jars[i]);
         dep.setup();
         return cls.cast(dep);
     }

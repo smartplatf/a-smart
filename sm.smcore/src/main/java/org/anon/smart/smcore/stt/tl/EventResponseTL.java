@@ -65,5 +65,12 @@ public class EventResponseTL extends BaseTL
         annons.add(ResponseAnnotate.class);
         return annons.toArray(new Class[0]);
     }
+
+    public static EventResponseTL defaultFor(String clsname, String type, String flow, String[] parms)
+    {
+        EventResponseTL ret = new EventResponseTL();
+        BaseTL.populateDefault(ret, clsname, type, flow);
+        return ret;
+    }
 }
 

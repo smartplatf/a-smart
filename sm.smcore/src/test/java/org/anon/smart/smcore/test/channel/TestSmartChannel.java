@@ -47,9 +47,6 @@ import java.net.URL;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.anon.utilities.test.PathHelper;
-import org.anon.smart.smcore.test.ModConstants;
-import org.anon.smart.base.loader.SmartLoader;
 import org.anon.smart.channels.distill.Rectifier;
 import org.anon.smart.channels.SmartChannel;
 import org.anon.smart.channels.http.HTTPClientChannel;
@@ -58,11 +55,13 @@ import org.anon.smart.channels.http.HTTPConfig;
 import org.anon.smart.channels.data.ContentData;
 import org.anon.smart.channels.data.PData;
 
+import org.anon.smart.smcore.test.CoreServerUtilities;
+
 import org.anon.utilities.anatomy.CrossLinkApplication;
 
-public class TestSmartChannel implements ModConstants
+public class TestSmartChannel
 {
-    private void postTo(SCShell shell, int port, String server, String uri, String post)
+    private HTTPClientChannel postTo(SCShell shell, int port, String server, String uri, String post, boolean wait)
         throws Exception
     {
         Rectifier rr = new Rectifier();
@@ -76,60 +75,38 @@ public class TestSmartChannel implements ModConstants
         ByteArrayInputStream istr = new ByteArrayInputStream(post.getBytes());
         PData d = new TestPData(null, new ContentData(istr));
         cchnl.post(uri, new PData[] { d });
-        Thread.sleep(3000); //response shd have come within 3s
-        cchnl.disconnect();
-    }
-
-    private SmartLoader createLoader()
-        throws Exception
-    {
-        URL[] urls = new URL[]
-                        {
-                            new URL(PathHelper.getJar(true, BASE)),
-                            new URL(PathHelper.getJar(true, D2CACHE)),
-                            new URL(PathHelper.getJar(true, DEPLOYMENT)),
-                            new URL(PathHelper.getJar(true, UTILITIES)),
-                            new URL(PathHelper.getJar(true, CHANNELS)),
-                            new URL(PathHelper.getJar(true, ATOMICITY)),
-                            new URL(PathHelper.getJar(true, SAMPLEAPP)),
-                            new URL(PathHelper.getProjectTestBuildPath()),
-                            new URL(PathHelper.getProjectBuildPath()),
-                            new URL(PathHelper.getDependantPath(true, "org/jboss/netty/netty/3.2.5.Final/netty-3.2.5.Final.jar")),
-                            new URL(PathHelper.getDependantPath(true, "jcs/jcs/1.3/jcs-1.3.jar"))
-                        };
-
-        for (int i = 0; i < urls.length; i++)
-            System.out.println("URL added: " + urls[i]);
-
-        String[] comps = new String[] { "org.anon.smart.smcore.anatomy.SMCoreModule", "org.anon.smart.smcore.test.testanatomy.TestModule" };
-
-        SmartLoader ldr = new SmartLoader(urls, comps);
-        CrossLinkApplication.getApplication().setStartLoader(ldr);
-        return ldr;
-    }
-
-    private void runServer()
-        throws Exception
-    {
-        SmartLoader ldr = createLoader();
-        Class cls = ldr.loadClass("org.anon.smart.smcore.test.channel.RunSmartServer");
-        Object run = cls.newInstance();
-        Thread thrd = new Thread((Runnable)run);
-        thrd.setContextClassLoader(ldr);
-        thrd.start();
-        //for now, wait for server to start up
-        Thread.currentThread().sleep(2000);
+        if (wait)
+        {
+            Thread.sleep(3000); //response shd have come within 3s
+            cchnl.disconnect();
+        }
+        return cchnl;
     }
 
     @Test
     public void testTestSmartChannel()
         throws Exception
     {
-        runServer();
+        int port = 9080;
+        CoreServerUtilities utils = new CoreServerUtilities(port);
+        utils.runServer("org.anon.smart.smcore.test.channel.RunSmartServer");
         SCShell shell = new SCShell();
-        postTo(shell, 9080, "localhost", "/invalidtenant/invalidflow/invalidevent", "{'order':'testorder'}");
-        postTo(shell, 9080, "localhost", "/SmartOwner/invalidflow/", "{'order':'testorder'}");
-        postTo(shell, 9080, "localhost", "/SmartOwner/ReviewFlow/WriteReview", "{'ReviewObject':'Not present', 'review':'Reviewed','rating':1}");
+        postTo(shell, port, "localhost", "/invalidtenant", "", true);
+        postTo(shell, port, "localhost", "/invalidtenant/invalidflow/invalidevent", "{'order':'testorder'}", true);
+        postTo(shell, port, "localhost", "/SmartOwner/invalidflow/", "{'order':'testorder'}", true);
+        postTo(shell, port, "localhost", "/coreanon/ReviewFlow/WriteReview", "{'ReviewObject':{'___smart_action___':'lookup', '___smart_value___':'Not present'}, 'review':'Reviewed','rating':1}", true);
+        postTo(shell, port, "localhost", "/coreanon/ReviewFlow/WriteReview", "{'ReviewObject':'Object1', 'review':'Reviewed','rating':1}", true); //error
+        postTo(shell, port, "localhost", "/coreanon/ReviewFlow/WriteReview", "{'ReviewObject':{'___smart_action___':'lookup', '___smart_value___':'Object1'}, 'review':'Reviewed','rating':1}", true);
+        String home = System.getenv("HOME");
+        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'RegistrationFlow.soa'}", true);
+        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'newtenant','enableFlow':'RegistrationFlow','enableFeatures':['all']}", false);
+        Thread.sleep(6000);//tenant creation takes time
+        for (int i = 0; i < 10; i++)
+        {
+            postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'rsankarx" + i + "@gmail.com'}", false);
+        }
+        Thread.sleep(10000);
+        utils.stopServer();
     }
 }
 

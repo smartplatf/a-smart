@@ -41,6 +41,7 @@
 
 package org.anon.smart.d2cache;
 
+import org.anon.smart.d2cache.store.StoreItem;
 import java.util.List;
 
 import org.anon.smart.d2cache.segment.CSegment;

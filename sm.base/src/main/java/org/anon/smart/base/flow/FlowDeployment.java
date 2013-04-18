@@ -53,24 +53,28 @@ import org.anon.smart.deployment.Deployment;
 
 import org.anon.utilities.exception.CtxException;
 
-public class FlowDeployment extends Deployment
+public class FlowDeployment extends Deployment implements FlowConstants
 {
     private transient Map<Class<? extends Annotation>, List<String>> _mapTypes;
 
+    private List<String> _internalData;
     private List<String> primeData;
     private List<String> data;
     private List<String> events;
     private List<String> responses;
     private List<String> messages;
     private List<String> transitions;
+    private List<Key> keys;
 
     private Map<String, String> _classToName;
     private Map<String, String> _nameToClass;
+    private Map<String, String> _keyMap;
 
     public FlowDeployment()
     {
         super();
         initialize();
+        _keyMap = new HashMap<String, String>();
     }
 
     public FlowDeployment(String nm, Artefact[] a)
@@ -82,9 +86,21 @@ public class FlowDeployment extends Deployment
         responses = new ArrayList<String>();
         messages = new ArrayList<String>();
         transitions = new ArrayList<String>();
+        keys = new ArrayList<Key>();
+        _internalData = new ArrayList<String>();
         _classToName = new HashMap<String, String>();
         _nameToClass = new HashMap<String, String>();
+        _keyMap = new HashMap<String, String>();
         initialize();
+    }
+
+    private void copy(List from, List to)
+    {
+        if ((from != null) && (to != null))
+        {
+            for (int i = 0; i < from.size(); i++)
+                to.add(from.get(i));
+        }
     }
 
     public FlowDeployment(FlowDeployment dep, String[] features)
@@ -94,7 +110,26 @@ public class FlowDeployment extends Deployment
         initialize();
         _classToName = new HashMap<String, String>();
         _nameToClass = new HashMap<String, String>();
-        primeData = dep.primeData;
+        _keyMap = new HashMap<String, String>();
+        for (String k : dep._keyMap.keySet())
+            _keyMap.put(k, dep._keyMap.get(k));
+
+        primeData = new ArrayList<String>();
+        data = new ArrayList<String>();
+        events = new ArrayList<String>();
+        responses = new ArrayList<String>();
+        messages = new ArrayList<String>();
+        transitions = new ArrayList<String>();
+        keys = new ArrayList<Key>();
+
+        copy(dep.primeData, primeData);
+        copy(dep.data, data);
+        copy(dep.events, events);
+        copy(dep.responses, responses);
+        copy(dep.transitions, transitions);
+        copy(dep.messages, messages);
+        copy(dep.keys, keys);
+
         for (String p : primeData)
         {
             String n = dep._classToName.get(p);
@@ -116,8 +151,15 @@ public class FlowDeployment extends Deployment
     {
         super.setup();
         initialize();
+        System.out.println("Found data: " + primeData + ":" + data + ":" + events + ":" + responses + ":" + transitions);
         _classToName = new HashMap<String, String>();
         _nameToClass = new HashMap<String, String>();
+        _keyMap = new HashMap<String, String>();
+        if (keys != null)
+        {
+            for (Key k : keys)
+                _keyMap.put(k.getData(), k.getKey());
+        }
     }
 
     private void initialize()
@@ -212,6 +254,50 @@ public class FlowDeployment extends Deployment
         ret = ret || ((transitions != null) && transitions.contains(clsname));
 
         return ret;
+    }
+
+    public String getDataType(String clsname)
+    {
+        if ((primeData != null) && primeData.contains(clsname))
+            return PRIMETYPE;
+        else if ((data != null) && data.contains(clsname))
+            return DATATYPE;
+        else if ((events != null) && events.contains(clsname))
+            return EVENTTYPE;
+        else if ((responses != null) && responses.contains(clsname))
+            return RESPONSETYPE;
+        else if ((transitions != null) && transitions.contains(clsname))
+            return TRANSITIONTYPE;
+        else if ((messages != null) && messages.contains(clsname))
+            return MESSAGETYPE;
+
+        return null;
+    }
+
+    public String[] getParmsFor(String dtype, String cls)
+    {
+        if (dtype.equals(PRIMETYPE) || dtype.equals(DATATYPE))
+            return new String[] { _keyMap.get(cls) };
+
+        return new String[0];
+    }
+
+    public List<String> getDeploymentFor(String dtype)
+    {
+        if (dtype.equals(PRIMETYPE))
+            return primeData;
+        else if (dtype.equals(DATATYPE))
+            return data;
+        else if (dtype.equals(EVENTTYPE))
+            return events;
+        else if (dtype.equals(RESPONSETYPE))
+            return responses;
+        else if (dtype.equals(TRANSITIONTYPE))
+            return transitions;
+        else if (dtype.equals(MESSAGETYPE))
+            return messages;
+
+        return new ArrayList<String>();
     }
 }
 

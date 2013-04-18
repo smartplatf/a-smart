@@ -46,13 +46,20 @@ import java.util.UUID;
 import org.anon.smart.base.flow.FlowObject;
 import org.anon.smart.smcore.data.SmartPrimeData;
 
+import org.anon.utilities.exception.CtxException;
+
 public interface SmartEvent
 {
+    public void smarteventstt____init()
+        throws CtxException;
     public String smart___name();
     public UUID smart___eventID();
     public FlowObject smart___forFlow();
     public EventLegend smart___legend();
     public SmartPrimeData smart___primeData();
+    public String smart___flowname();
+    public String smart___extratransitionfilter()
+        throws CtxException;
     //public Session session();
 }
 

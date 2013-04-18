@@ -59,11 +59,10 @@ public class IndexSegment implements CSegment {
 	}
 
 	@Override
-	public void setupSegment(String name, String related, StoreConfig cfg)
+	public void setupSegment(String name, StoreConfig cfg)
 			throws CtxException {
 		_store = new SolrStore(new SolrConnection());
-		_store.setup(name, related, cfg);
-
+		_store.setup(name, cfg);
 	}
 
 	@Override
@@ -77,5 +76,12 @@ public class IndexSegment implements CSegment {
 		// TODO Auto-generated method stub
 
 	}
+
+    public void cleanup()
+        throws CtxException
+    {
+        if (_store != null)
+            _store.close();
+    }
 
 }

@@ -41,9 +41,8 @@
 
 package org.anon.smart.base.loader;
 
-import org.anon.utilities.utils.RepeaterVariants;
 
-public class LoaderVars implements RepeaterVariants
+public class LoaderVars
 {
     private String _name;
 

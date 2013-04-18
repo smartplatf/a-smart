@@ -41,6 +41,8 @@
 
 package org.anon.smart.d2cache.store.repository.hbase;
 
+import java.util.Collection;
+
 import org.apache.hadoop.hbase.client.Put;
 
 import org.anon.smart.d2cache.annot.CacheKeyAnnotate;
@@ -57,16 +59,17 @@ public class HBaseRecord extends AbstractStoreRecord implements Constants
     private HBaseConnection _conn;
     private int _keyCount;
 
-    public HBaseRecord(String group, Object primarykey, Object curr, HBaseConnection conn)
+    public HBaseRecord(String group, Object primarykey, Object curr, Object orig, HBaseConnection conn)
         throws CtxException
     {
-        super(group, primarykey, curr);
+        super(group, primarykey, curr, orig);
 
         try
         {
         	_conn = conn;
         	String cls = curr.getClass().getName();
-        	_table = _conn.getTableName(group);
+        	//_table = _conn.getTableName(group);
+        	_table = group;
             HBaseCRUD crud = conn.getCRUD();
             _putRecord = crud.newRecord(primarykey.toString(), SYNTHETIC_COL_FAMILY, CLASSNAME, cls);
             _keyCount = 0;
@@ -91,6 +94,10 @@ public class HBaseRecord extends AbstractStoreRecord implements Constants
                 if (fldval != null)
                 {
                     _conn.getCRUD().addTo(_putRecord, DATA_COL_FAMILY, key, fldval);
+                   if(HBaseUtil.isFieldTypeNeeded(ctx.fieldType()))
+                    {
+                    	_conn.getCRUD().addTo(_putRecord, SYNTHETIC_COL_FAMILY, key+FIELDTYPE, fldval.getClass().getName());
+                    }
                     if (ctx.field().isAnnotationPresent(CacheKeyAnnotate.class))
                     {
                         _conn.getCRUD().addTo(_putRecord, DATA_COL_FAMILY, KEY_NAME + _keyCount, fldval);

@@ -73,6 +73,8 @@ public class DefaultReader implements Reader {
 		return null;
 	}
 	
-	
+	public List<Object> listAll(String group, int size) throws CtxException {
+		return null;
+	}
 
 }

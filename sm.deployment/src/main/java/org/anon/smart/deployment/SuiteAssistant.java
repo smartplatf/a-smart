@@ -42,6 +42,7 @@
 package org.anon.smart.deployment;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -60,17 +61,23 @@ public class SuiteAssistant<T extends Deployment>
         return _suite.deployments().addDeployment(dep);
     }
 
-    public Artefact[] deployClazz(Class cls)
+    public Artefact[] deployClazz(String dep, Class cls)
         throws CtxException
     {
-        Artefact[] artefacts = _suite.artefacts().deployClazz(cls);
+        MicroArtefacts marts = _suite.artefacts(dep);
+        if (marts == null)
+            marts = _suite.artefactsCreate(dep);
+        Artefact[] artefacts = marts.deployClazz(cls);
         return artefacts;
     }
 
     public Deployment deployClazz(Class cls, String dep)
         throws CtxException
     {
-        Artefact[] artefacts = _suite.artefacts().deployClazz(cls);
+        MicroArtefacts marts = _suite.artefacts(dep);
+        if (marts == null)
+            marts = _suite.artefactsCreate(dep);
+        Artefact[] artefacts = marts.deployClazz(cls);
         return _suite.deployments().addDeployment(dep, artefacts);
     }
 
@@ -80,35 +87,49 @@ public class SuiteAssistant<T extends Deployment>
         return _suite.deployments().deploymentFor(dep);
     }
 
-    public T deploymentFor(DeploymentFilter<T> filter)
+    public List<T> deploymentFor(DeploymentFilter<T> filter)
         throws CtxException
     {
         return _suite.deployments().deploymentFor(filter);
     }
 
-    public List<Class> clazzezFor(String wild, ArtefactType type, ClassLoader ldr)
+    public List<Class> clazzezFor(String dep, String wild, ArtefactType type, ClassLoader ldr)
         throws CtxException
     {
-        return _suite.artefacts().clazzezFor(wild, type, ldr);
+        Deployment d = deploymentFor(dep);
+        MicroArtefacts marts = _suite.artefacts(dep);
+        if (marts != null)
+            return marts.clazzezFor(wild, type, ldr, d);
+        return new ArrayList<Class>();
     }
 
-    public Class clazzFor(String key, ArtefactType type, ClassLoader ldr)
+    public Class clazzFor(String dep, String key, ArtefactType type, ClassLoader ldr)
         throws CtxException
     {
-        return _suite.artefacts().clazzFor(key, type, ldr);
+        Deployment d = deploymentFor(dep);
+        MicroArtefacts marts = _suite.artefacts(dep);
+        if (marts != null)
+            return marts.clazzFor(key, type, ldr, d);
+        return null;
     }
 
-    public Class clazzFor(String key, String type, ClassLoader ldr)
+    public Class clazzFor(String dep, String key, String type, ClassLoader ldr)
         throws CtxException
     {
         ArtefactType atype = ArtefactType.artefactTypeFor(type);
-        return clazzFor(key, atype, ldr);
+        return clazzFor(dep, key, atype, ldr);
     }
 
-    public void enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
+    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
         throws CtxException
     {
-        _suite.enableFor(ldeploy, dep, features);
+        return _suite.enableFor(ldeploy, dep, features);
+    }
+
+    public List<String> allDeployments()
+        throws CtxException
+    {
+        return _suite.deployments().allDeployments();
     }
 }
 

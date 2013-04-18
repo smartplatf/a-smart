@@ -86,7 +86,7 @@ public class CrossLinkDataShell extends CrossLinker
     public Object addSpace(Object model)
         throws CtxException
     {
-        return linkMethod("addSpace");
+        return linkMethod("addSpace", model);
     }
 
     public void cleanup()

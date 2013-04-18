@@ -42,9 +42,12 @@
 package org.anon.smart.smcore.data;
 
 import org.anon.smart.smcore.flow.SmartFlow;
+import org.anon.utilities.exception.CtxException;
 
 public interface SmartPrimeData extends SmartData
 {
     public SmartFlow smart___flow();
+
+	public void intiPrimeObject() throws CtxException;
 }
 

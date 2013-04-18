@@ -60,39 +60,46 @@ public class D2CacheScheme
     {
     }
 
-    protected static D2Cache memoryOnlyCache(String name, int flags)
+    protected static D2Cache memoryOnlyCache(String name, int flags, D2CacheConfig config)
         throws CtxException
     {
-        return new MemOnlyCache(name, null, flags);
+        return new MemOnlyCache(name, flags, config);
     }
 
-    protected static D2Cache memIndexedCache(String name, int flags)
+    protected static D2Cache memIndexedCache(String name, int flags, D2CacheConfig config)
         throws CtxException
     {
-        return new MemIndCache(name, null, flags);
+        return new MemIndCache(name, flags, config);
     }
 
-    protected static D2Cache memStoreIndexedCache(String name, int flags)
+    protected static D2Cache memStoreIndexedCache(String name, int flags, D2CacheConfig config)
         throws CtxException
     {
-        return new MemStoreIndCache(name, null, flags);
+        return new MemStoreIndCache(name, flags, config);
     }
 
+    //TODO Have to remove this method
     public static D2Cache getCache(scheme s, String name, int flags)
+            throws CtxException
+    {
+    		D2CacheConfig conf = new BasicD2CacheConfig(null, "hadoop", "2181", "hadoop:60000", false);
+        	return getCache(s, name, flags, conf);
+    }
+    public static D2Cache getCache(scheme s, String name, int flags, D2CacheConfig cacheConfig)
         throws CtxException
     {
         D2Cache ret = null;
         switch (s)
         {
         case mem:
-            ret = memoryOnlyCache(name, flags);
+            ret = memoryOnlyCache(name, flags, cacheConfig);
             break;
         case memind:
-            ret = memIndexedCache(name, flags);
+            ret = memIndexedCache(name, flags, cacheConfig);
             break;
         case memstoreind:
         default:
-            ret = memStoreIndexedCache(name, flags);
+            ret = memStoreIndexedCache(name, flags, cacheConfig);
             break;
         }
 

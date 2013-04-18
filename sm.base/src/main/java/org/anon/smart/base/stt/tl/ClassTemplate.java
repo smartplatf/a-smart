@@ -71,7 +71,7 @@ public class ClassTemplate implements SearchTemplate
         return false;
     }
 
-    public BaseTL[] searchFor(String cls, ClassLoader ldr)
+    public BaseTL[] searchFor(String cls, ClassLoader ldr, Object[] parms)
         throws CtxException
     {
         String file = getTemplateFile(cls);

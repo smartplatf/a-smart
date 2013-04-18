@@ -41,23 +41,30 @@
 
 package org.anon.smart.d2cache.store;
 
+import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.reflect.DirtyFieldTraversal;
+
 public class StoreItem
 {
     private String _group;
     private Object[] _keys;
-    private Object _item;
+    private Object _truth;
+    private Object _modified;
+    
+
+	private Object _original;
 
     public StoreItem(Object[] keys, Object obj)
     {
         _keys = keys;
-        _item = obj;
+        _truth = obj;
         _group = "";
     }
 
     public StoreItem(Object[] keys, Object obj, String group)
     {
         _keys = keys;
-        _item = obj;
+        _truth = obj;
         _group = group;
     }
 
@@ -66,14 +73,39 @@ public class StoreItem
         return _keys;
     }
 
-    public Object item()
+    public Object getTruth()
     {
-        return _item;
+        return _truth;
     }
 
     public String group()
     {
         return _group;
     }
+    
+    public Object getModified() {
+		return _modified;
+	}
+
+	public void setModified(Object modified) {
+		this._modified = modified;
+	}
+
+	public Object getOriginal() {
+		return _original;
+	}
+
+	public void setOriginal(Object original) {
+		this._original = original;
+	}
+	
+	public boolean mergeChanges()
+	throws CtxException
+	{
+		boolean changed = true;
+		
+		
+		return changed;
+	}
 }
 

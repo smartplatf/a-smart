@@ -60,10 +60,10 @@ public class RepositorySegment implements CSegment {
 	}
 
 	@Override
-	public void setupSegment(String name, String related, StoreConfig cfg)
+	public void setupSegment(String name, StoreConfig cfg)
 			throws CtxException {
 		_store = new HBaseStore(new HBaseConnection());
-		_store.setup(name, related, cfg);
+		_store.setup(name, cfg);
 		
 
 	}
@@ -79,5 +79,12 @@ public class RepositorySegment implements CSegment {
 		// TODO Auto-generated method stub
 
 	}
+
+    public void cleanup()
+        throws CtxException
+    {
+        if (_store != null)
+            _store.close();
+    }
 
 }

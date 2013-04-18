@@ -41,6 +41,8 @@
 
 package org.anon.smart.base.flow;
 
+import java.util.List;
+
 import org.anon.utilities.crosslink.CrossLinker;
 import org.anon.utilities.exception.CtxException;
 
@@ -61,6 +63,34 @@ public class CrossLinkFlowDeployment extends CrossLinker
         throws CtxException
     {
         return linkMethod("model", ldr);
+    }
+
+    protected Class[] parmTypes(String method, Object ... params)
+    {
+        if (method.equals("model"))
+        {
+            return new Class[] { ClassLoader.class };
+        }
+
+        return super.parmTypes(method, params);
+    }
+    
+    public String deployedName() 
+        throws CtxException
+    {
+    	return (String)linkMethod("deployedName");
+    }
+
+    public String classFor(String name)
+        throws CtxException
+    {
+        return (String)linkMethod("classFor", name);
+    }
+
+    public List<String> getDeploymentFor(String dtype)
+        throws CtxException
+    {
+        return (List<String>)linkMethod("getDeploymentFor", dtype);
     }
 }
 

@@ -47,13 +47,18 @@ import java.util.Map;
 import org.anon.smart.base.flow.FlowObject;
 import org.anon.smart.smcore.transition.TransitionService;
 import org.anon.smart.smcore.transition.TransitionContext;
+import org.anon.smart.smcore.inbuilt.responses.ErrorResponse;
+import org.anon.smart.smcore.channel.server.CrossLinkEventRData;
+import org.anon.smart.smcore.transition.MessageSource;
+
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 import org.anon.utilities.jitq.JITProcessQueue;
 import org.anon.utilities.jitq.DataListener;
 import org.anon.utilities.cthreads.RuntimeContext;
 import org.anon.utilities.exception.CtxException;
 
-public class FlowEventListener implements DataListener
+public class FlowEventListener implements DataListener, MessageSource
 {
     private JITProcessQueue _queue;
 
@@ -66,12 +71,40 @@ public class FlowEventListener implements DataListener
         _queue = q;
     }
 
+    public void doneMessage()
+        throws CtxException
+    {
+        jitq().doneProcessingMessage(_queue);
+    }
+
     public void onMessage(Object data)
         throws CtxException
     {
-        System.out.println("Data is: " + data);
-        TransitionContext ctx = TransitionService.createContext(data);
-        ctx.executeGraph();
+        try
+        {
+            System.out.println("Data is: " + data + _queue);
+            TransitionContext ctx = TransitionService.createContext(data, this);
+            ctx.executeGraph();
+        }
+        catch (Exception e)
+        {
+            //TODO: log this error
+            e.printStackTrace();
+            //send out an error message if an exception is caught here
+            try
+            {
+                CrossLinkEventRData rdata = new CrossLinkEventRData(data);
+                rdata.clearResponses();
+                ErrorResponse resp = new ErrorResponse(ErrorResponse.servererrors.exception, e);
+                rdata.addResponse(resp);
+                rdata.commitResponses();
+            }
+            catch (Exception e1)
+            {
+                //TODO: log error
+                e1.printStackTrace();
+            }
+        }
     }
 
     public RuntimeContext startRuntimeContext(String action, JITProcessQueue queue)

@@ -45,6 +45,6 @@ import org.anon.smart.d2cache.store.StoreConfig;
 
 public interface SolrConfig extends StoreConfig
 {
-    public String getSolrHome();
+    public String getIndexHome();
 }
 

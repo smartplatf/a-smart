@@ -47,9 +47,14 @@ import org.anon.smart.base.loader.LoaderVars;
 import org.anon.smart.base.dspace.DSpaceAuthor;
 import org.anon.smart.base.dspace.DefaultAuthor;
 import org.anon.smart.base.anatomy.SmartModuleContext;
+import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.data.SmartDataTruth;
+import org.anon.smart.smcore.data.TruthCreator;
 
 import static org.anon.utilities.services.ServiceLocator.*;
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
+import org.anon.utilities.memcache.LimitedMemCache;
 import org.anon.utilities.anatomy.ModuleContext;
 import org.anon.utilities.anatomy.JVMEnvironment;
 import org.anon.utilities.exception.CtxException;
@@ -57,10 +62,13 @@ import org.anon.utilities.exception.CtxException;
 public class SMCoreContext implements SmartModuleContext
 {
     private SCShell _smartChannels;
+    private LimitedMemCache<SmartData, SmartDataTruth> _truthCache;
 
     public SMCoreContext()
+        throws CtxException
     {
         _smartChannels = new SCShell();
+        _truthCache = cache().create(10000, new TruthCreator());
     }
 
     public JVMEnvironment vmEnvironment()
@@ -89,6 +97,31 @@ public class SMCoreContext implements SmartModuleContext
         throws CtxException
     {
         return new DefaultAuthor();
+    }
+
+    public SmartDataTruth getTruthFor(SmartData sd)
+        throws CtxException
+    {
+        //possible this can be grouped by flows. For now.
+        return _truthCache.get(sd);
+    }
+
+    public void putTruthFor(SmartData sd, SmartDataTruth truth)
+        throws CtxException
+    {
+        _truthCache.put(sd, truth);
+    }
+
+    public void invalidate(SmartData sd)
+        throws CtxException
+    {
+        _truthCache.invalidate(sd);
+    }
+
+    public static SMCoreContext coreContext()
+        throws CtxException
+    {
+        return (SMCoreContext)anatomy().context(SMCoreContext.class);
     }
 }
 

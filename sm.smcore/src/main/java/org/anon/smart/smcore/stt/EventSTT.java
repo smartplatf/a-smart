@@ -44,6 +44,7 @@ package org.anon.smart.smcore.stt;
 import java.util.UUID;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
+import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.smart.base.stt.annot.MethodExit;
 import org.anon.smart.base.flow.FlowObject;
@@ -56,6 +57,7 @@ import org.anon.utilities.exception.CtxException;
 
 public class EventSTT implements SmartEvent
 {
+    private String ___smart_flow_name___;
     private EventLegend ___smart_legend___;
     private FlowObject ___smart_flow___;
     private SmartPrimeData ___smart_primeData___;
@@ -65,8 +67,11 @@ public class EventSTT implements SmartEvent
     {
     }
 
-    @MethodExit("constructor")
-    private void smarteventstt____init()
+    //@MethodExit("constructor")
+    //Please note, calling this in the constructor is of no use since the object
+    //is created with a silent creator which does not call the constructor.
+    //So this will be called directly where created, since we are creating it.
+    public void smarteventstt____init()
         throws CtxException
     {
         ___smart_name___ = objectName(this);
@@ -77,5 +82,20 @@ public class EventSTT implements SmartEvent
     public FlowObject smart___forFlow() { return ___smart_flow___; }
     public SmartPrimeData smart___primeData() { return ___smart_primeData___; }
     public UUID smart___eventID() { return ___smart_legend___.eventID(); }
+    public String smart___flowname() { return ___smart_flow_name___; }
+
+    public String smart___extratransitionfilter()
+        throws CtxException
+    {
+        String val = filterFor(this.getClass());
+        if ((val == null) || (val.length() <= 0))
+            return "";
+
+        Object filter = reflect().getAnyFieldValue(this.getClass(), this, val);
+        if (filter != null)
+            return filter.toString();
+
+        return "";
+    }
 }
 

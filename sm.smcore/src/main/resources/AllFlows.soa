@@ -1,0 +1,36 @@
+name:   AllFlows
+defaultEnable:  all
+primeData:
+    - org.anon.smart.base.flow.FlowAdmin
+events:
+    - org.anon.smart.smcore.inbuilt.events.SearchEvent
+    - org.anon.smart.smcore.inbuilt.events.LookupEvent
+    - org.anon.smart.smcore.inbuilt.events.ListAllEvent
+    - org.anon.smart.smcore.inbuilt.events.CreatePrime
+    - org.anon.smart.smcore.inbuilt.events.MetricAccess
+transitions:
+    - org.anon.smart.smcore.inbuilt.transition.SearchManager
+    - org.anon.smart.smcore.inbuilt.transition.CRUDManager
+    - org.anon.smart.smcore.inbuilt.transition.MetricAccessManager
+responses:
+    - org.anon.smart.smcore.inbuilt.responses.SearchResponse
+    - org.anon.smart.smcore.inbuilt.responses.LookupResponse
+    - org.anon.smart.smcore.inbuilt.responses.ListAllResponse
+    - org.anon.smart.smcore.inbuilt.responses.MetricResponse
+features:
+    - name: all
+      artefacts:
+        - org.anon.smart.base.flow.FlowAdmin
+        - org.anon.smart.smcore.inbuilt.events.SearchEvent
+        - org.anon.smart.smcore.inbuilt.events.LookupEvent
+        - org.anon.smart.smcore.inbuilt.events.ListAllEvent
+        - org.anon.smart.smcore.inbuilt.events.CreatePrime
+        - org.anon.smart.smcore.inbuilt.events.MetricAccess
+        - org.anon.smart.smcore.inbuilt.transition.SearchManager
+        - org.anon.smart.smcore.inbuilt.transition.CRUDManager
+        - org.anon.smart.smcore.inbuilt.transition.MetricAccessManager
+        - org.anon.smart.smcore.inbuilt.responses.SearchResponse
+        - org.anon.smart.smcore.inbuilt.responses.LookupResponse
+        - org.anon.smart.smcore.inbuilt.responses.ListAllResponse
+        - org.anon.smart.smcore.inbuilt.responses.MetricResponse
+        

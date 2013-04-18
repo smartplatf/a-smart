@@ -45,6 +45,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import org.anon.smart.base.annot.BaseAnnotate;
+import org.anon.smart.base.annot.EventAnnotate;
+import org.anon.smart.base.annot.SmartDataAnnotate;
+import org.anon.smart.base.annot.PrimeDataAnnotate;
 import org.anon.smart.base.annot.KeyAnnotate;
 import org.anon.smart.base.annot.Synthetic;
 
@@ -111,6 +114,34 @@ public class AnnotationUtils
         BaseAnnotate annot = (BaseAnnotate)reflect().getAnnotation(cls, BaseAnnotate.class);
         if (annot != null)
             return annot.flow();
+
+        return null;
+    }
+
+    public static String commitFor(Class cls)
+        throws CtxException
+    {
+        assertion().assertNotNull(cls, "Cannot find the commit of a null class");
+        SmartDataAnnotate annot = (SmartDataAnnotate)reflect().getAnnotation(cls, SmartDataAnnotate.class);
+        System.out.println("Annot is: " + annot);
+        if (annot != null)
+            return annot.commit();
+
+        PrimeDataAnnotate pannot = (PrimeDataAnnotate)reflect().getAnnotation(cls, PrimeDataAnnotate.class);
+        System.out.println("Annot is: " + pannot);
+        if (pannot != null)
+            return pannot.commit();
+
+        return null;
+    }
+
+    public static String filterFor(Class cls)
+        throws CtxException
+    {
+        assertion().assertNotNull(cls, "Cannot find the filter for a null class");
+        EventAnnotate annot = (EventAnnotate)reflect().getAnnotation(cls, EventAnnotate.class);
+        if (annot != null)
+            return annot.filter();
 
         return null;
     }

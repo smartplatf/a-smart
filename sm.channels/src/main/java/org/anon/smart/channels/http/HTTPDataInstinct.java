@@ -64,6 +64,9 @@ public class HTTPDataInstinct extends RectifierInstinct
         throws CtxException
     {
         HTTPMessageDScope dscope = _factory.createDScope(chnl, msg, rdr);
+        if ((dscope.getURI() == null) || (dscope.getURI().length() <= 0) || (dscope.getURI().equals("/")))
+            return null; //just a default response is requested
+
         PData prime = dscope.primary();
         return new Distillate(prime);
     }

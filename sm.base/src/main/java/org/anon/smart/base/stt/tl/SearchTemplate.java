@@ -47,7 +47,7 @@ import org.anon.utilities.exception.CtxException;
 public interface SearchTemplate extends Repeatable
 {
     public boolean templateFound(String cls, ClassLoader ldr);
-    public BaseTL[] searchFor(String cls, ClassLoader ldr)
+    public BaseTL[] searchFor(String cls, ClassLoader ldr, Object[] parms)
         throws CtxException;
 }
 

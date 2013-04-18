@@ -45,6 +45,7 @@ import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.data.SmartPrimeData;
 import org.anon.smart.smcore.transition.parms.EventProbe;
 import org.anon.smart.smcore.transition.parms.PrimeDataProbe;
+import org.anon.smart.smcore.transition.parms.TxnDataProbe;
 import org.anon.smart.smcore.channel.server.CrossLinkEventRData;
 import org.anon.smart.smcore.transition.graph.TransitionGraphs;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
@@ -54,6 +55,8 @@ import org.anon.utilities.fsm.FiniteState;
 import org.anon.utilities.gconcurrent.Graph;
 import org.anon.utilities.gconcurrent.execute.ParamType;
 import org.anon.utilities.exception.CtxException;
+
+import static org.anon.utilities.services.ServiceLocator.*;
 
 public class TransitionService implements TConstants
 {
@@ -66,10 +69,10 @@ public class TransitionService implements TConstants
     {
         ParamType.registerProbe(EVENT, new EventProbe(), false);
         ParamType.registerProbe(DATA, new PrimeDataProbe(), false);
-
+        ParamType.registerProbe(TXN, new TxnDataProbe(), true);
     }
 
-    public static TransitionContext createContext(Object rdata)
+    public static TransitionContext createContext(Object rdata, MessageSource source)
         throws CtxException
     {
         CrossLinkEventRData clrdata = new CrossLinkEventRData(rdata);
@@ -78,13 +81,17 @@ public class TransitionService implements TConstants
 
         String eventName = event.smart___name();
         String dataName = data.smart___name();
+        String extra = event.smart___extratransitionfilter();
+        String flow = clrdata.flow();
 
         FiniteState state = data.utilities___currentState();
+        assertion().assertNotNull(state, "Cannot find the state of the object: " + dataName + " to execute event: " + eventName);
         String fromstate = state.stateName();
-        Graph graph = TransitionGraphs.getGraph(dataName, eventName, fromstate);
+        Graph graph = TransitionGraphs.getGraph(flow, dataName, eventName, extra, fromstate);
+        assertion().assertNotNull(graph, "No transitions found for: " + dataName + ":" + eventName + ":" + fromstate);
         CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
         RuntimeShell rtshell = (RuntimeShell)tenant.runtimeShell();
-        TransitionContext tctx = new TransitionContext(rdata, rtshell.transitionExecutor(), graph);
+        TransitionContext tctx = new TransitionContext(rdata, rtshell.transitionExecutor(), graph, source);
         return tctx;
     }
 }

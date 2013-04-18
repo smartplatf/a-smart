@@ -51,6 +51,8 @@ import static org.anon.smart.base.dspace.DSpaceService.*;
 import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.smart.base.dspace.DSpace;
+import org.anon.smart.base.dspace.DSpaceObject;
+import org.anon.smart.base.dspace.TransactDSpace;
 import org.anon.smart.base.monitor.MonitorableObject;
 import org.anon.smart.base.tenant.TenantConstants;
 import org.anon.smart.d2cache.BrowsableReader;
@@ -76,14 +78,14 @@ public class DataShell implements SmartShell, TenantConstants
         throws CtxException
     {
         int count = 0;
-        addStandardModel(USERS_SPACE, false);
+        /*addStandardModel(USERS_SPACE, false);
         count++;
         addStandardModel(SESSIONS_SPACE, true);
         count++;
         addStandardModel(ROLES_SPACE, false);
         count++;
         addStandardModel(CONFIG_SPACE, false);
-        count++;
+        count++;*/
         addStandardModel(MONITOR_SPACE, false);
         count++;
         return count;
@@ -118,7 +120,7 @@ public class DataShell implements SmartShell, TenantConstants
     public Object addSpace(Object model)
         throws CtxException
     {
-        assertion().assertTrue((model instanceof SpaceModel), "Cannot add space for a model that is not a spacemodel");
+        assertion().assertTrue((model instanceof SpaceModel), "Cannot add space for a model that is not a spacemodel: " + model + ":" + model.getClass().getClassLoader() + ":" + this.getClass().getClassLoader() + ":" + _context.name());
         return addSpaceFor((SpaceModel)model);
     }
 
@@ -169,16 +171,40 @@ public class DataShell implements SmartShell, TenantConstants
         throws CtxException
     {
         DSpace space = _spaces.get(spacemodel);
+        assertion().assertNotNull(space, "Space is NULL for:"+spacemodel);
         Object ret = lookupIn(space, key, group);
         return ret;
     }
 
-    public List<Object> search(String spacemodel, String group, Object query)
+    public List<Object> search(String spacemodel, Class clz, Map<String, String> query)
         throws CtxException
     {
         DSpace space = _spaces.get(spacemodel);
-        List<Object> ret = searchIn(space, query, group);
+        List<Object> ret = searchIn(space, query, clz);
         return ret;
+    }
+
+    public List<Object> listAll(String spacemodel, String group, int size)
+    	throws CtxException
+    {
+    	DSpace space = _spaces.get(spacemodel);
+    	assertion().assertNotNull(space, "ListAll:Space is NULL for:"+spacemodel);
+        List<Object> ret = listAllIn(space, group, size);
+        return ret;
+    }
+    void commitTo(String spacemodel, DSpaceObject[] sobjs)
+        throws CtxException
+    {
+        TransactDSpace space = (TransactDSpace)_spaces.get(spacemodel);
+        assertion().assertNotNull(space, "Cannot find transact space for: " + spacemodel);
+        addToSpace(space, sobjs);
+    }
+
+    public TransactDSpace getSpaceFor(String spacemodel)
+        throws CtxException
+    {
+    	
+        return (TransactDSpace)_spaces.get(spacemodel);
     }
 }
 

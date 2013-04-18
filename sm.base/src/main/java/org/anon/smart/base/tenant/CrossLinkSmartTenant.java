@@ -97,5 +97,12 @@ public class CrossLinkSmartTenant extends CrossLinker
         Object tenant = RelatedUtils.getRelatedObjectForClass(CrossLinkSmartTenant.class);
         return new CrossLinkSmartTenant(tenant);
     }
+
+    public boolean isPlatformOwner()
+        throws CtxException
+    {
+        Boolean b = (Boolean)linkMethod("isPlatformOwner");
+        return ((b != null) && b.booleanValue());
+    }
 }
 

@@ -43,7 +43,7 @@ package org.anon.smart.base.flow;
 
 import org.anon.smart.base.tenant.shell.StandardSpaceModel;
 
-public class FlowModel extends StandardSpaceModel
+public class FlowModel extends StandardSpaceModel implements java.io.Serializable
 {
     public FlowModel(String name)
     {

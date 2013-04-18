@@ -42,14 +42,22 @@
 package org.anon.smart.smcore.test.channel;
 
 import org.anon.smart.channels.distill.Distillation;
+import org.anon.smart.channels.distill.Rectifier;
 import org.anon.smart.channels.distill.Distillate;
 
 import org.anon.utilities.exception.CtxException;
 
 public class TestDistillation implements Distillation
 {
+    private Rectifier _myRectifier;
+
     public TestDistillation()
     {
+    }
+
+    public void setRectifier(Rectifier rectifier)
+    {
+        _myRectifier = rectifier;
     }
 
     public Distillate distill(Distillate prev)

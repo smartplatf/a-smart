@@ -48,8 +48,9 @@ import org.anon.smart.base.annot.StateAnnotate;
 
 public class StateTL extends BaseTL
 {
-    private String endState;
-    private String startState;
+    private String name;
+    private boolean endState;
+    private boolean startState;
     private String parentState;
     private List<ChildStateTL> childStates;
     private String timeout;
@@ -58,8 +59,8 @@ public class StateTL extends BaseTL
     {
     }
 
-    public boolean isStartState() { return ((startState != null) && (startState.equals("yes"))); }
-    public boolean isEndState() { return ((endState != null) && (endState.equals("yes"))); }
+    //public boolean isStartState() { return ((startState != null) && (startState.equals("yes"))); }
+    //public boolean isEndState() { return ((endState != null) && (endState.equals("yes"))); }
     public String getParentState() { return parentState; }
     public int getTimeOut() { return ((timeout != null) ? Integer.parseInt(timeout) : -1); }
     public List<ChildStateTL> getChildren() { return childStates; }
@@ -68,6 +69,24 @@ public class StateTL extends BaseTL
     public Class[] getAnnotations(String name)
     {
         return new Class[] { StateAnnotate.class };
+    }
+
+    static StateTL getDefaultStartState()
+    {
+        StateTL active = new StateTL();
+        active.name = "active";
+        active.startState = true;
+        active.endState = false;
+        return active;
+    }
+
+    static StateTL getDefaultEndState()
+    {
+        StateTL inactive = new StateTL();
+        inactive.name = "inactive";
+        inactive.startState = false;
+        inactive.endState = true;
+        return inactive;
     }
 }
 

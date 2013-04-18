@@ -41,11 +41,11 @@
 
 package org.anon.smart.base.tenant.shell;
 
-public class StandardSpaceModel implements SpaceModel
+public class StandardSpaceModel implements SpaceModel, java.io.Serializable
 {
     private String _name;
-    private int _aperture;
-    private boolean _browsable;
+    private transient int _aperture;
+    private transient boolean _browsable;
 
     public StandardSpaceModel(String name, boolean browsable)
     {

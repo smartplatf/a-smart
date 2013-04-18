@@ -49,6 +49,14 @@ import org.anon.smart.smcore.events.CrossLinkSmartEvent;
 
 import org.anon.smart.channels.data.PData;
 import org.anon.smart.channels.data.RData;
+import org.anon.smart.channels.data.Responses;
+import org.anon.smart.channels.distill.Rectifier;
+import org.anon.smart.channels.distill.Distillate;
+import org.anon.smart.channels.SmartServerChannel;
+import org.anon.smart.smcore.anatomy.SMCoreContext;
+
+import static org.anon.utilities.services.ServiceLocator.*;
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -58,17 +66,21 @@ public class EventRData extends RData
     private SmartTenant _tenant;
     private FlowDeployment _deployment;
     private String _origin;
+    private String _flow;
     private UUID _requestID;
     private UUID _eventID;
+    private Rectifier _myRectifier;
 
-    public EventRData(PData data, Object event, SmartTenant tenant, FlowDeployment dep)
+    public EventRData(Rectifier rectifier, PData data, Object event, SmartTenant tenant, FlowDeployment dep)
         throws CtxException
     {
         super(data);
+        _myRectifier = rectifier;
         EventPData epdata = (EventPData)data;
         EventDScope dscope = (EventDScope)epdata.dscope();
         _origin = dscope.origin();
         _requestID = dscope.requestID();
+        _flow = dscope.flow();
         _deployment = dep;
         _tenant = tenant;
         _event = event;
@@ -77,5 +89,31 @@ public class EventRData extends RData
     }
 
     public Object event() { return _event; }
+    public String flow() { return _flow; }
+
+    @Override
+    protected Responses aggregatedResponse()
+    {
+        return new EventResponses(_eventID);
+    }
+
+    @Override
+    protected PData createPDataFrom(Object response)
+        throws CtxException
+    {
+        System.out.println("Sending response: " + response);
+        EventRData rrdata = new EventRData(_myRectifier, (PData)isotope(), response, _tenant, _deployment);
+        Distillate respstart = new Distillate(rrdata);
+        Distillate dist = _myRectifier.condense(respstart);
+        return (PData)dist.current();
+    }
+
+    @Override
+    protected SmartServerChannel getChannel(UUID channelID)
+        throws CtxException
+    {
+        SMCoreContext ctx = (SMCoreContext)anatomy().context(this.getClass());
+        return (SmartServerChannel)ctx.smartChannelShell().channelFor(channelID);
+    }
 }
 

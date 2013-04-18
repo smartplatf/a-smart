@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 import java.util.List;
 
@@ -90,29 +91,31 @@ public class SolrConnection implements StoreConnection, Constants
         try
         {
             SolrConfig scfg = (SolrConfig)cfg;
-            _home = new File(scfg.getSolrHome());
-            assertion().assertTrue(_home.exists(), "The solr home directory does not exist. Please setup solr correctly.");
+            _home = new File(scfg.getIndexHome());
+            assertion().assertTrue(_home.exists(), "The solr home directory does not exist. Please setup solr correctly." + scfg.getIndexHome());
             File solr = new File(_home, CORE_CONFIG);
-            assertion().assertTrue(solr.exists(), "The solr config file does not exist. Please setup solr correctly.");
+            assertion().assertTrue(solr.exists(), "The solr config file does not exist. Please setup solr correctly." + CORE_CONFIG);
             _container = new CoreContainer();
-            _container.load(scfg.getSolrHome(), solr);
+            _container.load(scfg.getIndexHome(), solr);
             _config = cfg;
 
         }
         catch (Exception e)
         {
+            System.out.println(">>>>>>>>>>>>>>>>>exceptionconnecting to: ");
+            e.printStackTrace();
             except().rt(e, new CtxException.Context("SolrConnection.connect", "Exception"));
         }
     }
 
-    public void open(String related, String name)
+    public void open(String name)
         throws CtxException
     {
         try
         {
-            String corename = related + "_" + name;
+            String corename = name;
             File f = new File(_home, corename);
-            //if (!f.exists())
+            if (!f.exists())
             {
                 //has not yet been created. Create again.
                 URL url = getClass().getClassLoader().getResource(SOLR_CONFIG);
@@ -124,19 +127,25 @@ public class SolrConnection implements StoreConnection, Constants
                 //have to test if there needs to be synchronization
                 _server = new EmbeddedSolrServer(_container, DEFAULT_CORE);
                 CoreAdminRequest.createCore(corename, corename, _server, SOLR_CONFIG, SCHEMA_CONFIG);
-                CoreAdminRequest.persist(SOLR_CONFIG, _server);
-               // _server = new EmbeddedSolrServer(_container, corename);
+                CoreAdminRequest.persist(CORE_CONFIG, _server);
+                _server = new EmbeddedSolrServer(_container, corename);
                 _logger.info("Solr server opened for connections:"+_server+"::"+corename);
              }
+            else
+            {
+            	_server = new EmbeddedSolrServer(_container, corename);
+            	_logger.info(">>>>>>>>>>>>>>>>>Solr server opened for connections:"+_server+"::"+corename);
+            }
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             except().rt(e, new CtxException.Context("SolrConnection.open", "Exception"));
         }
         
     }
 
-    public EmbeddedSolrServer server() {System.out.println("Returning Server:"+_server); return _server; }
+    public EmbeddedSolrServer server() { return _server; }
 
     public Repeatable repeatMe(RepeaterVariants vars)
         throws CtxException
@@ -159,8 +168,13 @@ public class SolrConnection implements StoreConnection, Constants
     public void close()
         throws CtxException
     {
+    	System.out.println("!!!!!!!!!!!!!!!!!  Closing Solr Server !!!!!!!!!!!!!!!!!");
         if (_server != null)
+        {
+        	_container.shutdown();
             _server.shutdown();
+            
+        }
     }
 
     public Object find(String group, Object key)
@@ -195,8 +209,13 @@ public class SolrConnection implements StoreConnection, Constants
 		} catch (SolrServerException e) {
 			except().rt(e, new CtxException.Context("SolrConnection.search", "Exception while querying"));
 		}
-		System.out.println("DOC ID:"+resultSet);
 		return resultSet;
+	}
+
+	@Override
+	public Iterator<Object> listAll(String group, int size) throws CtxException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

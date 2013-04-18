@@ -1,0 +1,11 @@
+name:       CRUDManager
+type:       Transition
+flow:       AllFlows
+foreach:        FlowAdmin|CreatePrime
+actions:
+    - name:     createPrimeData
+      method:   createPrimeData
+      foreach:  FlowAdmin|CreatePrime
+      from:     active
+      to:       active
+

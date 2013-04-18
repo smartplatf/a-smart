@@ -54,6 +54,7 @@ import org.anon.smart.d2cache.store.StoreItem;
 import org.anon.smart.d2cache.store.StoreRecord;
 import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.utilities.exception.CtxException;
+import org.anon.utilities.reflect.DirtyFieldTraversal;
 import org.anon.utilities.reflect.ObjectTraversal;
 
 import com.google.common.collect.Lists;
@@ -85,15 +86,31 @@ public class D2CacheTransactionImpl implements D2CacheTransaction {
 	@Override
 	public void add(StoreItem item) throws CtxException {
 		List<StoreRecord> recList = new ArrayList<StoreRecord>();
+		
+		/*
+		 * Now do the DirtyFieldTraversal here and store the modified truth object against set of keys
+		 */
+		item.mergeChanges();
 		for (Object key : item.keys()) {
 			for (StoreTransaction txn : _storeTransactions) {
-				System.out.println(txn);
-				recList.add(txn.addRecord(item.group(), key, item.item()));
+				//System.out.println(txn);
+				recList.add(txn.addRecord(item.group(), key, item.getModified(), item.getOriginal()));
 			}
 		}
 		
+		System.out.println("--->D2CacheTransactionImpl:"+item.getTruth()+"::"+item.getModified()+"::"+item.getOriginal());
+		
 		CacheObjectTraversal cot = new CacheObjectTraversal(recList);
-		ObjectTraversal ot = new ObjectTraversal(cot, item.item(), false, null);
+		ObjectTraversal ot = null;
+		if((item.getTruth() == null) || item.getTruth().equals(item.getModified()))
+		{
+			//Truth is null..new Object
+			ot =  new ObjectTraversal(cot, item.getModified(), false, null);
+		}
+		else
+		{
+			ot  = new DirtyFieldTraversal(cot, item.getModified(), item.getOriginal(), false);
+		}
 		ot.traverse();
 	}
 

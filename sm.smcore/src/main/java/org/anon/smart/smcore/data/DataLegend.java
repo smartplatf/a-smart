@@ -43,7 +43,7 @@ package org.anon.smart.smcore.data;
 
 import java.util.UUID;
 
-public class DataLegend
+public class DataLegend implements java.io.Serializable
 {
     private UUID _id;
     private String _group;

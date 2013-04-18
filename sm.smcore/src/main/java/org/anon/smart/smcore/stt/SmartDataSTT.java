@@ -49,21 +49,29 @@ import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
+import org.anon.smart.base.monitor.MonitorableObject;
 import org.anon.smart.base.stt.annot.MethodExit;
 import org.anon.smart.base.dspace.DSpaceObject;
 import org.anon.smart.base.annot.KeyAnnotate;
 import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.data.SmartDataTruth;
 import org.anon.smart.smcore.data.DataLegend;
+import org.anon.smart.smcore.data.SmartPrimeData;
+import org.anon.smart.smcore.anatomy.SMCoreContext;
+import org.anon.smart.smcore.transition.TransitionContext;
 
 import org.anon.utilities.fsm.StateEntity;
 import org.anon.utilities.fsm.FiniteState;
+import org.anon.utilities.fsm.FiniteStateMachine;
 import org.anon.utilities.exception.CtxException;
 
-public class SmartDataSTT implements SmartData, DSpaceObject
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
+
+public class SmartDataSTT implements SmartData, DSpaceObject, MonitorableObject
 {
     private FiniteState ___smart_currentState___;
     private DataLegend ___smart_legend___;
-    private transient String ___smart_name___;
+    private String ___smart_name___;
 
     public SmartDataSTT()
     {
@@ -75,10 +83,20 @@ public class SmartDataSTT implements SmartData, DSpaceObject
     {
         ___smart_legend___ = new DataLegend();
         ___smart_name___ = objectName(this);
+        FiniteStateMachine mc = fsm().fsm(___smart_name___);
+        assertion().assertNotNull(mc, "The finite state machine for " + ___smart_name___ + " has not been setup correctly.");
+        mc.start(this);
+        TransitionContext ctx = (TransitionContext)threads().threadContext();
+        if (ctx != null)
+            ctx.atomicity().includeNewData(this);
     }
 
     public String smart___name()
+        throws CtxException
     {
+        if (___smart_name___ == null)
+            ___smart_name___ = objectName(this);
+
         return ___smart_name___;
     }
 
@@ -137,18 +155,15 @@ public class SmartDataSTT implements SmartData, DSpaceObject
     public List<Object> smart___keys()
         throws CtxException
     {
-        KeyAnnotate kannot = (KeyAnnotate)reflect().getAnyAnnotation(this.getClass(), KeyAnnotate.class.getName());
-        assertion().assertNotNull(kannot, "No keys defined for SmartData. Error.");
-        assertion().assertNotNull(kannot.keys(), "No keys defined for SmartData. Error.");
-        assertion().assertTrue((kannot.keys().length() > 0), "No keys defined for SmartData. Error.");
+        Object[] keys = reflect().getAnnotatedFieldValues(this, KeyAnnotate.class);
+        assertion().assertNotNull(keys, "No keys defined for SmartData. Error.");
+        assertion().assertTrue((keys.length > 0), "No keys defined for SmartData. Error.");
         List<Object> ret = new ArrayList<Object>();
         ret.add(smart___id());
-        String[] flds = value().listAsString(kannot.keys());
-        for (int i = 0; i < flds.length; i++)
+        for (int i = 0; i < keys.length; i++)
         {
-            Object val = reflect().getAnyFieldValue(this.getClass(), this, flds[i]);
-            assertion().assertNotNull(val, "Key Value: " + flds[i] + " cannot be null. ");
-            ret.add(val);
+            assertion().assertNotNull(keys[i], "Key Value:  cannot be null. ");
+            ret.add(keys[i]);
         }
 
         return ret;
@@ -157,7 +172,37 @@ public class SmartDataSTT implements SmartData, DSpaceObject
     public String smart___objectGroup()
         throws CtxException
     {
-        return ___smart_name___;
+    	return ___smart_name___;
     }
+
+    public void smart___transition(String tostate)
+        throws CtxException
+    {
+        FiniteStateMachine mc = fsm().fsm(___smart_name___);
+        assertion().assertNotNull(mc, "Finite state machine for " + ___smart_name___ + " has not been setup correctly. Cannot transition.");
+        mc.transition(this, tostate);
+    }
+
+    public SmartDataTruth smart___myTruth()
+        throws CtxException
+    {
+        SMCoreContext ctx = SMCoreContext.coreContext();
+        SmartDataTruth truth = ctx.getTruthFor(this);
+        return truth;
+    }
+
+	@Override
+	public void initOnLoad() throws CtxException {
+		smartdatastt___init();
+		if(this instanceof SmartPrimeData)
+			((SmartPrimeData)this).intiPrimeObject();
+		
+	}
+
+	@Override
+	public void cleanup() throws CtxException {
+		// TODO Auto-generated method stub
+		
+	}
 }
 

@@ -51,6 +51,7 @@ import org.anon.smart.base.annot.StatesAnnotate;
 public class SmartObjectTL extends BaseTL
 {
     private String merge;
+    private String commit;
     private String config;
     private SpaceTL space;
     private KeyTL key;
@@ -77,6 +78,23 @@ public class SmartObjectTL extends BaseTL
         annons.add(SmartDataAnnotate.class);
         annons.add(StatesAnnotate.class);
         return annons.toArray(new Class[0]);
+    }
+
+    static void populateDefaults(SmartObjectTL ret, String type, String clsname, String key, String flow)
+    {
+        BaseTL.populateDefault(ret, clsname, type, flow);
+        ret.states = new ArrayList<StateTL>();
+        ret.states.add(StateTL.getDefaultStartState());
+        ret.states.add(StateTL.getDefaultEndState());
+        ret.attributes = new ArrayList<AttributeTL>();
+        ret.attributes.add(AttributeTL.getKeyAttribute(key));
+    }
+
+    public static SmartObjectTL defaultFor(String clsname, String type, String flow, String[] parms)
+    {
+        SmartObjectTL ret = new SmartObjectTL();
+        populateDefaults(ret, type, clsname, parms[0], flow);
+        return ret;
     }
 }
 

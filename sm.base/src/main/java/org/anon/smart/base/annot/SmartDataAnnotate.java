@@ -51,7 +51,8 @@ import java.lang.annotation.Target;
 public @interface SmartDataAnnotate
 {
     public String name();
-    public String merge();
-    public String config();
+    public String merge() default "";
+    public String config() default "";
+    public String commit() default "";
 }
 

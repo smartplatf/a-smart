@@ -48,6 +48,7 @@ import org.anon.smart.channels.data.PData;
 import org.anon.smart.channels.distill.Isotope;
 import org.anon.smart.channels.distill.Distillate;
 import org.anon.smart.channels.distill.Distillation;
+import org.anon.smart.channels.distill.Rectifier;
 
 import org.anon.smart.smcore.flow.CrossLinkSmartFlow;
 import org.anon.smart.smcore.channel.server.EventRData;
@@ -58,8 +59,15 @@ import org.anon.utilities.exception.CtxException;
 
 public class StorageStage implements Distillation
 {
+    private Rectifier _myRectifier;
+
     public StorageStage()
     {
+    }
+
+    public void setRectifier(Rectifier parent)
+    {
+        _myRectifier = parent;
     }
 
     public Distillate distill(Distillate prev)
@@ -80,7 +88,7 @@ public class StorageStage implements Distillation
         for (AlteredData.FlowEvent evt : evts)
         {
             Object event = evt.event();
-            EventRData rdata = new EventRData(pdata, event, searched.tenant(), searched.flowDeployment());
+            EventRData rdata = new EventRData(_myRectifier, pdata, event, searched.tenant(), searched.flowDeployment());
             CrossLinkSmartFlow clsf = new CrossLinkSmartFlow(evt.flow());
             clsf.postExternal(rdata);
         }

@@ -1,0 +1,21 @@
+name:       SearchManager
+type:       Transition
+flow:       AllFlows
+foreach:    FlowAdmin|LookupEvent,FlowAdmin|SearchEvent,FlowAdmin|ListAllEvent
+actions:
+    - name:     search
+      method:   search
+      foreach:  FlowAdmin|SearchEvent
+      from:     active
+      to:       active
+    - name:     lookup
+      method:   lookup
+      foreach:  FlowAdmin|LookupEvent
+      from:     active
+      to:       active
+    - name:     listAll
+      method:   listAll
+      foreach:  FlowAdmin|ListAllEvent
+      from:     active
+      to:       active
+

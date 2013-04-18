@@ -58,5 +58,37 @@ public class CrossLinkEventRData extends CrossLinker
     {
         return (SmartEvent)linkMethod("event");
     }
+
+    public String flow()
+        throws CtxException
+    {
+        return (String)linkMethod("flow");
+    }
+
+    public void commitResponses()
+        throws CtxException
+    {
+        linkMethod("commitResponses");
+    }
+
+    public void addResponse(Object response)
+        throws CtxException
+    {
+        linkMethod("addResponse", response);
+    }
+
+    protected Class[] parmTypes(String mthd, Object ... params)
+    {
+        if (mthd.equals("addResponse"))
+            return new Class[] { Object.class };
+
+        return super.parmTypes(mthd, params);
+    }
+
+    public void clearResponses()
+        throws CtxException
+    {
+        linkMethod("clearResponses");
+    }
 }
 

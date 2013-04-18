@@ -96,6 +96,8 @@ public abstract class HTTPMessageDScope implements DScope
         _dataCount = anatomy().jvmEnv().createAtomicCounter(_requestID.toString() + "-EventCounter", 0);
     }
 
+    public String getURI() { return _uri; }
+
     protected void handleHeader(String key, String value)
     {
         if (key.equalsIgnoreCase("ORIGIN"))

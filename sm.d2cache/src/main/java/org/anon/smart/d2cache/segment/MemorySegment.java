@@ -62,11 +62,11 @@ public class MemorySegment implements CSegment {
 	}
 
 	@Override
-	public void setupSegment(String name, String related, StoreConfig cfg)
+	public void setupSegment(String name, StoreConfig cfg)
 			throws CtxException {
 		/* based on storeConfig we may have diff Store instances like jcs, ehcache..etc */
 		_store = new JCSStore(new JCSConnection());
-		_store.setup(name, related, cfg);
+		_store.setup(name, cfg);
 	
 	}
 
@@ -81,5 +81,12 @@ public class MemorySegment implements CSegment {
 		// TODO Auto-generated method stub
 
 	}
+
+    public void cleanup()
+        throws CtxException
+    {
+        if (_store != null)
+            _store.close();
+    }
 
 }

@@ -41,6 +41,8 @@
 
 package org.anon.smart.channels;
 
+import org.anon.smart.channels.data.RData;
+
 import org.anon.utilities.exception.CtxException;
 
 public interface SmartServerChannel extends SmartChannel
@@ -49,6 +51,9 @@ public interface SmartServerChannel extends SmartChannel
         throws CtxException;
 
     public void stop()
+        throws CtxException;
+
+    public void sendResponses(RData data)
         throws CtxException;
 }
 

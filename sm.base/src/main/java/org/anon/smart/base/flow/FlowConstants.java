@@ -49,5 +49,13 @@ public interface FlowConstants
     public static final String TRANSITION = "transition";
     public static final String RESPONSE = "response";
     public static final String MESSAGE = "message";
+    public static final String FLOW = "flow";
+
+    public static final String PRIMETYPE = "PrimeData";
+    public static final String DATATYPE = "Data";
+    public static final String EVENTTYPE = "Event";
+    public static final String RESPONSETYPE = "Response";
+    public static final String MESSAGETYPE = "Message";
+    public static final String TRANSITIONTYPE = "Transition";
 }
 

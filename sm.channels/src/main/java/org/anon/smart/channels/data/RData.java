@@ -41,18 +41,89 @@
 
 package org.anon.smart.channels.data;
 
+import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
+
 import org.anon.smart.channels.distill.Isotope;
+import org.anon.smart.channels.SmartServerChannel;
+
+import org.anon.utilities.exception.CtxException;
 
 public class RData extends Isotope
 {
     private long _convertedTime;
+    private DScope _dscope;
+    private boolean _committedResponses;
 
     public RData(PData data)
     {
         super(data);
         _convertedTime = System.nanoTime();
+        _dscope = data.dscope();
+        _committedResponses = false;
     }
 
     public long convertedTime() { return _convertedTime; }
+
+    protected Responses aggregatedResponse()
+    {
+        return new Responses();
+    }
+
+    public void addResponse(Object response)
+        throws CtxException
+    {
+        _dscope.responder().addResponse(response);
+    }
+
+    public void clearResponses()
+        throws CtxException
+    {
+        _dscope.responder().clearResponses();
+    }
+
+    protected PData createPDataFrom(Object response)
+        throws CtxException
+    {
+        return null; //has to be implemented by derived classes.
+    }
+
+    protected SmartServerChannel getChannel(UUID channelID)
+        throws CtxException
+    {
+        return null;
+    }
+
+    public void sendResponses()
+        throws CtxException
+    {
+        Responder resp = _dscope.responder();
+        Object[] responses = resp.responses();
+        List<PData> send = new ArrayList<PData>();
+        Responses sresp = aggregatedResponse();
+        for (int i = 0; i < responses.length; i++)
+            sresp.addResponse(responses[i]);
+
+        PData pdata = createPDataFrom(sresp);
+        if (pdata != null)
+            send.add(pdata);
+
+        if (send.size() > 0)
+            _dscope.transmit(send.toArray(new PData[0]));
+    }
+
+    public void commitResponses()
+        throws CtxException
+    {
+        if (!_committedResponses)
+        {
+            UUID channelID = _dscope.channelID();
+            SmartServerChannel chnl = getChannel(channelID);
+            if (chnl != null)
+                chnl.sendResponses(this);
+            _committedResponses = true;
+        }
+    }
 }
 

@@ -41,6 +41,8 @@
 
 package org.anon.smart.d2cache.store.repository.hbase;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
@@ -52,6 +54,9 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.MasterNotRunningException;
+import org.apache.hadoop.hbase.TableNotFoundException;
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
@@ -61,7 +66,10 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.filter.FirstKeyOnlyFilter;
+import org.apache.hadoop.hbase.filter.KeyOnlyFilter;
 import org.apache.hadoop.hbase.util.Bytes;
+import static org.anon.utilities.services.ServiceLocator.*;
 
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
@@ -84,7 +92,9 @@ public class HBaseCRUD implements Constants
             for (int i = 0; i < cf.length; i++) 
                 desc.addFamily(new HColumnDescriptor(cf[i]));
             admin.createTable(desc);
+            System.out.println("Table Created:"+tableName);
         }
+        
     }
     void deleteTable(String tableName)
     	throws Exception
@@ -103,19 +113,50 @@ public class HBaseCRUD implements Constants
     {
         //possibly we can do this using filter also?? need to check out
         //TODO: can filter by any key value
-        HTable table = new HTable(_config, tableName);
+		HTable table  = null;
+		Map<String, byte[]> ret = new HashMap<String, byte[]>();
+		try
+		{
+			if(tableExists(tableName))
+				table = new HTable(_config, tableName);
+			else
+				return ret;
+		}
+		catch(Exception ex)
+		{
+			return ret;
+		}
         Get get = new Get(rowKey.getBytes());
         Result rs = table.get(get);
-        Map<String, byte[]> ret = new HashMap<String, byte[]>();
+        
         for(KeyValue kv : rs.raw())
         {
-        	System.out.println(new String(kv.getQualifier())+"--->"+new String(kv.getValue()));
+       	    //System.out.println(new String(kv.getQualifier())+"--->"+new String(kv.getValue()));
             ret.put(new String(kv.getQualifier()), kv.getValue());
         }
 
         return ret;
     }
 
+	Iterator<Object> listAll(String tableName, int size)
+		throws IOException 
+	{
+		List<Object> resultSet = new ArrayList<Object>();
+		HTable table = new HTable(_config, tableName);
+        Scan s = new Scan();
+        //add filters to s
+        s.setFilter(new FirstKeyOnlyFilter());
+        s.setFilter(new KeyOnlyFilter());
+        ResultScanner rs = table.getScanner(s);
+        for (Result result = rs.next(); result != null; result = rs.next())
+        {
+        	
+           
+            resultSet.add(new String(result.getRow()));
+        }
+        
+        return resultSet.iterator();
+	}
 	Put newRecord(String rowKey, String family, String qualifier, Object value)
         throws Exception
     {
@@ -131,7 +172,8 @@ public class HBaseCRUD implements Constants
     Put addTo(Put p, String family, String qualifier, Object value)
         throws Exception
     {
-        p.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(convert().objectToString(value)));
+    	//System.out.println("ADDING COLUMN:"+family+"::"+qualifier+"::"+convert().objectToString(value));
+    	p.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(convert().objectToString(value)));
         return p;
     }
 
@@ -142,9 +184,22 @@ public class HBaseCRUD implements Constants
         table.put(puts);
     }
 
-    public boolean isTableExists(String tableName) throws CtxException
+    public boolean tableExists(String tableName) throws CtxException
     {
-    	//HTable table = new HTable(_config, tableName);
+    	try {
+			HBaseAdmin admin = new HBaseAdmin(_config);
+			try {
+				if(admin.tableExists(tableName))
+						return true;
+			} catch (IOException e) {
+				except().rt(e, "IOException while checking existance of table:"+tableName, null);
+			}
+		} catch (MasterNotRunningException e) {
+			except().rt(e, "Master NOT running for HBase", null);
+		} catch (ZooKeeperConnectionException e) {
+			except().rt(e, "Exception while connecting to ZooKeeper", null);
+		}
+    	
 		return false;
     	
     	

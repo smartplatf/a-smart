@@ -43,6 +43,7 @@ package org.anon.smart.smcore.transition.graph;
 
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.shell.RuntimeShell;
+import org.anon.smart.smcore.transition.TransitionContext;
 
 import org.anon.utilities.gconcurrent.GraphRuntimeNode;
 import org.anon.utilities.gconcurrent.execute.ProbeParms;
@@ -68,6 +69,11 @@ public class TransitionExecutor extends ExecuteGraphNode
     protected boolean successOrFailure(Object ret)
         throws CtxException
     {
+        TransitionNodeDetails det = (TransitionNodeDetails)_grtNode.details();
+        TransitionContext ctx = (TransitionContext)_context;
+        //TODO: this is under the assumption that the parameter passed is the prime data
+        //when a related data is introduced this needs to be changed
+        ctx.modifyToState(det.to());
         return true;
     }
 

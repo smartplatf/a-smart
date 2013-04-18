@@ -43,9 +43,22 @@ package org.anon.smart.d2cache.store.index.solr;
 
 public class BasicSolrConfig implements SolrConfig {
 
-	private String _solrHome = "/home/vjaasti/mywork/solr";
+	//private String _solrHome = "/home/vjaasti/mywork/solr";
+	private String _solrHome ;
+	
+	public BasicSolrConfig(String home)
+	{
+		_solrHome = home;
+        if ((home == null) || (home.length() <= 0))
+        {
+            String path = System.getenv("SMART_PATH");
+            if ((path == null) || (path.length() <= 0))
+                path = System.getenv("HOME") + "/solr/";
+            _solrHome = path + "/solr-datastore/";
+        }
+	}
 	@Override
-	public String getSolrHome() {
+	public String getIndexHome() {
 		// TODO Auto-generated method stub
 		return _solrHome;
 	}

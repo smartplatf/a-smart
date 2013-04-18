@@ -77,11 +77,13 @@ public abstract class NettyServerChannel extends AbstractServerChannel
         bootstrap.setPipelineFactory(pipelineFactory());
         bootstrap.bind(new InetSocketAddress(cfg.port()));
         _bootstrap = bootstrap;
+        System.out.println(">>>>>>Started the server on the port>>> " + cfg.port());
     }
 
     public void stop()
         throws CtxException
     {
+        super.shutdown();
         _bootstrap.releaseExternalResources();
     }
 }

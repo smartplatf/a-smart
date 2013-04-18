@@ -70,6 +70,9 @@ public class EventDScope extends HTTPMessageDScope
     protected void handlePath(String path)
         throws CtxException
     {
+        if ((path == null) || (path.length() <= 0) || (path.equals("/")))
+            return; //let the default handle this.
+
         String[] tokens = path.split("/");
         int count = 0;
         while ((count < tokens.length) && (tokens[count].trim().length() <= 0))
@@ -84,7 +87,6 @@ public class EventDScope extends HTTPMessageDScope
         else
             _eventName = "SearchEvent";
 
-        System.out.println("Got : " + _tenant + ":" + _flow + ":" + _eventName);
     }
 
     protected void handleHeader(String key, String value)

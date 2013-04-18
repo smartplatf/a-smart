@@ -48,7 +48,6 @@ import org.anon.utilities.exception.CtxException;
 public abstract class AbstractStore implements Store
 {
     private String _name;
-    private String _related;
     protected StoreConfig _config;
     protected transient StoreConnection _connection;
     
@@ -58,17 +57,16 @@ public abstract class AbstractStore implements Store
         _connection = conn;
     }
 
-    public void setup(String name, String related, StoreConfig cfg)
+    public void setup(String name, StoreConfig cfg)
         throws CtxException
     {
         try
         {
             _name = name;
-            _related = related;
             _config = cfg;
             assertion().assertNotNull(_connection, "The connection object is null");
             _connection.connect(cfg);
-            _connection.open(related, name);
+            _connection.open(name);
         }
         catch (Exception e)
         {
@@ -77,5 +75,11 @@ public abstract class AbstractStore implements Store
     }
 
     public StoreConnection getConnection() { return _connection; }
+
+    public void close()
+        throws CtxException
+    {
+        _connection.close();
+    }
 }
 

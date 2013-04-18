@@ -64,6 +64,13 @@ public abstract class AbstractHypothesis implements Hypothesis
         _id = id;
         _collected = new ConcurrentHashMap<TruthData, EmpiricalData>();
         _errorCollected = new ConcurrentHashMap<TruthData, EmpiricalData>();
+        _taggedCollection = new ConcurrentHashMap<TruthData, String>();
+    }
+
+    public EmpiricalData dataFor(TruthData truth)
+        throws CtxException
+    {
+        return _collected.get(truth);
     }
 
     private String createKey(List<String> tags)
@@ -116,6 +123,27 @@ public abstract class AbstractHypothesis implements Hypothesis
         return ret;
     }
 
+    public EmpiricalData collectError(EmpiricalData edata)
+        throws CtxException
+    {
+        TruthData td = edata.truth();
+        if (td == null)
+        {
+            //this is a new data that has to become truth
+            edata.setNew();
+            //assumption is that the empiricaldata will provide an empty
+            //truth data here for new data once the flag is set.
+            td = edata.truth();
+        }
+
+        EmpiricalData present = _collected.get(td);
+        if (present != null)
+            _collected.remove(td);
+
+        EmpiricalData ret = addTo(td, edata, _errorCollected);
+        return ret;
+    }
+
     public List<EmpiricalData> empiricalDataFor(String tag)
         throws CtxException
     {
@@ -154,6 +182,91 @@ public abstract class AbstractHypothesis implements Hypothesis
                 ret.add(_collected.get(td));
         }
         return ret;
+    }
+
+    protected Map<TruthData, EmpiricalData> workWith(boolean outcome)
+    {
+        if (outcome)
+            return _collected;
+        else
+            return _errorCollected;
+    }
+
+    public boolean startTxn(UUID txnid)
+        throws CtxException
+    {
+        boolean ret = true;
+        Map<TruthData, EmpiricalData> workwith = workWith(true);
+        for (TruthData td : workwith.keySet())
+            ret = ret && td.start(txnid); //if one fails all others needs not start, hence do this.
+
+        workwith = workWith(false);
+        for (TruthData td : workwith.keySet())
+            ret = ret && td.start(txnid); //if one fails all others needs not start, hence do this.
+
+        return ret;
+    }
+
+    public boolean endTxn(UUID txnid)
+        throws CtxException
+    {
+        boolean ret = true;
+
+        Map<TruthData, EmpiricalData> workwith = workWith(true);
+        for (TruthData td : workwith.keySet())
+            ret = td.end(txnid) && ret; //need to end for all, hence do this.
+
+        workwith = workWith(false);
+        for (TruthData td : workwith.keySet())
+            ret = td.end(txnid) && ret; //need to end for all, hence do this. Need to end even for errors
+
+        return ret;
+    }
+
+    public boolean simulate(UUID txnid)
+        throws CtxException
+    {
+        //simulate for only those in collected
+        boolean ret = true;
+        Map<TruthData, EmpiricalData> workwith = workWith(true);
+        for (TruthData td : workwith.keySet())
+        {
+            EmpiricalData ed = workwith.get(td);
+            ret = ret && td.simulate(txnid, ed); //one error and it will stop
+        }
+
+        return ret;
+    }
+
+    public void accept(UUID txnid)
+        throws CtxException
+    {
+        //accept only those that are in collected
+        Map<TruthData, EmpiricalData> workwith = workWith(true);
+        for (TruthData td : workwith.keySet())
+        {
+            EmpiricalData ed = workwith.get(td);
+            td.accept(txnid, ed);
+        }
+    }
+
+    public void discard(UUID txnid)
+        throws CtxException
+    {
+        //discard all that are in both errors and collected
+        Map<TruthData, EmpiricalData> workwith = workWith(true);
+        for (TruthData td : workwith.keySet())
+        {
+            EmpiricalData ed = workwith.get(td);
+            td.discard(txnid, ed);
+        }
+
+        workwith = workWith(false);
+        for (TruthData td : workwith.keySet())
+        {
+            EmpiricalData ed = workwith.get(td);
+            td.discard(txnid, ed);
+        }
     }
 }
 

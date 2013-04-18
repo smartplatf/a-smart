@@ -46,12 +46,14 @@ public abstract class AbstractStoreRecord implements StoreRecord
     protected String _group;
     protected Object _primaryKey;
     protected Object _currentObject;
+    protected Object _orig;
 
-    public AbstractStoreRecord(String group, Object primary, Object curr)
+    public AbstractStoreRecord(String group, Object primary, Object curr, Object orig)
     {
         _group = group;
         _primaryKey = primary;
         _currentObject = curr;
+        _orig = orig;
     }
 
     public Object getRowId()
@@ -63,5 +65,11 @@ public abstract class AbstractStoreRecord implements StoreRecord
     {
         return _group;
     }
+    
+    public Object getOriginal()
+    {
+    	return _orig;
+    }
+    
 }
 
