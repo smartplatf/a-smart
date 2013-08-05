@@ -71,5 +71,11 @@ public interface DScope
 
     public void close()
         throws CtxException;
+    
+    public Object eventLegend(ClassLoader ldr)
+            throws CtxException;
+    
+    public String origin();
+    public String flow();
 }
 

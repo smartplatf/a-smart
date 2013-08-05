@@ -66,7 +66,7 @@ public class ObjectAccessCounter extends AbstractMetricCounter {
 		return OBJECTACCESSGROUP;
 	}
 	@Override
-	public void initOnLoad() throws CtxException {
+	public void smart___initOnLoad() throws CtxException {
 		// TODO Auto-generated method stub
 		
 	}

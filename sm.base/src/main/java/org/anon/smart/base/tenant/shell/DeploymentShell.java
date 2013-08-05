@@ -41,13 +41,16 @@
 
 package org.anon.smart.base.tenant.shell;
 
+import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.smart.base.loader.SmartLoader;
 import org.anon.smart.base.tenant.SmartTenant;
+import org.anon.smart.base.flow.Link;
 import org.anon.smart.base.flow.FlowDeployment;
 import org.anon.smart.base.flow.FlowDeploymentSuite;
 import org.anon.smart.base.flow.PrimeTypeFilter;
@@ -64,6 +67,7 @@ public class DeploymentShell implements SmartShell, FlowConstants
     private SmartTenant _tenant;
     private ClassLoader _loader;
     private LicensedDeploymentSuite<FlowDeployment> _licensed;
+    private Map<String, List<FlowDeployment>> _linked;
 
     public DeploymentShell(SmartTenant tenant, ClassLoader ldr)
         throws CtxException
@@ -72,17 +76,50 @@ public class DeploymentShell implements SmartShell, FlowConstants
         _licensed.setHandleDeployment(FlowDeployment.class);
         _loader = ldr;
         _tenant = tenant;
+        _linked = new ConcurrentHashMap<String, List<FlowDeployment>>();
     }
 
-    public void enableForMe(String name, String[] features)
+    private String getUnique(String flow, String object)
+    {
+        return flow + "." + object;
+    }
+
+    private void cacheLinks(FlowDeployment dep)
+        throws CtxException
+    {
+        List<Link> lnks = dep.getLinks();
+        if (lnks != null)
+        {
+            for (Link l : lnks)
+            {
+                String unique = getUnique(l.getFromObject().getFlow(), l.getFromObject().getObject());
+                List<FlowDeployment> deps = _linked.get(unique);
+                if (deps == null)
+                    deps = new ArrayList<FlowDeployment>();
+                deps.add(dep);
+                _linked.put(unique, deps);
+            }
+        }
+    }
+
+    public FlowDeployment enableForMe(String name, String[] features, Map<String, String> linked)
         throws CtxException
     {
         //this has to be run from the same classloader as the tenant which will be
         //the application class loader. Anything else should anyways give error.
         Artefact[] artefacts = FlowDeploymentSuite.getAssistant().enableFor(_licensed, name, features);
-        for (int i = 0; i < artefacts.length; i++)
-            System.out.println("Added artefact for " + name + ": " + artefacts[i].getName() + ":" + artefacts[i].getClazz());
+        //for (int i = 0; i < artefacts.length; i++)
+         //   System.out.println("Added artefact for " + name + ": " + artefacts[i].getName() + ":" + artefacts[i].getClazz());
         FlowDeployment deploy = _licensed.assistant().deploymentFor(name);
+        //if there are links needed, then ensure they are there.
+        if (deploy.getNeedLinks() > 0)
+        {
+            assertion().assertTrue(((linked != null) && (linked.size() >= deploy.getNeedLinks())), "The deployment cannot be enabled without links provided");
+            for (String n : linked.keySet())
+                deploy.setupLinkFor(n, linked.get(n));
+        }
+
+        assertion().assertTrue((deploy.getNeedLinks() <= 0), "Not all links are provided. Need links for: " + deploy.getNeedLinkNames());
         List<String> jars = deploy.myJars();
         for (String jar : jars)
         {
@@ -92,6 +129,14 @@ public class DeploymentShell implements SmartShell, FlowConstants
         Object model = deploy.model(_loader);
         _tenant.enableFlow(model, artefacts, deploy);
         _tenant.registerEnabledFlow(name, features);
+        cacheLinks(deploy);
+        return deploy;
+    }
+
+    public List<FlowDeployment> linkedDeploymentsFor(String flow, String object)
+    {
+        String unique = getUnique(flow, object);
+        return _linked.get(unique);
     }
 
     public Class deployment(String dep, String name, String type)
@@ -115,6 +160,12 @@ public class DeploymentShell implements SmartShell, FlowConstants
         if (cls == null)
             cls = deployment(dep, name, PRIMEDATA);
         return cls;
+    }
+
+    public Class configClass(String dep, String name)
+        throws CtxException
+    {
+        return deployment(dep, name, CONFIG);
     }
 
     public List<Class> transitionsFor(String dep, String prime, String event, String extra)

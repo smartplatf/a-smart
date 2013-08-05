@@ -70,6 +70,8 @@ public class TemplateReader extends VMSingleton
 
     private Map<String, Class<? extends BaseTL>> __type__mapping__ = new HashMap<String, Class<? extends BaseTL>>();
     private List<SearchTemplate> __search__templates__ = new ArrayList<SearchTemplate>();
+    private List<Class> ___added__annotates___ = new ArrayList<Class>();
+    private List<String> ___added__types___ = new ArrayList<String>();
 
     public TemplateReader()
     {
@@ -77,6 +79,36 @@ public class TemplateReader extends VMSingleton
         //in the order it will be searched
         __search__templates__.add(new ClassTemplate());
         __search__templates__.add(new DefaultTemplate());
+    }
+
+    public static Class[] getAddedAnnotates()
+        throws CtxException
+    {
+        TemplateReader reader = getTemplateReader();
+        return reader.___added__annotates___.toArray(new Class[0]);
+    }
+
+    public static String[] getExtraTypes()
+        throws CtxException
+    {
+        TemplateReader reader = getTemplateReader();
+        return reader.___added__types___.toArray(new String[0]);
+    }
+
+    public static void addExtraType(String type)
+        throws CtxException
+    {
+        TemplateReader reader = getTemplateReader();
+        if (!reader.___added__types___.contains(type))
+            reader.___added__types___.add(type);
+    }
+
+    public static void addAnnotates(Class cls)
+        throws CtxException
+    {
+        TemplateReader reader = getTemplateReader();
+        if (!reader.___added__annotates___.contains(cls))
+            reader.___added__annotates___.add(cls);
     }
 
     public static void registerTemplate(String name, Class<? extends BaseTL> type)
@@ -101,15 +133,27 @@ public class TemplateReader extends VMSingleton
         String[] types = BaseTL.getTypes(values);
         for (int i = 0; i < types.length; i++)
         {
-            Class<? extends BaseTL> cls = reader.__type__mapping__.get(types[i]);
-            if (cls != null)
-            {
-                BaseTL tl = (BaseTL)convert().mapToObject(cls, values);
-                ret.add(tl);
-            }
+            addOne(types[i], values, ret, reader);
         }
 
         return ret.toArray(new BaseTL[0]);
+    }
+
+    private static void addOne(String type, Map values, List<BaseTL> ret, TemplateReader reader)
+        throws CtxException
+    {
+        Class<? extends BaseTL> cls = reader.__type__mapping__.get(type);
+        if (cls != null)
+        {
+            BaseTL tl = (BaseTL)convert().mapToObject(cls, values);
+            ret.add(tl);
+            String[] extras = tl.getExtras();
+            for (int i = 0; (extras != null) && (i < extras.length); i++)
+            {
+                if (tl.shouldAdd(extras[i]))
+                    addOne(extras[i], values, ret, reader);
+            }
+        }
     }
 
     public static BaseTL[] readTemplate(String cls, ClassLoader ldr)

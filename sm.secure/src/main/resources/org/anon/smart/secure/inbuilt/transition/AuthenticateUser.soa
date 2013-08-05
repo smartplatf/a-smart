@@ -1,0 +1,11 @@
+name:       AuthenticateUser
+type:       Transition
+flow:       Security
+foreach:        FlowAdmin|Authenticate
+actions:
+    - name:     authenticateUser
+      method:   authenticateUser
+      foreach:  FlowAdmin|Authenticate
+      from:     active
+      to:       active
+

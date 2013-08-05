@@ -108,6 +108,9 @@ public abstract class AbstractStoreTransaction implements StoreTransaction
         _recordsInTxn.put(group, grp);
         return rec;
     }
+    
+    public abstract StoreRecord addRecord(String group, Object primarykey, Object curr, Object orig, Object relatedKey)
+            throws CtxException;
 
     //by default wait.
     public boolean waitToComplete()

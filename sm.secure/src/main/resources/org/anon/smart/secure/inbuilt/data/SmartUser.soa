@@ -1,0 +1,12 @@
+name:   SmartUser
+type:   PrimeData
+flow:   Security
+attributes:
+    - attribute:    _id
+      type:         key
+states:
+    - name:         active
+      startState:   true
+    - name:         inactive
+      endState:     true
+

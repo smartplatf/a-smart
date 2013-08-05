@@ -76,5 +76,7 @@ public interface StoreConnection extends Repeatable
     	throws CtxException;
     public void remove(String group, Object key)
     	throws CtxException;
+    public boolean exists(String group, Object key)
+            throws CtxException;
 }
 

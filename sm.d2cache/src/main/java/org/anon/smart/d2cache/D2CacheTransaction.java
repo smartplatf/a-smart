@@ -51,6 +51,8 @@ import org.anon.utilities.exception.CtxException;
 
 public interface D2CacheTransaction
 {
+    public void setupFilters(DataFilter[] filters);
+
     public void add(StoreItem item)
         throws CtxException;
 

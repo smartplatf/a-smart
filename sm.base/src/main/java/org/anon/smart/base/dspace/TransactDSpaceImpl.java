@@ -42,6 +42,7 @@
 package org.anon.smart.base.dspace;
 
 import org.anon.smart.d2cache.D2CacheScheme;
+import org.anon.smart.d2cache.DataFilter;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -53,10 +54,22 @@ public class TransactDSpaceImpl extends AbstractDSpace
         super(name);
     }
 
-    protected D2CacheScheme.scheme getScheme()
+     public TransactDSpaceImpl(String name, DataFilter[] filters)
+        throws CtxException
     {
-        //TODO:
-        return D2CacheScheme.scheme.memstoreind;
+        super(name, filters);
     }
+
+
+    protected D2CacheScheme.scheme getCacheScheme()
+    {
+	    return D2CacheScheme.scheme.memstoreind;
+    }
+    
+        protected D2CacheScheme.scheme getFileCacheScheme()
+    {
+        return D2CacheScheme.scheme.filestore;
+    }
+
 }
 

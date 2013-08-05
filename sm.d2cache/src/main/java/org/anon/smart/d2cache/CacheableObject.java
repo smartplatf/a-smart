@@ -44,5 +44,5 @@ package org.anon.smart.d2cache;
 import org.anon.utilities.exception.CtxException;
 
 public interface CacheableObject {
-	public void initOnLoad() throws CtxException;
+	public void smart___initOnLoad() throws CtxException;
 }

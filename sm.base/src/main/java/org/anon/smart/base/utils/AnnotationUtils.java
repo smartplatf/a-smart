@@ -45,6 +45,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import org.anon.smart.base.annot.BaseAnnotate;
+import org.anon.smart.base.annot.ConfigAnnotate;
 import org.anon.smart.base.annot.EventAnnotate;
 import org.anon.smart.base.annot.SmartDataAnnotate;
 import org.anon.smart.base.annot.PrimeDataAnnotate;
@@ -118,6 +119,23 @@ public class AnnotationUtils
         return null;
     }
 
+    public static String configFor(Class cls)
+        throws CtxException
+    {
+        assertion().assertNotNull(cls, "Cannot find the config of a null class");
+        SmartDataAnnotate annot = (SmartDataAnnotate)reflect().getAnnotation(cls, SmartDataAnnotate.class);
+        System.out.println("Annot is: " + annot);
+        if (annot != null)
+            return annot.config();
+
+        PrimeDataAnnotate pannot = (PrimeDataAnnotate)reflect().getAnnotation(cls, PrimeDataAnnotate.class);
+        System.out.println("Annot is: " + pannot);
+        if (pannot != null)
+            return pannot.config();
+
+        return null;
+    }
+
     public static String commitFor(Class cls)
         throws CtxException
     {
@@ -160,6 +178,13 @@ public class AnnotationUtils
                 ret[i] = flds[i].getType();
         }
         return ret;
+    }
+
+    public static boolean isConfig(Class cls)
+        throws CtxException
+    {
+        ConfigAnnotate annot = (ConfigAnnotate)reflect().getAnnotation(cls, ConfigAnnotate.class);
+        return (annot != null);
     }
 }
 

@@ -48,8 +48,10 @@ import java.util.ArrayList;
 
 import org.anon.smart.channels.distill.Isotope;
 import org.anon.smart.base.tenant.SmartTenant;
+import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 import org.anon.smart.base.flow.FlowDeployment;
 import org.anon.smart.smcore.channel.distill.ChannelConstants;
+import org.anon.utilities.exception.CtxException;
 
 public class SearchedData extends Isotope implements ChannelConstants
 {
@@ -70,6 +72,7 @@ public class SearchedData extends Isotope implements ChannelConstants
     private SmartTenant _tenant;
     private String _flow;
     private FlowDeployment _flowDeployment;
+    private CrossLinkFlowDeployment _clFlowDeployment;
     //private Object _session;
     private Map<String, List<Object>> _searchedData;
     private List<PrimeFlow> _primeSearch;
@@ -107,8 +110,15 @@ public class SearchedData extends Isotope implements ChannelConstants
     {
         _flowDeployment = flow;
     }
+    
+    void setupFlowDeployment(CrossLinkFlowDeployment flow)
+    {
+    	_clFlowDeployment = flow;
+    }
 
     public FlowDeployment flowDeployment() { return _flowDeployment; }
+    
+    public CrossLinkFlowDeployment crossLinkFlowDeployment() { return _clFlowDeployment; }
 
     void setupEventClass(Class cls) { _eventClass = cls; }
 
@@ -161,13 +171,16 @@ public class SearchedData extends Isotope implements ChannelConstants
         return _eventLegend;
     }
 
-    public void setupSearchMap(PrimeFlow flow)
+    public void setupSearchMap(PrimeFlow flow) throws CtxException
     {
         _values = new HashMap<String, Object>();
         _values.put(EVENT_LEGEND_FLD, _eventLegend);
         _values.put(FLOW_FLD, flow._flowObject);
         _values.put(PRIMEDATA_FLD, flow._primeObject);
-        _values.put(FLOW_NAME_FLD, _flowDeployment.deployedName());
+        if(_flowDeployment != null)
+            _values.put(FLOW_NAME_FLD, _flowDeployment.deployedName());
+        else
+        	_values.put(FLOW_NAME_FLD, _clFlowDeployment.deployedName());
         //_values.put(SESSION_FLD, _session);
         for (String key : _searchedData.keySet())
         {

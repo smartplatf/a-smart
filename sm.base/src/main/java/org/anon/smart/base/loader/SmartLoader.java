@@ -76,5 +76,10 @@ public class SmartLoader extends RelatedLoader
         SmartLoader ldr = new SmartLoader(this.getURLs(), lvars.getName(), _initComps);
         return ldr;
     }
+
+    public String[] addExtraSTT(String type)
+    {
+        return new String[0];
+    }
 }
 

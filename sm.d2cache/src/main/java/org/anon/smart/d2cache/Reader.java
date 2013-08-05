@@ -48,6 +48,8 @@ import org.anon.utilities.exception.CtxException;
 
 public interface Reader
 {
+    public void userFilters(DataFilter[] filter);
+
     public Object lookup(String group, Object key)
         throws CtxException;
 
@@ -56,5 +58,8 @@ public interface Reader
     
     public List<Object> listAll(String group, int size)
     	throws CtxException;
+    
+    public boolean exists(String group, Object key)
+            throws CtxException;
 }
 

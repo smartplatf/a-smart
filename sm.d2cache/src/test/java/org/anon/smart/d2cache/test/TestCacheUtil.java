@@ -54,7 +54,8 @@ public class TestCacheUtil {
 	public static void setTestData(D2Cache cache, Object obj, Object[] keys, String group)
 	throws CtxException {
 		D2CacheTransaction txn =  cache.startTransaction(UUID.randomUUID());
-		StoreItem item = new StoreItem(keys, obj, group);
+		StoreItem item = new StoreItem(keys, null, group);
+		item.setModified(obj);
 		txn.add(item);
 		txn.commit();
 		

@@ -60,6 +60,7 @@ public abstract class BaseTL implements Constants
         try
         {
             TemplateReader.registerTemplate("SmartData", SmartObjectTL.class);
+            TemplateReader.addAnnotates(BaseAnnotate.class);
         }
         catch (Exception e)
         {
@@ -85,8 +86,9 @@ public abstract class BaseTL implements Constants
     }
 
     public Class[] getAnnotations(String name)
+        throws CtxException
     {
-        return new Class[] { BaseAnnotate.class };
+        return TemplateReader.getAddedAnnotates();
     }
 
     public Object findValue(String nm)
@@ -125,6 +127,17 @@ public abstract class BaseTL implements Constants
         tl.flow = f;
 
         return tl.name;
+    }
+
+    public boolean shouldAdd(String type)
+    {
+        return false;
+    }
+
+    public String[] getExtras()
+        throws CtxException
+    {
+        return TemplateReader.getExtraTypes();
     }
 }
 

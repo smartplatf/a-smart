@@ -65,13 +65,23 @@ public class SanitizationStage implements Distillation
         _myRectifier = rectifier;
     }
 
+    protected SearchedData createData(Isotope curr)
+    {
+        return new SearchedData(curr);
+    }
+
+    protected SanitizeData createSanitizer()
+    {
+        return new SanitizeData();
+    }
+
     public Distillate distill(Distillate prev)
         throws CtxException
     {
         Isotope curr = prev.current();
         PData pdata = (PData)prev.from().current();
-        SearchedData data = new SearchedData(curr);
-        SanitizeData sanitize = new SanitizeData();
+        SearchedData data = createData(curr);
+        SanitizeData sanitize = createSanitizer();
         sanitize.sanitizePData(pdata, data);
         if (curr instanceof MapData)
         {

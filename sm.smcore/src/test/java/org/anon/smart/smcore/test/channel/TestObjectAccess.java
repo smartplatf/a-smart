@@ -44,6 +44,9 @@ package org.anon.smart.smcore.test.channel;
 
 import java.io.ByteArrayInputStream;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -56,11 +59,14 @@ import org.anon.smart.channels.data.ContentData;
 import org.anon.smart.channels.data.PData;
 
 import org.anon.smart.smcore.test.CoreServerUtilities;
+import org.anon.smart.smcore.test.TestClient;
+import org.anon.smart.smcore.test.AssertJSONResponse;
 
 import org.anon.utilities.anatomy.CrossLinkApplication;
 
 public class TestObjectAccess
 {
+    /*
     private void postTo(SCShell shell, int port, String server, String uri, String post)
         throws Exception
     {
@@ -77,6 +83,7 @@ public class TestObjectAccess
         cchnl.post(uri, new PData[] { d });
         cchnl.disconnect();
     }
+    */
 
     @Test
     public void dummyTest()
@@ -84,7 +91,7 @@ public class TestObjectAccess
 	assertTrue(1==1);
     }
 
-    //@Test
+    @Test
     public void testTestSearchEvent()
         throws Exception
     {
@@ -92,45 +99,85 @@ public class TestObjectAccess
         CoreServerUtilities utils = new CoreServerUtilities(port);
         utils.runServer("org.anon.smart.smcore.test.channel.RunSmartServer");
         SCShell shell = new SCShell();
-        Thread.sleep(10000);
+        //Thread.sleep(3000);
         String home = System.getenv("HOME");
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", 
+
+        TestClient clnt = new TestClient(port, "localhost", "newtenant", "RegistrationFlow", "RegistrationFlow.soa");
+        clnt.deployFromSampleJar();
+        clnt.createTenant();
+
+        /*postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", 
         		"{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, " +
         		"'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'RegistrationFlow.soa'}");
         System.out.println("Zzzzzzzz 1 Min after deploy------------------------");
         Thread.sleep(10000); //response shd have come within 3s
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'newtenant','enableFlow':'RegistrationFlow','enableFeatures':['all']}");
-        System.out.println("Zzzzzzzz 1 Min after Tenant Creation-----------------------");
-        Thread.sleep(10000);
+       // postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'newtenant','enableFlow':'RegistrationFlow','enableFeatures':['all']}");
+        //System.out.println("Zzzzzzzz 1 Min after Tenant Creation-----------------------");
+        Thread.sleep(10000);*/
         
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 1; i++)
         {
-            postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'rsankarx" + i + "@gmail.com'}");
+            clnt.post("RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'vjaasti" + i + "@gmail.com',  'password':[\"91\", \"92\"], 'salary':'20000'}");
+        	//clnt.post("RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'vjaasti" + i + "@gmail.com', 'salary':'20000'}");
         }
-        System.out.println("Zzzzzzzz 1 Min after Registration----------------------");
-        Thread.sleep(10000);
-        /*
+        //System.out.println("Zzzzzzzz 1 Min after Registration----------------------");
+        //Thread.sleep(10000);
+        
         System.out.println("Ended Registration------------------------");
+
        
         System.out.println("Running lookup event.................");
         //Lookup
-        postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/LookupEvent",
-        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'key':'rsankarx0@gmail.com'}");
+        //postTo(shell, port, "localhost", "/MyTenant/RegistrationFlow/LookupEvent",
+        //		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'key':'vjaasti0@gmail.com'}");
+	AssertJSONResponse r =  clnt.post("LookupEvent",  "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'key':'vjaasti0@gmail.com'}");
         System.out.println("Zzzzzzzz 1 Min after lookup----------------------");
-        Thread.sleep(10000);
-        */
         
-        /*
+        
+        System.out.println("Running CHECKEXISTENCE event.................");
+        r =  clnt.post("CheckExistence",  "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'key':'vjaasti0@gmail.com'}");
+        assertTrue(r != null);
+        List res = ((List)r.getjson().get("responses"));
+        Map er = (Map)res.get(0);
+        Boolean exists = (Boolean)er.get("exists");
+        System.out.println("CHECK EXISTENCE RESULT:"+exists);
+        
+        assertTrue(exists.booleanValue());
+        
+        System.out.println("Running CHECKEXISTENCE event.................");
+        r =  clnt.post("CheckExistence",  "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'key':'vjaasti000@gmail.com'}");
+        
+       
+        AssertJSONResponse resp = null;
         System.out.println("Running search event.................");
         //Search
-        postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/SearchEvent",
-        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'queryMap':{'email':'rsankarx0@gmail.com'}}");
+        resp = clnt.post("SearchEvent",
+        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'queryMap':{'email':'vjaasti0@gmail.com'}}");
         System.out.println("Zzzzzzzz 1 Min after Search----------------------");
         
-        Thread.sleep(60000);
-        */
-        /*System.out.println("Running listall event.................");
+        //Thread.sleep(10000);
+        assertTrue(resp != null);
+        List responses = ((List)resp.getjson().get("responses"));
+        Map sr = (Map)responses.get(0);
+        List resultSet = (List)sr.get("searchResult");
+        System.out.println("ResultSet Size:"+resultSet.size());
+        assertTrue(resultSet.size() > 0);
+       
+        System.out.println("Running search event with Integer field.................");
         //Search
+        resp = clnt.post("SearchEvent",
+        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'queryMap':{'weight':'0.0'}}");
+        System.out.println("Zzzzzzzz 1 Min after Search----------------------");
+        
+        //Thread.sleep(10000);
+        assertTrue(resp != null);
+        responses = ((List)resp.getjson().get("responses"));
+        sr = (Map)responses.get(0);
+        resultSet = (List)sr.get("searchResult");
+        System.out.println("ResultSet Size:"+resultSet.size());
+        //assertTrue(resultSet.size() > 0);
+/*
+        System.out.println("Running listall event.................");
         postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/ListAllEvent",
         		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'size':4}");
         System.out.println("Zzzzzzzz 1 Min after List All----------------------");
@@ -138,60 +185,38 @@ public class TestObjectAccess
         Thread.sleep(10000);
         
         System.out.println("Running listall event AGAIN.................");
-        //Search
         postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/ListAllEvent",
         		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'size':4}");
         System.out.println("Zzzzzzzz 1 Min after List All----------------------");
         
-        Thread.sleep(10000);*/
+        Thread.sleep(10000);
         
         System.out.println("GETTING COUNTERS.................");
         //Search
         postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/MetricAccess",
         		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'objName':'Registration'}");
         System.out.println("Zzzzzzzz 1 Min after List All----------------------");
+ */       
         
-        Thread.sleep(10000);
+        System.out.println("Running MetricAccess event .................");
+        resp = clnt.post("MetricAccess",
+        		"{'FlowAdmin':{'___smart_action___':'lookup','___smart_value___':'RegistrationFlow'},'metric':'instancecount','key':'Registration'}}");
+        assertTrue(resp != null);
+        //System.out.println("Zzzzzzzz 1 Min after MetricAccess----------------------");
+        
+        //Thread.sleep(10000);
+
+        System.out.println("Running MetricAccess event again .................");
+        resp = clnt.post("MetricAccess",
+        		"{'FlowAdmin':{'___smart_action___':'lookup','___smart_value___':'RegistrationFlow'},'metric':'eventcount','key':'RegisterEvent'}}");
+        assertTrue(resp != null);
+        //System.out.println("Zzzzzzzz 1 Min after MetricAccess----------------------");
+        
+        
+        //Thread.sleep(1000 * 60);
         utils.stopServer();
     }
     
-    @Test
-    public void testSurveyDemo()
-        throws Exception
-    {
-        int port = 9084;
-        CoreServerUtilities utils = new CoreServerUtilities(port);
-        utils.runServer("org.anon.smart.smcore.test.channel.RunSmartServer");
-        SCShell shell = new SCShell();
-        Thread.sleep(6000);
-        String home = System.getenv("HOME");
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", 
-        		"{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, " +
-        		"'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'RegistrationFlow.soa'}");
-        System.out.println("Zzzzzzzz 1 Min after deploy------------------------");
-        Thread.sleep(10000); //response shd have come within 3s
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'newtenant','enableFlow':'RegistrationFlow','enableFeatures':['all']}");
-        System.out.println("Zzzzzzzz 1 Min after Tenant Creation-----------------------");
-        Thread.sleep(10000);
-        
-        for (int i = 0; i < 5; i++)
-        {
-            postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'rsankarx" + i + "@gmail.com'}");
-        }
-        System.out.println("Zzzzzzzz 1 Min after Registration----------------------");
-        Thread.sleep(10000);
-        System.out.println("Ended Registration------------------------");
-       
-        System.out.println("Running lookup event.................");
-        
-        System.out.println("GETTING COUNTERS.................");
-        //Search
-        postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/MetricAccess",
-        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'objName':'Registration'}");
-        System.out.println("Zzzzzzzz 1 Min after List All----------------------");
-        
-        Thread.sleep(10000);
-        utils.stopServer();
-    }
+   
 
 }

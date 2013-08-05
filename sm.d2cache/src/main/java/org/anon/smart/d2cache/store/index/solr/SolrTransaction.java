@@ -110,5 +110,12 @@ public class SolrTransaction extends AbstractStoreTransaction
     {
         return false;
     }
+
+	@Override
+	public StoreRecord addRecord(String group, Object primarykey, Object curr,
+			Object orig, Object relatedKey) throws CtxException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

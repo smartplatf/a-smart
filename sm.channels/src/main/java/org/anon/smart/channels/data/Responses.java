@@ -58,6 +58,10 @@ public class Responses implements java.io.Serializable
         responses.add(response);
     }
 
+    public List<Object> responses(){
+    	return responses;
+    }
+    
     public String toString() { return ":" + responses.toString(); }
 }
 

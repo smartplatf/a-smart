@@ -1,0 +1,42 @@
+<html>
+	<head>
+
+		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<script src="js/confirmation.js"></script>
+		<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<script type="text/javascript" src="js/bootstrap.js"></script>
+	</head>
+	<body>
+
+		<img id="image1" src="images/backdrop.png" alt="screenshot" width="100%">
+
+		<!--Activation success--->
+		<div id="activationsuccess" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+			<div class="modal-header">
+				<h3 id="myModalLabel">Verification Success!!</h3>
+			</div>
+			<div id="activatedbody" class="modal-body">
+				<p>
+					Your email ID was successfully verified.Click on Ok button to continue...
+				</p>
+			</div>
+			<div id="flowfooter" class="modal-footer">
+				<button id="ok" class="btn btn-success" data-dismiss="modal">
+					Ok
+				</button>
+			</div>
+		</div>
+
+		<!--working--->
+		<div id="working" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+			<div class="modal-header">
+				<h3 id="myModalLabel">Working....</h3>
+			</div>
+			<div id="working" class="modal-body">
+				<img src="images/working.gif" width="50px;" class ="span1">
+				<h4 id="working" class="offset1">Please wait while we validate your Email Id..... </h4>
+			</div>
+		</div>
+	</body>
+
+</html>

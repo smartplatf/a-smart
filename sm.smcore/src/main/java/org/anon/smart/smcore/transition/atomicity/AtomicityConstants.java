@@ -45,5 +45,7 @@ public interface AtomicityConstants
 {
     public static final String SMARTDATA = "SmartData";
     public static final String RESPONSE = "Response";
+    public static final String MESSAGE = "Message";
+    public static final String CONFIG = "Config";
 }
 

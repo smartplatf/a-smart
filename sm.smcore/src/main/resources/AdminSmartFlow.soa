@@ -7,13 +7,18 @@ events:
     - org.anon.smart.smcore.inbuilt.events.EnableFlow
     - org.anon.smart.smcore.inbuilt.events.DeployEvent
     - org.anon.smart.smcore.inbuilt.events.ListDeployments
+    - org.anon.smart.smcore.inbuilt.events.DefinePrime
+    - org.anon.smart.smcore.inbuilt.events.ListEnabledFlows
 responses:
     - org.anon.smart.smcore.inbuilt.responses.SuccessCreated
     - org.anon.smart.smcore.inbuilt.responses.ErrorResponse
     - org.anon.smart.smcore.inbuilt.responses.DeploymentList
+    - org.anon.smart.smcore.inbuilt.responses.PrimeDefinition
+    - org.anon.smart.smcore.inbuilt.responses.ListEnabledFlowsResponse
 transitions:
     - org.anon.smart.smcore.inbuilt.transition.SmartTenantManager
     - org.anon.smart.smcore.inbuilt.transition.DeploymentManager
+    - org.anon.smart.smcore.inbuilt.transition.CodeGenManager
 features:
     - name: all
       artefacts:
@@ -22,9 +27,13 @@ features:
         - org.anon.smart.smcore.inbuilt.events.EnableFlow
         - org.anon.smart.smcore.inbuilt.events.DeployEvent
         - org.anon.smart.smcore.inbuilt.events.ListDeployments
+        - org.anon.smart.smcore.inbuilt.events.DefinePrime
+        - org.anon.smart.smcore.inbuilt.events.ListEnabledFlows
         - org.anon.smart.smcore.inbuilt.responses.SuccessCreated
         - org.anon.smart.smcore.inbuilt.responses.ErrorResponse
         - org.anon.smart.smcore.inbuilt.responses.DeploymentList
+        - org.anon.smart.smcore.inbuilt.responses.PrimeDefinition
+        - org.anon.smart.smcore.inbuilt.responses.ListEnabledFlowsResponse
         - org.anon.smart.smcore.inbuilt.transition.SmartTenantManager
         - org.anon.smart.smcore.inbuilt.transition.DeploymentManager
-
+        - org.anon.smart.smcore.inbuilt.transition.CodeGenManager

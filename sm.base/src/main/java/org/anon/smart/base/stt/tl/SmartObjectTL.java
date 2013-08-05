@@ -48,6 +48,8 @@ import java.lang.annotation.Annotation;
 import org.anon.smart.base.annot.SmartDataAnnotate;
 import org.anon.smart.base.annot.StatesAnnotate;
 
+import org.anon.utilities.exception.CtxException;
+
 public class SmartObjectTL extends BaseTL
 {
     private String merge;
@@ -69,6 +71,7 @@ public class SmartObjectTL extends BaseTL
 
     @Override
     public Class[] getAnnotations(String name)
+        throws CtxException
     {
         List<Class> annons = new ArrayList<Class>();
         Class[] annots = super.getAnnotations(name);
@@ -78,6 +81,12 @@ public class SmartObjectTL extends BaseTL
         annons.add(SmartDataAnnotate.class);
         annons.add(StatesAnnotate.class);
         return annons.toArray(new Class[0]);
+    }
+
+    @Override
+    public boolean shouldAdd(String type)
+    {
+        return true;
     }
 
     static void populateDefaults(SmartObjectTL ret, String type, String clsname, String key, String flow)

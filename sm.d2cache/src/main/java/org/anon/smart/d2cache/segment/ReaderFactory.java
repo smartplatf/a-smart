@@ -57,9 +57,16 @@ public class ReaderFactory {
 			return new DefaultReader(store, cfg); //TODO
 	}
 	
-	public static Reader getReaderFor(Store[] stores, int flags)
+	public static Reader getReaderFor(Store[] stores, int flags, boolean memOnly)
 		throws CtxException {
-		return new LayeredReader(stores);
+		Reader rdr = null;
+		
+		if(memOnly)
+			rdr = new MemoryReader(stores);
+		else
+			rdr = new LayeredReader(stores, new ReplicationWriter());
+		
+		return rdr;
 		
 	}
 }

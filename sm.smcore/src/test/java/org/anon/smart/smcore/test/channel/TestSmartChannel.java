@@ -56,11 +56,14 @@ import org.anon.smart.channels.data.ContentData;
 import org.anon.smart.channels.data.PData;
 
 import org.anon.smart.smcore.test.CoreServerUtilities;
+import org.anon.smart.smcore.test.TestClient;
+import org.anon.smart.smcore.test.AssertJSONResponse;
 
 import org.anon.utilities.anatomy.CrossLinkApplication;
 
 public class TestSmartChannel
 {
+    /*
     private HTTPClientChannel postTo(SCShell shell, int port, String server, String uri, String post, boolean wait)
         throws Exception
     {
@@ -82,6 +85,7 @@ public class TestSmartChannel
         }
         return cchnl;
     }
+    */
 
     @Test
     public void testTestSmartChannel()
@@ -90,6 +94,38 @@ public class TestSmartChannel
         int port = 9080;
         CoreServerUtilities utils = new CoreServerUtilities(port);
         utils.runServer("org.anon.smart.smcore.test.channel.RunSmartServer");
+
+        TestClient clnt = new TestClient();
+        AssertJSONResponse resp = clnt.postTo(port, "localhost", "/invalidtenant", "", false);
+        //assertTrue(resp != null);
+        //resp.assertHasErrors();
+        resp = clnt.postTo(port, "localhost", "/invalidtenant/invalidflow/invalidevent", "{'order':'testorder'}", true);
+        assertTrue(resp != null);
+        resp.assertHasErrors();
+        resp = clnt.postTo(port, "localhost", "/invalidtenant/invalidflow/invalidevent", "{'order':'testorder'}", true);
+        assertTrue(resp != null);
+        resp.assertHasErrors();
+        resp = clnt.postTo(port, "localhost", "/SmartOwner/invalidflow/", "{'order':'testorder'}", true);
+        assertTrue(resp != null);
+        resp.assertHasErrors();
+
+        clnt = new TestClient(port, "localhost", "coreanon", "ReviewFlow", "ReviewFlow.soa");
+        resp = clnt.post("WriteReview", "{'ReviewObject':{'___smart_action___':'lookup', '___smart_value___':'Not present'}, 'review':'Reviewed','rating':1}");
+        assertTrue(resp != null);
+        resp.assertHasErrors();
+
+        resp = clnt.post("WriteReview", "{'ReviewObject':'Object1', 'review':'Reviewed','rating':1}");
+        assertTrue(resp != null);
+        resp.assertHasErrors();
+
+        resp = clnt.post("WriteReview", "{'ReviewObject':{'___smart_action___':'lookup', '___smart_value___':'Object1'}, 'review':'Reviewed','rating':1}");
+        assertTrue(resp != null);
+
+        clnt = new TestClient(port, "localhost", "newtenant", "RegistrationFlow", "RegistrationFlow.soa");
+        clnt.deployFromSampleJar();
+        clnt.createTenant();
+
+        /*
         SCShell shell = new SCShell();
         postTo(shell, port, "localhost", "/invalidtenant", "", true);
         postTo(shell, port, "localhost", "/invalidtenant/invalidflow/invalidevent", "{'order':'testorder'}", true);
@@ -101,9 +137,10 @@ public class TestSmartChannel
         postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'RegistrationFlow.soa'}", true);
         postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'newtenant','enableFlow':'RegistrationFlow','enableFeatures':['all']}", false);
         Thread.sleep(6000);//tenant creation takes time
+        */
         for (int i = 0; i < 10; i++)
         {
-            postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'rsankarx" + i + "@gmail.com'}", false);
+            clnt.postTo(port, "localhost", "/newtenant/RegistrationFlow/RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'rsankarx" + i + "@gmail.com'}", false);
         }
         Thread.sleep(10000);
         utils.stopServer();

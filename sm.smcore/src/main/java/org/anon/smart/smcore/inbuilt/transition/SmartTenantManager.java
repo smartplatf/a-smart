@@ -41,7 +41,11 @@
 
 package org.anon.smart.smcore.inbuilt.transition;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.anon.smart.base.flow.FlowAdmin;
 import org.anon.smart.base.tenant.SmartTenant;
@@ -50,10 +54,14 @@ import org.anon.smart.base.tenant.TenantsHosted;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
 import org.anon.smart.base.tenant.shell.CrossLinkRuntimeShell;
+import org.anon.smart.base.tenant.shell.DeploymentShell;
 import org.anon.smart.base.tenant.shell.RuntimeShell;
 import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.inbuilt.events.LinkFor;
+import org.anon.smart.smcore.inbuilt.events.ListEnabledFlows;
 import org.anon.smart.smcore.inbuilt.events.NewTenant;
 import org.anon.smart.smcore.inbuilt.events.EnableFlow;
+import org.anon.smart.smcore.inbuilt.responses.ListEnabledFlowsResponse;
 import org.anon.smart.smcore.inbuilt.responses.SuccessCreated;
 import org.anon.smart.smcore.transition.TransitionContext;
 
@@ -71,16 +79,21 @@ public class SmartTenantManager
         assertion().assertNotNull(tenant.tenantName(), "Cannot create a null tenant");
         System.out.println("Creating a tenant: " + tenant.tenantName());
         SmartTenant stenant = new SmartTenant(tenant.tenantName());
-        stenant.deploymentShell().enableForMe("AdminSmartFlow", new String[] { "all" });
-        stenant.deploymentShell().enableForMe("AllFlows", new String[] { "all" });
+        stenant.deploymentShell().enableForMe("AdminSmartFlow", new String[] { "all" }, new HashMap<String, String>());
+        stenant.deploymentShell().enableForMe("AllFlows", new String[] { "all" }, new HashMap<String, String>());
         TenantAdmin admin = new TenantAdmin(tenant.tenantName(), stenant);
+
         String flow = tenant.getEnableFlow();
         List<String> features = tenant.getEnableFeatures();
         if ((flow != null) && (flow.length() > 0) && (features != null))
         {
             System.out.println("Typing to enable flow for: " + flow + ":" + features);
-            stenant.deploymentShell().enableForMe(flow, features.toArray(new String[0]));
+            stenant.deploymentShell().enableForMe(flow, features.toArray(new String[0]), new HashMap<String, String>());
         }
+
+        ClassLoader ldr = stenant.getRelatedLoader();
+        DefaultObjectsManager.createDefaultObjects(admin, stenant, ldr);
+
         SuccessCreated created = new SuccessCreated(tenant.tenantName());
     }
 
@@ -107,10 +120,26 @@ public class SmartTenantManager
         List<String> features = enable.getEnableFeatures();
         if ((flow != null) && (flow.length() > 0) && (features != null))
         {
-            System.out.println("Typing to enable flow for: " + flow + ":" + features);
-            stenant.deploymentShell().enableForMe(flow, features.toArray(new String[0]));
+            System.out.println("Trying to enable flow for: " + flow + ":" + features);
+            Map<String, String> linked = new HashMap<String, String>();
+            if (enable.getLinks() != null)
+            {
+                for (LinkFor l : enable.getLinks())
+                    linked.put(l.getName(), l.getTo());
+            }
+            stenant.deploymentShell().enableForMe(flow, features.toArray(new String[0]), linked);
         }
         SuccessCreated created = new SuccessCreated(enable.getEnableFlow());
+    }
+    
+    public void listEnabledFlows(TenantAdmin dest, ListEnabledFlows event)
+        throws CtxException
+    {
+        assertion().assertNotNull(dest, "Cannot List enabled flows: Tenant is NULL");
+        SmartTenant stenant = TenantsHosted.tenantFor(dest.tenantName());
+        Collection<String> flows = stenant.listEnableFlows();
+        ListEnabledFlowsResponse resp = new ListEnabledFlowsResponse(flows);
+        System.out.println("Enabled Flows For Tenant:"+dest.tenantName()+":"+flows);
     }
 }
 

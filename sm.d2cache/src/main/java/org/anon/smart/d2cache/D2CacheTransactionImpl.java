@@ -53,6 +53,7 @@ import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreItem;
 import org.anon.smart.d2cache.store.StoreRecord;
 import org.anon.smart.d2cache.store.StoreTransaction;
+import org.anon.smart.d2cache.store.repository.hbase.RelatedObject;
 import org.anon.utilities.exception.CtxException;
 import org.anon.utilities.reflect.DirtyFieldTraversal;
 import org.anon.utilities.reflect.ObjectTraversal;
@@ -62,10 +63,10 @@ import com.google.common.collect.Lists;
 
 public class D2CacheTransactionImpl implements D2CacheTransaction {
 
-	private UUID _txnID;
-	private StoreTransaction[] _storeTransactions;
-	private SegmentWriter _writer;
-	
+	protected UUID _txnID;
+	protected StoreTransaction[] _storeTransactions;
+	protected SegmentWriter _writer;
+	protected DataFilter[] _filters;
 	
 	
 	public D2CacheTransactionImpl(UUID id, StoreConnection[] storeConnections, SegmentWriter writer)
@@ -83,18 +84,53 @@ public class D2CacheTransactionImpl implements D2CacheTransaction {
 			}
 		}
 	}
+
+    public void setupFilters(DataFilter[] filters)
+    {
+        _filters = filters;
+    }
+
+    private boolean isFilter(Object obj)
+        throws CtxException
+    {
+        boolean ret = true;
+        for (int i = 0; (ret) && (_filters != null) && (i < _filters.length); i++)
+            ret = _filters[i].filterObject(obj, DataFilter.dataaction.write, true);
+
+        return ret;
+    }
+
 	@Override
 	public void add(StoreItem item) throws CtxException {
 		List<StoreRecord> recList = new ArrayList<StoreRecord>();
+
+        //if the filter says I cannot do anything with this data, then return.
+        if ((item.getTruth() != null) && !isFilter(item.getTruth()))
+            return;
 		
 		/*
 		 * Now do the DirtyFieldTraversal here and store the modified truth object against set of keys
 		 */
 		item.mergeChanges();
-		for (Object key : item.keys()) {
+		Object[] keyList = item.keys();
+		for (StoreTransaction txn : _storeTransactions) {
+			recList.add(txn.addRecord(item.group(), keyList[0], item.getModified(), item.getTruth()));
+		}
+		
+		for (int i =1 ; i < keyList.length; i++) {
 			for (StoreTransaction txn : _storeTransactions) {
-				//System.out.println(txn);
-				recList.add(txn.addRecord(item.group(), key, item.getModified(), item.getOriginal()));
+				StoreRecord rec = txn.addRecord(item.group(), keyList[i], item.getModified(), item.getTruth(), keyList[0]);
+				if((rec != null) && (rec.getCurrent() instanceof RelatedObject))
+				{
+					CacheObjectTraversal trav = new CacheObjectTraversal(rec);
+					ObjectTraversal ot = new ObjectTraversal(trav, rec.getCurrent(), false, null);
+					ot.traverse();
+					
+				}
+				else if(rec != null)
+				{
+					recList.add(rec);
+				}
 			}
 		}
 		
@@ -109,7 +145,8 @@ public class D2CacheTransactionImpl implements D2CacheTransaction {
 		}
 		else
 		{
-			ot  = new DirtyFieldTraversal(cot, item.getModified(), item.getOriginal(), false);
+			//ot  = new DirtyFieldTraversal(cot, item.getModified(), item.getOriginal(), false);
+			ot  = new DirtyFieldTraversal(cot, item.getModified(), item.getTruth(), item.getOriginal(), false);
 		}
 		ot.traverse();
 	}

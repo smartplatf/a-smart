@@ -62,6 +62,7 @@ import org.anon.utilities.exception.CtxException;
 
 public class GraphCreator
 {
+	public static final String ANY = "Any|";
     GraphCreator()
     {
     }
@@ -79,7 +80,9 @@ public class GraphCreator
         assertion().assertNotNull(shell, "Not a Valid deployment shell.");
         List<Class> transitions = shell.transitionsFor(flow, prime, event, extra);
         List<Class> atransitions = shell.transitionsFor("AllFlows", prime, event, extra);
+        List<Class> Anytransitions = shell.transitionsFor("AllFlows", "*Any", event, extra);
         transitions.addAll(atransitions); //that which runs for all flows.
+        transitions.addAll(Anytransitions); //that which runs for all flows.
         Map<String, Graph> ret = new ConcurrentHashMap<String, Graph>();
         try
         {
@@ -154,7 +157,8 @@ public class GraphCreator
             boolean isfor = false;
             for (int i = 0; (!isfor) && (i < per.length); i++)
             {
-                if (key.equals(per[i]) || ((keyextra != null) && (keyextra.equals(per[i]))))
+            	if (key.equals(per[i]) || ((keyextra != null) && (keyextra.equals(per[i]))) || 
+            			((per[i].startsWith(ANY)) && (per[i].endsWith(key.substring(key.indexOf('|')+1, key.length())))))
                     isfor = true;
             }
 

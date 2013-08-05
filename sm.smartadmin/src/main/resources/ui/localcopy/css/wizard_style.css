@@ -1,0 +1,187 @@
+body {
+	background-color: #606060;
+}
+
+#header {
+	background-image: url("../images/pattern.png");
+	background-repeat: repeat-x;
+}
+
+#logo {
+	position: relative;
+	display: inline-block;
+	margin-top: -15px;
+}
+
+#tagline {
+	position: absolute;
+	font-family: Verdana, Geneva, sans-serif;
+	color: #626262;
+	font-size: 12px;
+	font-weight: bold;
+	font-style: italic;
+	top: 60px;
+	left: 10px;
+}
+
+#maincontent {
+	background-color: white;
+	border-radius: 15px;
+	padding: 20px 30px;
+	margin: 1% 3%;
+	min-height: 520px;
+	width: 90%;
+}
+
+/*#wizard{
+ margin-top:3%;
+ margin-left:70px;
+ }*/
+
+#step1, #step2, #step3, #step4 {
+	margin-top: 3%;
+}
+
+#addyourowndata {
+	margin-top: 15%;
+}
+
+.steptxt {
+	padding: 10px 30px;
+}
+
+#entry {
+	padding-top: 5%;
+}
+
+#step3progress {
+	overflow-y: scroll;
+}
+
+#proceedcontainer {
+	position: relative;
+	margin-top: 40%;
+}
+
+#verifyemail {
+	margin-top: -42px;
+}
+
+#loading {
+	position: relative;
+	top: -350px;
+	left: 650px;
+	z-index: 200;
+}
+
+#error {
+	display: none;
+	background-color: #FF3333;
+	color: black;
+	z-index: 1000
+}
+
+#success {
+	display: none;
+	background-color: #47D147;
+	color: black;
+	z-index: 1000
+}
+
+label {
+	font-size: 18px;
+}
+
+a > img {
+	position: relative;
+	top: 10px;
+}
+
+span#tenantinfo {
+	font-family: Arial Blackadder ITC;
+	font-size: medium;
+	color: blue;
+}
+
+.inputfield {
+	font-size: 15px;
+}
+
+.actionBar, #loginsuccess {
+	display: none;
+}
+
+.help {
+	color: #12ADF1;
+	font-style: italic;
+}
+
+.info {
+	color: red;
+}
+
+#loginsuccess {
+	font-weight: bold;
+	font-size: 15px;
+	margin: 10% 10%;
+}
+
+.desc {
+	padding: 0px 10px;
+	margin-top: 2%;
+	font-weight: 500;
+	text-align: justify;
+	font-size: 14px;
+	line-height: 30px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.finalstepdesc {
+	padding: 20px 10px;
+	/*margin-top:40%;*/
+	position: relative;
+	font-weight: 500;
+	text-align: justify;
+	font-size: 15px;
+	line-height: 30px;
+}
+
+.summary {
+	padding: 0px 10px;
+	margin-top: 10%;
+	font-weight: 500;
+	text-align: justify;
+	font-size: 14px;;
+	line-height: 45px;
+}
+
+.tab-content {
+	overflow: hidden;
+	margin-left: 2%;
+}
+
+th {
+	color: black;
+}
+
+.demotext {
+	font-style: italic;
+}
+
+.popover, .popover .content {
+	font-size: 14px;
+}
+
+.highlight_red {
+	color: red;
+	font-weight: bold;
+}
+
+.highlight_green {
+	color: green;
+	font-weight: bold;
+}
+
+.dataentry{
+	margin-left:15%;
+}

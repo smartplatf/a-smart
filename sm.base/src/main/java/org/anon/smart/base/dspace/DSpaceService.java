@@ -88,17 +88,37 @@ public class DSpaceService
         return ret;
     }
 
-    public static Reader readerFor(DSpace space)
+    public static SpaceFilter[] spaceFilters()
         throws CtxException
     {
-        return space.myReader();
+        SmartModuleContext ctx = (SmartModuleContext)anatomy().overriddenContext(DSpaceService.class); 
+        DSpaceAuthor author = null;
+        if (ctx != null)
+            author = ctx.spaceAuthor();
+
+        if (author == null)
+            author = new DefaultAuthor();
+
+        return author.spaceFilters();
+    }
+
+    public static Reader readerFor(DSpace space)
+            throws CtxException
+    {
+            return readerFor(space, false);
+    }
+    
+    public static Reader readerFor(DSpace space, boolean memOnly)
+        throws CtxException
+    {
+        return space.myReader(memOnly);
     }
 
     public static BrowsableReader browsableReaderFor(DSpace space)
         throws CtxException
     {
         assertion().assertTrue(isBrowsable(space), "Cannot get a browsable reader for nonbrowsable space");
-        return (BrowsableReader)space.myReader();
+        return (BrowsableReader)space.getBrowsableReader();
     }
 
     public static Reader readerFor(DSpace[] space)
@@ -112,14 +132,34 @@ public class DSpaceService
     }
 
     public static Object lookupIn(DSpace space, Object key, String group)
+            throws CtxException
+    {
+            Object ret = null;
+            Reader rdr = readerFor(space);
+            if (rdr != null)
+                ret = rdr.lookup(group, key);
+            return ret;
+    }
+    
+    public static Object lookupIn(DSpace space, Object key, String group, boolean memOnly)
         throws CtxException
     {
         Object ret = null;
-        Reader rdr = readerFor(space);
+        Reader rdr = readerFor(space, memOnly);
         if (rdr != null)
             ret = rdr.lookup(group, key);
         return ret;
     }
+    
+    public static boolean existsObject(DSpace space, Object key, String group, boolean memOnly)
+            throws CtxException
+        {
+            boolean ret = false;
+            Reader rdr = readerFor(space, memOnly);
+            if (rdr != null)
+                ret = rdr.exists(group, key);
+            return ret;
+        }
 
     public static List<Object> searchIn(DSpace space, Map<String, String> query, Class clz)
         throws CtxException
@@ -139,6 +179,18 @@ public class DSpaceService
         return ret;
     }
     
+    /**
+     * 1) gets all keys from different stores(memory, repo) and creates a concurrent List.
+     * 2) looks up for each key in concurrent list and removes all keys of the result object from list
+     * 
+     * TODO batch lookup
+     * 
+     * @param space
+     * @param group
+     * @param size
+     * @return
+     * @throws CtxException
+     */
     public static List<Object> listAllIn(DSpace space, String group, int size)
     		throws CtxException
     {
@@ -153,9 +205,9 @@ public class DSpaceService
             CopyOnWriteArrayList<Object> conKeyList = new CopyOnWriteArrayList<Object>(keyList);
             System.out.println("Total Keys before filtering dups:"+keyList.size());
         
-        for(int i = 0; ((totSize < size) && (i<conKeyList.size()));i++)
+        for(int i = 0; ((totSize < size) && (!conKeyList.isEmpty()));i++)
         {
-        	Object obj = lookupIn(space, conKeyList.get(i), group);
+            Object obj = lookupIn(space, conKeyList.get(0), group, false);
         	List<Object> keysForObject = ((DSpaceObject)obj).smart___keys();
         	conKeyList.removeAll(keysForObject);
         	resultSet.add(obj);
@@ -214,7 +266,7 @@ public class DSpaceService
             return;
 
         UUID txnid = UUID.randomUUID();
-        D2CacheTransaction transaction = space.startTransaction(txnid);
+        D2CacheTransaction transaction = space.startTransaction(txnid,false);
         for (int i = 0; i < sobj.length; i++)
             addObject(transaction, sobj[i]);
         transaction.commit();
@@ -223,7 +275,27 @@ public class DSpaceService
     public static D2CacheTransaction startTransaction(TransactDSpace space, UUID txnid)
         throws CtxException
     {
-        return space.startTransaction(txnid);
+        return space.startTransaction(txnid,false);
     }
+    
+    public static D2CacheTransaction startFSTransaction(TransactDSpace space, UUID txnid)
+            throws CtxException
+        {
+            return space.startTransaction(txnid,true);
+        }
+    
+    public static void addFSObject(D2CacheTransaction transaction, String srcFl , String group)
+            throws CtxException
+        {
+            StoreItem item = new StoreItem(null, srcFl, group);
+            transaction.add(item);
+            /*Object compare = sobj;
+            if (compare instanceof RelatedObject)
+            {
+                DSpaceObject[] rel = ((RelatedObject)compare).relatedTo();
+                for (int r = 0; (rel != null) && (r < rel.length); r++)
+                    addObject(transaction, rel[r]);
+            }*/
+        }
 }
 

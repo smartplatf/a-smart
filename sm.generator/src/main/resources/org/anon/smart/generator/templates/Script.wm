@@ -1,0 +1,11 @@
+<script id="widget" type="text/javascript">
+var _saProp = [];
+(function(){
+_saProp.push(['tenant','${sd.tenant}']);
+_saProp.push(['flow','${sd.flow}']);
+var _sa = document.createElement('script'); _sa.type = 'text/javascript'; _sa.async = true;
+_sa.src = 'http://localhost/smart/smart_loader.js';
+var _sNode = document.getElementById('widget');
+_sNode.parentNode.insertBefore(_sa, _sNode);
+})();
+</script>

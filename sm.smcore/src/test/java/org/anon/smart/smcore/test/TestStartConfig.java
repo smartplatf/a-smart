@@ -56,7 +56,7 @@ import org.anon.utilities.exception.CtxException;
 
 public class TestStartConfig extends BaseStartConfig implements SMCoreConfig
 {
-    private ExternalConfig[] _channels;
+    protected ExternalConfig[] _channels;
 
     public TestStartConfig(String[] deploy, String[] tenants, Map<String, String[]> enable, int port)
     {

@@ -43,6 +43,7 @@ package org.anon.smart.base.test;
 
 public interface ModConstants
 {
+    public static final String CORE = "smart.smcore";
     public static final String BASE = "smart.base";
     public static final String CHANNELS = "smart.channels";
     public static final String D2CACHE = "smart.d2cache";

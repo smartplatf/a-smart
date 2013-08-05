@@ -1,0 +1,21 @@
+name:       ManagerUsers
+type:       Transition
+flow:       Security
+foreach:        FlowAdmin|CreateUser,SmartUser|AddIdentity,SmartUser|AddRolesToUser
+actions:
+    - name:     createNewUser
+      method:   createNewUser
+      foreach:  FlowAdmin|CreateUser
+      from:     active
+      to:       active
+    - name:     addIdentity
+      method:   addIdentity
+      foreach:  SmartUser|AddIdentity
+      from:     active
+      to:       active
+    - name:     addRolesToUser
+      method:   addRolesToUser
+      foreach:  SmartUser|AddRolesToUser
+      from:     active
+      to:       active
+

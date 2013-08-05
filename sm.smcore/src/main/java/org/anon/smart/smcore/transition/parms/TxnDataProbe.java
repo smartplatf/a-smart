@@ -42,6 +42,7 @@
 package org.anon.smart.smcore.transition.parms;
 
 import java.util.List;
+import java.lang.reflect.Type;
 
 import org.anon.smart.atomicity.EmpiricalData;
 import org.anon.smart.smcore.data.SmartDataED;
@@ -69,7 +70,7 @@ public class TxnDataProbe extends AbstractProbe implements AtomicityConstants
     }
 
     @Override
-    public Object valueFor(ProbeParms parms, PDescriptor desc)
+    public Object valueFor(ProbeParms parms, Type type, PDescriptor desc)
         throws CtxException
     {
         String attr = desc.attribute();

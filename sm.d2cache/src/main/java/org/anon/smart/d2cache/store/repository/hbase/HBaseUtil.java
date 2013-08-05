@@ -52,7 +52,7 @@ public class HBaseUtil {
 		{
 			return true;
 		}
-		return false;
+		return true; //add for all
 	}
 
 }

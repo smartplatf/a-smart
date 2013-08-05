@@ -55,8 +55,14 @@ public interface D2Cache
         throws CtxException;
 
     public Reader myReader()
+            throws CtxException;
+    
+    public Reader myReader(boolean memOnly)
         throws CtxException;
 
+    public Reader getBrowsableReader()
+            throws CtxException;
+    
     public void cleanupMemory()
         throws CtxException;
 

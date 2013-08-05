@@ -62,7 +62,7 @@ public class Deployment implements Deployable, VerifiableObject
     private String initializer;
     private String defaultEnable;
     private List<Feature> features;
-    private List<Relation> relations;
+    //private List<Relation> relations;
 
     private List<String> _jars;
     private String _runClass;
@@ -81,7 +81,7 @@ public class Deployment implements Deployable, VerifiableObject
         _verified = true;
         name = nm;
         features = new ArrayList<Feature>();
-        relations = new ArrayList<Relation>();
+        //relations = new ArrayList<Relation>();
         _features = new HashMap<String, Feature>();
         addArtefacts(a);
     }
@@ -93,7 +93,7 @@ public class Deployment implements Deployable, VerifiableObject
         name = dep.name;
         initializer = dep.initializer;
         defaultEnable = dep.defaultEnable;
-        relations = dep.relations;
+        //relations = dep.relations;
         _runClass = dep._runClass;
         _runMethod = dep._runMethod;
         _verified = true;
@@ -133,6 +133,19 @@ public class Deployment implements Deployable, VerifiableObject
 
     public void addArtefacts(Artefact[] artefacts)
     {
+    }
+
+    public String[] deployedURI(String nm)
+    {
+        //sub feature?
+        List<String> uris = new ArrayList<String>();
+        String myuri = deployedURI();
+        for (Feature f : features)
+        {
+            f.deployedURI(nm, myuri, uris);
+        }
+
+        return uris.toArray(new String[0]);
     }
 
     public String deployedURI()

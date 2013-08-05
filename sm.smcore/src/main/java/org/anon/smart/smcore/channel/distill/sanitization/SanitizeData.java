@@ -21,7 +21,7 @@
  *
  *
  * */
- 
+
 /**
  * ************************************************************
  * HEADERS
@@ -51,17 +51,24 @@ import java.lang.reflect.ParameterizedType;
 
 import org.anon.smart.d2cache.QueryObject;
 import org.anon.smart.channels.data.PData;
+import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 import org.anon.smart.base.flow.FlowDeployment;
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.SmartTenant;
 import org.anon.smart.base.tenant.TenantsHosted;
+import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
 import org.anon.smart.base.tenant.shell.CrossLinkRuntimeShell;
 import org.anon.smart.base.utils.AnnotationUtils;
 
 import org.anon.smart.smcore.data.CrossLinkSmartPrimeData;
+import org.anon.smart.smcore.data.SmartPrimeData;
+import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.channel.server.EventPData;
 import org.anon.smart.smcore.channel.server.EventDScope;
 import org.anon.smart.smcore.channel.distill.ChannelConstants;
 import org.anon.smart.smcore.channel.distill.translation.MapData;
+import org.anon.smart.smcore.channel.distill.translation.ObjectData;
+import org.anon.smart.smcore.channel.internal.MessagePData;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
@@ -70,18 +77,23 @@ import org.anon.utilities.exception.CtxException;
 
 public class SanitizeData implements ChannelConstants
 {
-    SanitizeData()
+    public SanitizeData()
     {
     }
 
-    void sanitizePData(PData data, SearchedData populate)
+    public void sanitizePData(PData data, SearchedData populate)
         throws CtxException
     {
+    	if(data instanceof MessagePData)
+    	{
+    		sanitizePDataForMessage(data, populate);
+    		return;
+    	}
         EventPData epdata = (EventPData)data;
         EventDScope epscope = (EventDScope)data.dscope();
 
         String tenant = epdata.tenant();
-        SmartTenant stenant = TenantsHosted.tenantFor(tenant);
+        SmartTenant stenant = TenantsHosted.tenantFor(tenant, false);
         assertion().assertNotNull(stenant, "Tenant " + tenant + " does not exist");
         populate.setupTenant(stenant);
 
@@ -100,18 +112,91 @@ public class SanitizeData implements ChannelConstants
         populate.setupEventLegend(epscope.eventLegend(stenant.getRelatedLoader()));
     }
 
-    void sanitizeMap(MapData map, SearchedData populate)
+    private void sanitizePDataForMessage(PData data, SearchedData populate)
+    	throws CtxException
+    {
+    	try
+    	{
+		MessagePData mpData = (MessagePData)data;
+
+		String eventName = mpData.eventName();
+
+		CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+		//CrossLinkFlowDeployment dep = tenant.deploymentShell().deploymentFor(flow);
+        String nm = AnnotationUtils.objectName(mpData.event());
+		List<CrossLinkFlowDeployment> deps =  tenant.deploymentShell().flowForType(nm);
+        assertion().assertTrue(deps.size() > 0, "Cannot find deployment for: " + nm);
+        CrossLinkFlowDeployment dep = deps.get(0);
+		String flow = dep.deployedName();
+
+		populate.setupFlow(flow);
+		populate.setupFlowDeployment(dep);
+
+        Class evt = mpData.event().getClass();
+        System.out.println("Event Class for InternalEvent:"+evt.getName());
+        assertion().assertNotNull(evt, "No event class found for event: " + eventName);
+        populate.setupEventClass(evt);
+        populate.setupEventLegend(mpData.dscope().eventLegend(tenant.getRelatedLoader()));
+
+        reflect().setAnyFieldValue(evt, mpData.event(), "___smart_flow_name___", flow);
+    	}
+    	catch(Exception ex)
+    	{
+    		ex.printStackTrace();
+    	}
+
+	}
+
+
+	public void sanitizeMap(MapData map, SearchedData populate)
         throws CtxException
     {
-        String flow = populate.getFlow();
+        String flow = null;
         Map<String, Object> data = map.translated();
         populate.setupMappedData(data);
-        List<String> prime = populate.flowDeployment().getPrimeData();
+        List<String> prime = null;
+        if(populate.flowDeployment() != null)
+        	prime = populate.flowDeployment().getPrimeData();
+        else
+        	prime = populate.crossLinkFlowDeployment().getPrimeData();
+        CrossLinkSmartTenant thisTenant;
+        if(populate.tenant() != null)
+            thisTenant  = new CrossLinkSmartTenant(populate.tenant());
+        else
+            thisTenant =  CrossLinkSmartTenant.currentTenant();
+
+        CrossLinkFlowDeployment fd = thisTenant.deploymentShell().deploymentFor("AllFlows");
+
+        List<String> primesAllFlows =  fd.getPrimeData();
+        for(String p : primesAllFlows)
+        {
+            if(!p.equals("org.anon.smart.base.flow.FlowAdmin"))
+            {
+                if (!prime.contains(p))
+                    prime.add(p);
+            }
+        }
         assertion().assertTrue((prime.size() > 0), "The flow does not have even one prime enabled.");
         List<String> sanitizedKeys = new ArrayList<String>();
         for (String p : prime)
         {
-            String lookp = populate.flowDeployment().nameFor(p);
+            String lookp = null;
+            if(populate.flowDeployment() != null)
+            {
+            	lookp = populate.flowDeployment().nameFor(p);
+                flow = populate.getFlow();
+            }
+            else
+            {
+            	lookp = populate.crossLinkFlowDeployment().nameFor(p);
+                flow = populate.getFlow();
+            }
+
+            if(lookp == null)
+            {
+            	lookp =	fd.nameFor(p);
+                flow = fd.deployedName();
+            }
             if (data.containsKey(lookp))
             {
                 //means we need to post to these flows
@@ -126,7 +211,7 @@ public class SanitizeData implements ChannelConstants
         {
             //check if FlowAdmin is present
             Object search = data.get("FlowAdmin");
-            sanitizePrime(flow, "FlowAdmin", search, populate);
+            sanitizePrime(populate.getFlow(), "FlowAdmin", search, populate);
             sanitizedKeys.add("FlowAdmin");
         }
 
@@ -139,21 +224,34 @@ public class SanitizeData implements ChannelConstants
         }
     }
 
+
     private void sanitizePrime(String flow, String type, Object val, SearchedData populate)
         throws CtxException
     {
-        Class typecls = populate.tenant().deploymentShell().primeClass(flow, type);
-        if (typecls == null)
-            typecls = populate.tenant().deploymentShell().primeClass("AllFlows", type);
+    	CrossLinkSmartTenant t = null;
+    	if(populate.tenant() != null)
+    		t = new CrossLinkSmartTenant(populate.tenant());
+    	else
+    		t = CrossLinkSmartTenant.currentTenant();
+
+        Class typecls = t.deploymentShell().primeClass(flow, type);
+        if (typecls == null)    {
+            typecls = t.deploymentShell().primeClass("AllFlows", type);
+        }
         assertion().assertNotNull(typecls, "Cannot find the class for: <<<<" + type + ">>>>");
-        List<FlowDeployment> deps = new ArrayList<FlowDeployment>();
-        deps.add(populate.flowDeployment());
-        if (!flow.equals(populate.flowDeployment().deployedName()))
+        List<CrossLinkFlowDeployment> deps = new ArrayList<CrossLinkFlowDeployment>();
+        CrossLinkFlowDeployment dep = null;
+        if(populate.flowDeployment() != null)
+        	dep = new CrossLinkFlowDeployment(populate.flowDeployment());
+        else
+        	dep = populate.crossLinkFlowDeployment();
+        deps.add(dep);
+        if (!flow.equals(dep.deployedName()))
         {
-            FlowDeployment fdep = populate.tenant().deploymentShell().deploymentFor(flow);
+            CrossLinkFlowDeployment fdep = t.deploymentShell().deploymentFor(flow);
             deps.add(fdep);
         }
-        Object searched = searchData(flow, type, typecls, val, deps, populate.tenant());
+        Object searched = searchData(flow, type, typecls, val, deps, t);
 
         assertion().assertNotNull(searched, "Cannot find object of type: " + type + ":" + val);
 
@@ -221,7 +319,7 @@ public class SanitizeData implements ChannelConstants
             populate.addSearch(key, val);
     }
 
-    private Object searchOne(String name, Object search, String spacemodel, String action, SmartTenant tenant)
+    protected Object searchOne(String name, Object search, String spacemodel, String action, Object tenant)
         throws CtxException
     {
         System.out.println("Searching in: " + spacemodel + ":" + name + ":" + search);
@@ -229,7 +327,11 @@ public class SanitizeData implements ChannelConstants
             return null;
 
         Object ret = null;
-        CrossLinkRuntimeShell shell = new CrossLinkRuntimeShell(tenant.runtimeShell());
+        CrossLinkRuntimeShell shell = null;
+        if(tenant instanceof SmartTenant)
+        	shell = new CrossLinkRuntimeShell(((SmartTenant)tenant).runtimeShell());
+        else
+        	shell = new CrossLinkRuntimeShell(((CrossLinkSmartTenant)tenant).runtimeShell());
         if ((action == null) || action.equals(LOOKUP_ACTION))
         {
             ret = shell.lookupFor(spacemodel, name, search);
@@ -241,81 +343,88 @@ public class SanitizeData implements ChannelConstants
 
         return ret;
     }
-
-    private Object searchData(String thisflow, String name, Class cls, Object search, List<FlowDeployment> deps, SmartTenant tenant)
-        throws CtxException
-    {
-        Object ret = null;
-        //has to be a collection or a map, else it is nothing
-        if (search instanceof Collection)
+    private Object searchData(String thisflow, String name, Class cls, Object search, List deps, Object t)
+            throws CtxException
         {
-            Collection coll = (Collection)search;
-            List vals = new ArrayList<Object>();
-            for (Object one : coll)
+    		CrossLinkSmartTenant tenant = null;
+    		if(t instanceof SmartTenant)
+    			tenant = new CrossLinkSmartTenant(t);
+    		else tenant = (CrossLinkSmartTenant)t;
+
+            Object ret = null;
+            //has to be a collection or a map, else it is nothing
+            if (search instanceof Collection)
             {
-                Object val = searchData(thisflow, name, cls, one, deps, tenant);
-                vals.add(val);
+                Collection coll = (Collection)search;
+                List vals = new ArrayList<Object>();
+                for (Object one : coll)
+                {
+                    Object val = searchData(thisflow, name, cls, one, deps, tenant);
+                    vals.add(val);
+                }
+                ret = vals;
             }
-            ret = vals;
+            else if (search instanceof Map)
+            {
+                Map smap = (Map)search;
+                Class type = null;
+                String action = (String)smap.get(ACTION);
+                if (action == null) action = "";
+                String flow = (String)smap.get(SEARCH_FLOW);
+                if (flow == null)
+                    flow = thisflow;
+                CrossLinkFlowDeployment dep = null;
+                for (int i = 0; i < deps.size(); i++)
+                {
+                	CrossLinkFlowDeployment d = null;
+                	if(deps.get(i) instanceof FlowDeployment)
+                		d = new CrossLinkFlowDeployment(deps.get(i));
+                	else
+                		d = (CrossLinkFlowDeployment)deps.get(i);
+                    if (d.deployedName().equals(flow))
+                    {
+                        dep = d;
+                        break;
+                    }
+                }
+
+                assertion().assertNotNull(dep, "Cannot find the deployment for: " + name + ":" + flow);
+                try
+                {
+                    Object val = null;
+                    if ((action.equals(LOOKUP_ACTION)) && (smap.containsKey(KEY_TYPE)))
+                    {
+                        type = tenant.getRelatedLoader().loadClass(smap.get(KEY_TYPE).toString());
+                    }
+                    else if (action.equals(LOOKUP_ACTION))
+                    {
+                        Class[] keyTypes = AnnotationUtils.keyTypes(cls);
+                        //blindly take the first, if more than one, it has to be
+                        //specified, else there will anyways be an error
+                        type = keyTypes[0];
+                    }
+                    else if (action.equals(SEARCH_ACTION))
+                    {
+                        //load search class and populate it
+                        type = tenant.getRelatedLoader().loadClass(QueryObject.class.getName());
+                    }
+
+                    if ((type != null) && (type().checkPrimitive(type)))
+                        val = smap.get(VALUE);
+                    else
+                        val = convert().mapToObject(type, smap);
+                   	assertion().assertTrue(((val != null) && type().isAssignable(type, val.getClass())),
+                            "Cannot lookup value: " + val + " not correct type: " + type.getName() + ":" + val);
+
+                    if (action != null) //only if there is an action do we search, else we do not
+                        ret = searchOne(name, val, dep.deployedName(), action, tenant);
+                }
+                catch (Exception e)
+                {
+                    except().rt(e, new CtxException.Context("Exception in finding key: ", "Exception"));
+                }
+            }
+
+            return ret;
         }
-        else if (search instanceof Map)
-        {
-            Map smap = (Map)search;
-            Class type = null;
-            String action = (String)smap.get(ACTION);
-            if (action == null) action = "";
-            String flow = (String)smap.get(SEARCH_FLOW);
-            if (flow == null)
-                flow = thisflow;
-            FlowDeployment dep = null;
-            for (int i = 0; i < deps.size(); i++)
-            {
-                if (deps.get(i).deployedName().equals(flow))
-                {
-                    dep = deps.get(i);
-                    break;
-                }
-            }
-
-            assertion().assertNotNull(dep, "Cannot find the deployment for: " + name + ":" + flow);
-            try
-            {
-                Object val = null;
-                if ((action.equals(LOOKUP_ACTION)) && (smap.containsKey(KEY_TYPE)))
-                {
-                    type = tenant.getRelatedLoader().loadClass(smap.get(KEY_TYPE).toString());
-                }
-                else if (action.equals(LOOKUP_ACTION))
-                {
-                    Class[] keyTypes = AnnotationUtils.keyTypes(cls);
-                    //blindly take the first, if more than one, it has to be
-                    //specified, else there will anyways be an error
-                    type = keyTypes[0];
-                }
-                else if (action.equals(SEARCH_ACTION))
-                {
-                    //load search class and populate it
-                    type = tenant.getRelatedLoader().loadClass(QueryObject.class.getName());
-                }
-
-                if ((type != null) && (type().checkPrimitive(type)))
-                    val = smap.get(VALUE);
-                else
-                    val = convert().mapToObject(type, smap);
-
-                assertion().assertTrue(((val != null) && type().isAssignable(type, val.getClass())), 
-                        "Cannot lookup value: " + val + " not correct type: " + type.getName() + ":" + val);
-
-                if (action != null) //only if there is an action do we search, else we do not
-                    ret = searchOne(name, val, dep.deployedName(), action, tenant);
-            }
-            catch (Exception e)
-            {
-                except().rt(e, new CtxException.Context("Exception in finding key: ", "Exception"));
-            }
-        }
-
-        return ret;
-    }
 }
-

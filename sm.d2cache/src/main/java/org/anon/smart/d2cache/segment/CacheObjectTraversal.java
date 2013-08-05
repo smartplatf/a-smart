@@ -61,15 +61,21 @@ public class CacheObjectTraversal implements TVisitor {
 		  _traversed = new HashMap<String, List<Object>>();
 		  _recList = recList;
 	  }
+	public CacheObjectTraversal(StoreRecord rec) {
+		_traversed = new HashMap<String, List<Object>>();
+		_recList = new ArrayList<StoreRecord>();
+		_recList.add(rec);
+	}
 	@Override
 	public Object visit(DataContext ctx)
 	        throws CtxException
 	{
+		
 	        Object ret = null;
 	        List<Object> lst = null;
 	        if (ctx.field() != null)
 	        {
-                int modifiers = ctx.field().getModifiers();
+	        	int modifiers = ctx.field().getModifiers();
                 if (Modifier.isTransient(modifiers) || (Modifier.isStatic(modifiers)))
                     return null; //do not continue further
 

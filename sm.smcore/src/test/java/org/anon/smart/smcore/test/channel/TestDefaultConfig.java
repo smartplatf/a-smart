@@ -56,11 +56,14 @@ import org.anon.smart.channels.data.ContentData;
 import org.anon.smart.channels.data.PData;
 
 import org.anon.smart.smcore.test.CoreServerUtilities;
+import org.anon.smart.smcore.test.TestClient;
+import org.anon.smart.smcore.test.AssertJSONResponse;
 
 import org.anon.utilities.anatomy.CrossLinkApplication;
 
 public class TestDefaultConfig
 {
+    /*
     private HTTPClientChannel postTo(SCShell shell, int port, String server, String uri, String post, boolean wait)
         throws Exception
     {
@@ -83,6 +86,7 @@ public class TestDefaultConfig
 
         return cchnl;
     }
+    */
 
     @Test
     public void testTestDefaultConfig()
@@ -91,7 +95,35 @@ public class TestDefaultConfig
         int port = 9083;
         CoreServerUtilities utils = new CoreServerUtilities(port);
         utils.runServer("org.anon.smart.smcore.test.channel.RunSmartServer");
-        Thread.sleep(3000);
+        //Thread.sleep(3000);
+
+        String home = System.getenv("HOME");
+
+        String reviewJar = home + "/.m2/repository/org/anon/sampleapp/testreview/1.0/testreview-1.0.jar";
+        TestClient clnt = new TestClient(port, "localhost", "reviewtenant", "ReviewFlow2", "ReviewFlow2.soa");
+        clnt.deployJar(port,reviewJar, "ReviewFlow2.soa");
+        clnt.createTenant();
+
+        AssertJSONResponse resp = clnt.postTo(port, "localhost", "/reviewtenant/AdminSmartFlow/ListDeployments", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'AdminSmartFlow'}, 'dType':'Event','flow':'ReviewFlow2'}", true);
+        assertTrue(resp != null);
+
+        resp = clnt.postTo(port, "localhost", "/SmartOwner/AdminSmartFlow/ListDeployments", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'AdminSmartFlow'}}", true);
+        assertTrue(resp != null);
+
+        resp = clnt.postTo(port, "localhost", "/reviewtenant/AdminSmartFlow/ListDeployments", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'AdminSmartFlow'}, 'dType':'PrimeData','flow':'ReviewFlow2'}", true);
+        assertTrue(resp != null);
+
+        resp = clnt.post("CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ReviewFlow2'}, 'create':'ReviewMe', 'data':{'_name':'ReviewObject1'}}");
+        assertTrue(resp != null);
+
+        resp = clnt.post("ReviewEvent", "{'ReviewMe':{'___smart_action___':'lookup', '___smart_value___':'ReviewObject1'}, 'review':'Reviewed','rating':1}");
+        assertTrue(resp != null);
+        
+        resp = clnt.postTo(port, "localhost", "/SmartOwner/AdminSmartFlow/ListEnabledFlows", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}}", true);
+        assertTrue(resp != null);
+        resp = clnt.postTo(port, "localhost", "/SmartOwner/AdminSmartFlow/ListEnabledFlows", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'reviewtenant'}}", true);
+        assertTrue(resp != null);
+        /*
         SCShell shell = new SCShell();
         String home = System.getenv("HOME");
         postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/privategithub/p-sampleapp2/testreview.jar','flowsoa':'ReviewFlow2.soa'}", true);
@@ -102,7 +134,9 @@ public class TestDefaultConfig
         postTo(shell, port, "localhost", "/reviewtenant/AdminSmartFlow/ListDeployments", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'AdminSmartFlow'}, 'dType':'PrimeData','flow':'ReviewFlow2'}", true);
         postTo(shell, port, "localhost", "/reviewtenant/ReviewFlow2/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ReviewFlow2'}, 'create':'ReviewMe', 'data':{'_name':'ReviewObject1'}}", true);
         postTo(shell, port, "localhost", "/reviewtenant/ReviewFlow2/ReviewEvent", "{'ReviewMe':{'___smart_action___':'lookup', '___smart_value___':'ReviewObject1'}, 'review':'Reviewed','rating':1}", true);
-        utils.stopServer();
+        */
+	 utils.stopServer();
+        
     }
 }
 

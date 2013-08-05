@@ -2,35 +2,79 @@ name:   AllFlows
 defaultEnable:  all
 primeData:
     - org.anon.smart.base.flow.FlowAdmin
+    - org.anon.smart.smcore.data.SmartFileObject
 events:
     - org.anon.smart.smcore.inbuilt.events.SearchEvent
     - org.anon.smart.smcore.inbuilt.events.LookupEvent
     - org.anon.smart.smcore.inbuilt.events.ListAllEvent
     - org.anon.smart.smcore.inbuilt.events.CreatePrime
+    - org.anon.smart.smcore.inbuilt.events.UpdatePrime
     - org.anon.smart.smcore.inbuilt.events.MetricAccess
+    - org.anon.smart.smcore.inbuilt.events.ConfigFlow
+    - org.anon.smart.smcore.inbuilt.events.GetPrimeMeta
+    - org.anon.smart.smcore.inbuilt.events.ConfigFlow
+    - org.anon.smart.smcore.inbuilt.events.DefinePrime
+    - org.anon.smart.smcore.inbuilt.events.UploadEvent
+    - org.anon.smart.smcore.inbuilt.events.DownloadEvent
+    - org.anon.smart.smcore.inbuilt.events.GetJavaScript
+    - org.anon.smart.smcore.inbuilt.events.GetTemplateMeta
+    - org.anon.smart.smcore.inbuilt.events.CheckExistence
 transitions:
     - org.anon.smart.smcore.inbuilt.transition.SearchManager
     - org.anon.smart.smcore.inbuilt.transition.CRUDManager
     - org.anon.smart.smcore.inbuilt.transition.MetricAccessManager
+    - org.anon.smart.smcore.inbuilt.transition.ConfigManager
+    - org.anon.smart.smcore.inbuilt.transition.UploadManager
+    - org.anon.smart.smcore.inbuilt.transition.MetaManager
+    - org.anon.smart.smcore.inbuilt.transition.JavaScriptManager
+    - org.anon.smart.smcore.inbuilt.transition.TemplateMetaManager
 responses:
     - org.anon.smart.smcore.inbuilt.responses.SearchResponse
     - org.anon.smart.smcore.inbuilt.responses.LookupResponse
     - org.anon.smart.smcore.inbuilt.responses.ListAllResponse
     - org.anon.smart.smcore.inbuilt.responses.MetricResponse
+    - org.anon.smart.smcore.inbuilt.responses.SuccessUpdated
+    - org.anon.smart.smcore.inbuilt.responses.MetaResponse
+    - org.anon.smart.smcore.inbuilt.responses.UploadResponse
+    - org.anon.smart.smcore.inbuilt.responses.DownloadResponse
+    - org.anon.smart.smcore.inbuilt.responses.JavaScriptSnippet
+    - org.anon.smart.smcore.inbuilt.responses.TemplateMetaResponse
+    - org.anon.smart.smcore.inbuilt.responses.CheckExistenceResponse
 features:
     - name: all
       artefacts:
         - org.anon.smart.base.flow.FlowAdmin
+        - org.anon.smart.smcore.data.SmartFileObject
         - org.anon.smart.smcore.inbuilt.events.SearchEvent
         - org.anon.smart.smcore.inbuilt.events.LookupEvent
         - org.anon.smart.smcore.inbuilt.events.ListAllEvent
         - org.anon.smart.smcore.inbuilt.events.CreatePrime
+        - org.anon.smart.smcore.inbuilt.events.UpdatePrime
         - org.anon.smart.smcore.inbuilt.events.MetricAccess
+        - org.anon.smart.smcore.inbuilt.events.ConfigFlow
+        - org.anon.smart.smcore.inbuilt.events.GetPrimeMeta
+        - org.anon.smart.smcore.inbuilt.events.DefinePrime
+        - org.anon.smart.smcore.inbuilt.events.UploadEvent
+        - org.anon.smart.smcore.inbuilt.events.DownloadEvent
+        - org.anon.smart.smcore.inbuilt.events.GetJavaScript
+        - org.anon.smart.smcore.inbuilt.events.GetTemplateMeta
+        - org.anon.smart.smcore.inbuilt.events.CheckExistence
         - org.anon.smart.smcore.inbuilt.transition.SearchManager
         - org.anon.smart.smcore.inbuilt.transition.CRUDManager
         - org.anon.smart.smcore.inbuilt.transition.MetricAccessManager
+        - org.anon.smart.smcore.inbuilt.transition.ConfigManager
+        - org.anon.smart.smcore.inbuilt.transition.UploadManager
+        - org.anon.smart.smcore.inbuilt.transition.MetaManager
+        - org.anon.smart.smcore.inbuilt.transition.JavaScriptManager
+        - org.anon.smart.smcore.inbuilt.transition.TemplateMetaManager
         - org.anon.smart.smcore.inbuilt.responses.SearchResponse
         - org.anon.smart.smcore.inbuilt.responses.LookupResponse
         - org.anon.smart.smcore.inbuilt.responses.ListAllResponse
         - org.anon.smart.smcore.inbuilt.responses.MetricResponse
-        
+        - org.anon.smart.smcore.inbuilt.responses.SuccessUpdated
+        - org.anon.smart.smcore.inbuilt.responses.MetaResponse
+        - org.anon.smart.smcore.inbuilt.responses.UploadResponse
+        - org.anon.smart.smcore.inbuilt.responses.DownloadResponse
+        - org.anon.smart.smcore.inbuilt.responses.JavaScriptSnippet
+        - org.anon.smart.smcore.inbuilt.responses.TemplateMetaResponse    
+        - org.anon.smart.smcore.inbuilt.responses.CheckExistenceResponse        

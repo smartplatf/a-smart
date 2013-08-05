@@ -1,0 +1,10 @@
+name:       MetaManager
+type:       Transition
+flow:       AllFlows
+foreach:        FlowAdmin|GetPrimeMeta
+actions:
+    - name:     getMetaData
+      method:   getMetaData
+      foreach:  FlowAdmin|GetPrimeMeta
+      from:     active
+      to:       active

@@ -57,8 +57,8 @@ import org.anon.utilities.exception.CtxException;
 public class MetricAccessManager {
 
 	public void getMetric(MetricAccess event) throws CtxException {
-		String type = event.getObjectName();
-		assertion().assertNotNull(type, "Object Type is NULL");
+		String k = event.getKey();
+		assertion().assertNotNull(k, "Object Type is NULL");
 
 		CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
 		RuntimeShell shell = (RuntimeShell) (tenant.runtimeShell());
@@ -69,13 +69,32 @@ public class MetricAccessManager {
 		Object o = event;
 		SmartEvent sevt = (SmartEvent) o;
 		String flow = sevt.smart___flowname();
-		String key = new String(flow + MonitorConstants.KEYSEPARATOR + type);
+		String key = null;
+		Object res = null;
+		if(event.getMetricName().equals(MonitorConstants.INSTANCECOUNT))
+		{
+			key = new String(flow + MonitorConstants.KEYSEPARATOR + k);
+			res = shell.lookupFor(TenantConstants.MONITOR_SPACE,
+					MonitorConstants.OBJECTTYPEGROUP, key);
+		}
+		else if (event.getMetricName().equals(MonitorConstants.ACCESSCOUNT))
+		{
+			key = new String(flow + MonitorConstants.KEYSEPARATOR + k);
+			res = shell.lookupFor(TenantConstants.MONITOR_SPACE,
+					MonitorConstants.OBJECTACCESSGROUP, key);
+		}
+		else if (event.getMetricName().equals(MonitorConstants.EVENTCOUNT))
+		{
+			key = new String(flow + MonitorConstants.KEYSEPARATOR + k);
+			res = shell.lookupFor(TenantConstants.MONITOR_SPACE,
+					MonitorConstants.EVENTEXECUTIONGROUP, key);
+		}
+		
 		System.out.println("Looking for obj with key:" + key);
-		Object res = shell.lookupFor(TenantConstants.MONITOR_SPACE,
-				MonitorConstants.OBJECTTYPEGROUP, key);
+		
 		MetricResponse resp = null;
 		if (res == null) {
-			System.out.println("Metrics for :" + type + " are not enabled...");// TODO
+			System.out.println("Metrics for :" + k + " are not enabled...");// TODO
 																				// ERRORRESPONSE
 
 			resp = new MetricResponse(0);
@@ -85,7 +104,7 @@ public class MetricAccessManager {
 					"Result is not instance of MetricCounter");
 
 			int count = ((MetricCounter) res).getCount();
-			System.out.println("!!!!!!! Number of instance created for:" + type
+			System.out.println("!!!!!!! METRIC RESULT:" + k
 					+ ":------->:" + count);
 			resp = new MetricResponse(count);
 		}

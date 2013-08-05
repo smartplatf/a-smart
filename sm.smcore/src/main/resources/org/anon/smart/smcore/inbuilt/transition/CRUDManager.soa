@@ -1,11 +1,16 @@
 name:       CRUDManager
 type:       Transition
 flow:       AllFlows
-foreach:        FlowAdmin|CreatePrime
+foreach:        FlowAdmin|CreatePrime,Any|UpdatePrime
 actions:
     - name:     createPrimeData
       method:   createPrimeData
       foreach:  FlowAdmin|CreatePrime
+      from:     active
+      to:       active
+    - name:     updatePrimeData
+      method:   updatePrimeData
+      foreach:  Any|UpdatePrime
       from:     active
       to:       active
 

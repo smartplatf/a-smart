@@ -54,6 +54,7 @@ import org.anon.smart.base.flow.FlowService;
 import org.anon.smart.base.flow.FlowModel;
 import org.anon.smart.base.flow.FlowAdmin;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
+import org.anon.smart.base.tenant.TenantConstants;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
@@ -64,7 +65,7 @@ import org.anon.utilities.pool.PoolEntity;
 import org.anon.utilities.fsm.FiniteStateMachine;
 import org.anon.utilities.exception.CtxException;
 
-public class RuntimeShell implements SmartShell
+public class RuntimeShell implements SmartShell, TenantConstants
 {
     private transient ShellContext _context;
     private transient Map<Class, Pool> _transitionPool;
@@ -99,6 +100,23 @@ public class RuntimeShell implements SmartShell
         Object ret = shell.lookup(spacemodel, group, key);
         return ret;
     }
+    
+    public boolean exists(String spacemodel, String group, Object key)
+            throws CtxException
+        {
+            //no need to search different spaces to find out which space has it
+            //it is searched directly on the shell that has to have it. IF not 
+            //present, then it is not accessible or not present.
+            DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
+            boolean res = shell.exists(spacemodel, group, key);
+            return res;
+        }
+    
+    public Object lookupConfigFor(String group, Object key)
+        throws CtxException
+    {
+        return lookupFor(CONFIG_SPACE, group, key);
+    }
 
     public List<Object> searchFor(String spacemodel, Class clz, Map<String, String> query)
         throws CtxException
@@ -127,6 +145,18 @@ public class RuntimeShell implements SmartShell
         //Please DO NOT USE THIS ANYWHERE EXCEPT FOR TESTING
         DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
         shell.commitTo(spacemodel, objects);
+    }
+
+    public void commitInternalObjects(String spacemodel, Object[] objects)
+        throws CtxException
+    {
+        //again is used only in tenant setup, nowhere else
+        DSpaceObject[] sobjs = new DSpaceObject[objects.length];
+        for (int i = 0; i < objects.length; i++)
+        {
+            sobjs[i] = (DSpaceObject)objects[i];
+        }
+        commitToSpace(spacemodel, sobjs);
     }
 
     public <T extends PoolEntity> T getTransition(Class<T> cls)
@@ -170,7 +200,7 @@ public class RuntimeShell implements SmartShell
         Object admin = new FlowAdmin(flow);
         if (admin instanceof DSpaceObject) //will only do if it has been stereotyped?
         {
-            System.out.println("Creating flow for: " + flow + ":" + ((DSpaceObject)admin).smart___objectGroup());
+            //System.out.println("Creating flow for: " + flow + ":" + ((DSpaceObject)admin).smart___objectGroup());
             commitToSpace(flow, new DSpaceObject[] { (DSpaceObject)admin });
         }
     }
@@ -192,7 +222,7 @@ public class RuntimeShell implements SmartShell
             String startstate = null;
             for (int i = 0; (startstate == null) && (i < state.length); i++)
             {
-                System.out.println(state[i]);
+                //System.out.println(state[i]);
                 if (state[i].startState())
                     startstate = state[i].name();
             }
@@ -200,7 +230,7 @@ public class RuntimeShell implements SmartShell
             mc = fsm().create(name, startstate);
             for (int i = 0; i < state.length; i++)
             {
-                System.out.println(state[i]);
+                //System.out.println(state[i]);
                 boolean start = state[i].startState();
                 boolean end = state[i].endState();
                 if ((!start) && (!end))

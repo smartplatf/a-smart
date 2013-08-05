@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<!-- <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /> -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=IE8" />
+		<link rel='shortcut icon' type='image/x-icon' href='images/favicon.png'>
+		<title>SMART Online-Demo</title>
+		<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link href="css/smart_wizard_vertical.css" rel="stylesheet" type="text/css">
+		<link href="css/wizard_style.css" rel="stylesheet" type="text/css">
+
+		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<script type="text/javascript" src="js/jquery.smartWizard.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+		<script type="text/javascript" src="js/bootstrap.js"></script>
+		<script type="text/javascript" src="js/logger.js"></script>
+
+		<script type="text/javascript" src="js/wizardscript.js"></script>
+		<script type="text/javascript" src="js/email.js"></script>
+		<script type="text/javascript" src="js/demo_popover.js"></script>
+		<script type="text/javascript" src="js/smartcom2.js"></script>
+
+	</head>
+
+	<body>
+		<div id="header" class="row">
+			<a href="www.smart-platform.com"><img id="logo" class="offset2" src="images/smartlogo.png"></a>
+			<p class="span4 offset2" id="tagline">
+				Building Cloud Applications – Accelerated
+			</p>
+		</div>
+		<div id="maincontent">
+			<div>
+				<ul class="nav nav-tabs" id="tabs">
+					<li class="active">
+						<a href="#wizard" data-toggle="tab">Smart Demo Wizard</a>
+					</li>
+				</ul>
+			</div>
+			<!--end of tab section-->
+
+			<div class="tab-content">
+
+				<div class="swMain tab-pane active" id="wizard">
+					<!-- <span class="info offset9">## hover over the field or blue text in the wizard for more information</span> -->
+					<ul>
+						<li>
+							<a href="#welcome"><span class="stepDesc"> Welcome
+								<br/>
+							</span> </a>
+						</li>
+						<li>
+							<a href="#step-1"><img src="images/registrationIcon.png" alt="registration"><span class="stepDesc"> Step 1
+								<br />
+								<small>Register / Sign in</small> </span> </a>
+						</li>
+						<li>
+							<a href="#step-2"><img src="images/choose.png" alt="choose"><span class="stepDesc"> Step 2
+								<br />
+								<small> Actions </small> </span> </a>
+						</li>
+						<li>
+							<a href="#step-3"><img src="images/user-info-icon.png" alt="userinfo"><span class="stepDesc"> Step 3
+								<br />
+								<small>Flow Details </small> </span> </a>
+						</li>
+						<li>
+							<a href="#step-4"><img src="images/objects-icon.png" alt="object"><span class="stepDesc"> Step 4
+								<br />
+								<small>Prime Object Details </small> </span> </a>
+						</li>
+						<li>
+							<a href="#step-5"> <img src="images/additems.png" alt="additems"><span class="stepDesc"> Step 5
+								<br />
+								<small>Prime Object Definition</small> </span> </a>
+						</li>
+						<li>
+							<a href="#step-6"><img src="images/Preview-icon.png" alt="preview"> <span class="stepDesc"> Step 6
+								<br />
+								<small> Verify and Finish</small> </span> </a>
+						</li>
+						<li>
+							<p id="error" class="alert alert-error"></p>
+							<p id="success" class="alert alert-success"></p>
+						</li>
+					</ul>
+
+					<!-- wizard body -->
+					<div id="welcome">
+						<h2 class="StepTitle">Welcome to SMART</h2>
+						<div class="desc">
+							<p>
+								This guided demo will walk you through the steps involved in Defining, Deploying & Using a Product Listing. It will also show you how to add & list the products.
+							</p>
+
+							<p>
+								This product listing is created as a simple <a href="#" target ="_blank">SMART FLOW</a> defined with one <a href="#" target="_blank">Prime Object</a>, which is the definition of the product. You will be able to Store, Retrieve & Search the products with <a href="#" target="_blank">Standard SMART events</a>.
+							</p>
+
+							<p>
+								In general you can define any data to be stored as a prime object and use the standard SMART events to store/retrieve. This is applicable for usecases that involve listing/searching such as list of services, doctors, dealers, products, schools and many more.
+							</p>
+
+							<p>
+								In the next few steps we will create the product Flow and Deploy it in <a href="#" target="_blank">SMART+. </a>
+							</p>
+						</div>
+					</div>
+
+					<div id="step-1">
+						<h2 class="StepTitle"> Register / Sign in </h2>
+						<div class="desc">
+							<h4> Provide your Email Id </h4>
+							<p>
+								This email id is a unique identifier to access your SMART flows. If this is a verified Email id, you will be able to continue further.
+							</p>
+							<p class="demotext">
+								In this demo we will use the pre-verified id - "smartdemo@smart-platform.com"
+							</p>
+						</div>
+						<div id="step1" class="span4 offset3">
+							<label for='email'>Email ID*</label>
+							<input id="email" type="email" value="smartdemo@smart-platform.com" placeholder="exampleuser@domain.com" readonly="readonly">
+						</div>
+						<span class = "span2 offset6">
+							<input id="verifyemail" type="button" value="Verify Email" class="btn btn-medium btn-block" disabled>
+						</span>
+						<!-- login success message-->
+						<div class="span alert alert-success" id="loginsuccess">
+							<div class="span"><img src="images/notification_done.png">
+							</div>
+							<div style="margin-left: 100px; padding-top: 10px;">
+								Login Successfull !!!. Use the "Next" & "Previous" navigation buttons to navigate through the demo.
+							</div>
+						</div>
+					</div>
+
+					<div id="step-2">
+						<h2 class="StepTitle">Actions</h2>
+						<div class="desc">
+							<h4>What do you want to do now?</h4>
+							<p class="demotext">
+								In this demo we will create a New Flow
+							</p>
+						</div>
+						<div id="step2" class="span5 offset4">
+							<div>
+								<label class="radio">
+									<input id="newflow" type="radio" name="choice" value="New Flow" checked>
+									Create New Flow</label>
+								<div style="margin-left: 2%;">
+									Select this option to create a new flow.
+								</div>
+							</div>
+
+							<div style="margin-top:5%;">
+								<label class="radio">
+									<input id="choosefromflow" type="radio" name="choice" value="My Flows" disabled="disabled">
+									View My Flows</label>
+								<div style="margin-left:2%;">
+									Select this option to view all your flows.
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+					<div id="step-3">
+						<h2 class="StepTitle">Flow Details </h2>
+						<div class="desc">
+							<h4>Name of your SMART Flow</h4>
+							<p>
+								SMART flows are enabled for a <a href="#" target="_blank">Tenant</a> associated with an ID.
+								This ID uniquely identifies your run time environment and can be accessed only by you.
+								The tenant ID has been auto generated by the wizard based on your Email id.
+								SMART flows are identified using a unique identifier <a href="#" target="_blank">"Flow Name"</a>.
+							</p>
+							<p class="demotext">
+								In this demo we will name the flow as ProductDemo1234(Random number)
+							</p>
+						</div>
+
+						<div id="step3" class="span4 offset4">
+							<label for='tenant'>SMART Tenant ID*</label>
+							<input id='tenant' type='text' value="smartdemo" readonly="readonly">
+							<br>
+							<label for='flow'>SMART Flow Name*</label>
+							<input id='flow' type='text' value="ProductDemo" readonly="readonly">
+							<br>
+							<span id="flowduplicateerror" class="error-message"></span>
+						</div>
+					</div>
+
+					<div id="step-4">
+						<h2 class="StepTitle">Prime Object Details</h2>
+						<div class="desc">
+							<h4>Name your Prime Object</h4>
+							<p>
+								A SMART flow is associated with a <a href="#" target="_blank">Prime Object</a>, which is typically the data to be listed. The Prime Object is identified using a name.
+							</p>
+							<p class="demotext">
+								In this demo our prime object is named "Product".
+							</p>
+						</div>
+
+						<div id="step4" class="span4 offset4">
+							<label for='objname'>Prime Object Name*</label>
+							<input id='objname' type='text' value="Product" placeholder="Item Name" maxlength="70" readonly="readonly">
+						</div>
+					</div>
+
+					<div id="step-5">
+						<h2 class="StepTitle">Prime Object Definition</h2>
+						<div class="desc">
+							<h4>Define your Prime Object attributes</h4>
+							<p>
+								Prime objects in a SMART flow is defined by a set of attributes. An attribute takes a label and its type.
+								One of the attributes has to be marked as a key. When data is added as for this prime object, the key will uniquely identify the data.
+								Pre-defined templates are provided for commonly used Prime Object definitions. This can be customized by adding/deleting the attributes.
+							</p>
+							<p class="demotext">
+								In this demo we will use a pre-defined product listing template "Basic Template".
+							</p>
+						</div>
+
+						<div id="entry" class="span6">
+							<div id="temp">
+								<h4> Select from available <span id="templatepopover">Templates</span></h4>
+								<select id="template" disabled="disabled">
+									<option id="0" >Select any one..</option>
+									<option id="1" selected="selected">Basic Template</option>
+								</select>
+								<input type="button" value="Add Fields" id="post" disabled="disabled" style="display: none;">
+								<br>
+								<span id="description"></span>
+							</div>
+							<br>
+							<div id="addyourowndata">
+								<h4>Customize </h4>
+								<form id="meta">
+									Field Name*
+									<input id='fieldname' type='text' value="" placeholder="Name. Address, Phone, Sex etc" disabled="disabled">
+									<br>
+									Entry Type*
+									<select id='fieldtype'  disabled="disabled">
+										<option id="0" selected="selected">Select a Type</option>
+										<option id="1"> AlphaNumeric </option>
+										<option id="2"> Character </option>
+										<option id="3"> Number </option>
+									</select>
+									<input id="addfield" class="button" type="button" value="Add"  disabled="disabled">
+								</form>
+							</div>
+						</div>
+						<div>
+							<h3><b id="object"></b><small>Attributes<span id="templatenameinfo"></span></small><span id="forpopover"></span></h3>
+							<div class="span5">
+								<table id='step5progress' class="table table-hover">
+									<tr>
+										<th>Key</th><th>Field</th><th>Type</th><th>Remove</th>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div id="step-6" class="row">
+						<h2 class="StepTitle">Verify and Finish</h2>
+						<div class="desc span">
+							<h4>Please verify your Flow details</h4>
+							<p>
+								Finish will create, deploy and enable your flow in SMART+, for any changes please using the "Previous" button to modify the details.
+							</p>
+						</div>
+						<hr>
+						<div class="summary row offset1" id="summary">
+							<div class="span">
+								<b> Your Tenant Id: &nbsp; &nbsp; </b>
+								<br>
+								<b> Flow Name:  &nbsp; &nbsp; </b>
+								<br>
+								<b> Object Name:  &nbsp; &nbsp; </b>
+								<br>
+								<b> Key Field:  &nbsp; &nbsp; </b>
+								<br>
+								<b> Object Attributes: </b>
+								<br>
+							</div>
+							<div class="offset1 span4">
+								<span class="text-info" id="summarytenantid"></span>
+								<br />
+								<span class="text-info" id="summaryflowname"></span>
+								<br />
+								<span class="text-info" id="summaryobjectname"></span>
+								<br />
+								<span class="text-info" id="summarykey"></span>
+								<br />
+								<div>
+									<div class="text-info">
+										<table id="summaryattrtable" class="table table-hover">
+											<tr>
+												<th>Type</th><th>Remove</th>
+											</tr>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--end of tab wizard-->
+
+				</div><!--end of tab content-->
+			</div><!--end of main content-->
+
+			<img id="loading" src="images/loading.gif" alt="working" style="display:none;">
+
+			<!----------------------------------------------------- Modals ------------------------------------------------------------------>
+			<!--Please wait--->
+			<div id="pleasewait" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+				<div class="modal-header">
+					<h3>Please Wait...</h3>
+				</div>
+				<div class="modal-body">
+					<img src="images/working.gif" width="50px;" class ="span1">
+					<h4 class="offset1">Please wait while SMART processes your Flow. </h4>
+				</div>
+			</div>
+
+			<!--flow creation success--->
+			<div id="flowcreated" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+						&times;
+					</button>
+					<h3 id="myModalLabel">Flow Creation Success!!!</h3>
+				</div>
+				<div id="flowcreatedbody" class="modal-body">
+					<img src="images/deploy.png" class="span">
+					<h5 class="offset1"> Your flow was Successfully Created. Would you like to Deploy it NOW?
+					<p>
+						Note: Deploying a flow will activate it for you.
+					</p></h5>
+				</div>
+				<div id="flowfooter" class="modal-footer">
+					<button id="deploybutton" class="btn btn-primary">
+						Deploy
+					</button>
+				</div>
+			</div>
+			<!-- deploying flow and tenant creation-->
+			<div id="deployprogress" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+				<div id="finalheader" class="modal-header">
+					<h3>Processing...</h3>
+				</div>
+				<div class="modal-body" id="deployprogressbody">
+					<img src="images/working.gif" width="50px;" class ="span1">
+					<h4 id="deployprogresscontent" class="offset1">Please wait while SMART is deploying your flow..... </h4>
+				</div>
+				<div class="modal-footer">
+					<button id="proceed" data-dismiss="modal" class="btn btn-success" aria-hidden="true" disabled>
+						Use this Flow
+					</button>
+					<!-- <button id="notnow" data-dismiss="modal" class="btn btn-primary" disabled>
+					Not Now
+					</button> -->
+				</div>
+			</div>
+			<!-- first time user modal-->
+			<div id="firstusermodal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+				<div class="modal-header">
+					<h3>Welcome New User</h3>
+				</div>
+				<div class="modal-body">
+					<img src="images/e-mail-marketing.jpg" alt="image" class ="span1">
+					<h5 class="offset1"> Welcome TO SMART Community. An e-mail has been sent out to you on this address.</h5>
+					<h5>Please check your email to continue. Thankyou for Registering.</h5>
+				</div>
+				<div class="modal-footer">
+					<button id="okbutton" data-dismiss="modal" class="btn btn-success">
+						OK
+					</button>
+				</div>
+			</div>
+
+			<!-- email not verified modal-->
+			<div id="notverified" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+				<div class="modal-header">
+					<h3>Email not Verified...</h3>
+				</div>
+				<div class="modal-body">
+					<img src="images/e-mail-marketing.jpg" alt="image" class ="span1">
+					<h5 class="offset1"> Your Email is not yet verified. Please Check your Email to verify. Problem in receiving email???</h5>
+				</div>
+				<div class="modal-footer">
+					<button id="sendagain" data-dismiss="modal" class="btn btn-success">
+						Send Again
+					</button>
+				</div>
+			</div>
+
+			<script>
+                var iniframe = [{
+                    "attributeName" : "ProductId",
+                    "attributeType" : "AlphaNumeric",
+                    "isKey" : false
+                }, {
+                    "attributeName" : "ProductName",
+                    "attributeType" : "Character",
+                    "isKey" : false
+                }, {
+                    "attributeName" : "ProductDescription",
+                    "attributeType" : "Character",
+                    "isKey" : false
+                }, {
+                    "attributeName" : "Price",
+                    "attributeType" : "Number",
+                    "isKey" : false
+                }];
+
+                for (var i = 0; i < iniframe.length; i++) {
+                    finalObject.push(iniframe[i]);
+                }
+
+                $(document).ready(function() {
+                    handsonredirect = "http://demo.smart-platform.com/handson_demo.html";
+                    emailVerified = true;
+                    flowvalid = true;
+                    $("#flow").val("ProductDemo" + Math.floor(Math.random() * 100001));
+                    showProgress(finalObject);
+
+                    $("input[name=field]:radio").attr("disabled", true);
+                    $("a.btn,a > i").attr("disabled", true);
+                });
+			</script>
+	</body>
+</html>

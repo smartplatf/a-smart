@@ -1,0 +1,11 @@
+name:       ConfigManager
+type:       Transition
+flow:       AllFlows
+foreach:        FlowAdmin|ConfigFlow
+actions:
+    - name:     createConfiguration
+      method:   createConfiguration
+      foreach:  FlowAdmin|ConfigFlow
+      from:     active
+      to:       active
+

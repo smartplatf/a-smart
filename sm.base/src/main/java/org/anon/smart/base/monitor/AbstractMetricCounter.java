@@ -59,7 +59,7 @@ public abstract class AbstractMetricCounter implements MetricCounter, Serializab
 	public AbstractMetricCounter(String key)
 	{
 		_objKey = key;
-		System.out.println("Created with key:"+_objKey);
+		//System.out.println("Created with key:"+_objKey);
 		//_counter = new DefaultCounter(0);
 		_counter = 0;
 	}
@@ -92,7 +92,7 @@ public abstract class AbstractMetricCounter implements MetricCounter, Serializab
 		
 
 	@Override
-	public void initOnLoad() throws CtxException {
+	public void smart___initOnLoad() throws CtxException {
 		// TODO Auto-generated method stub
 		
 	}

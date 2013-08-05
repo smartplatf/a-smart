@@ -1,0 +1,11 @@
+name:       ManageRoles
+type:       Transition
+flow:       Security
+foreach:        FlowAdmin|CreateRole
+actions:
+    - name:     createRole
+      method:   createRole
+      foreach:  FlowAdmin|CreateRole
+      from:     active
+      to:       active
+

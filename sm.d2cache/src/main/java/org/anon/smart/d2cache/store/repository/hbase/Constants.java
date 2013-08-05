@@ -53,5 +53,7 @@ public interface Constants
     public static final String PART_SEPARATOR = ".";
     public static final String KEY_NAME = "__smart__key__";
     public static final String FIELDTYPE = "__FIELDTYPE__";
+    public static final String SIZE = "__SIZE__";
+    public static final String SMART_KEY_NAME = "___smart_legend___"+PART_SEPARATOR+"_id";
 }
 

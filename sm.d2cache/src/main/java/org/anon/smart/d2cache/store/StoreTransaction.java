@@ -54,6 +54,8 @@ public interface StoreTransaction
     public StoreRecord recordFor(Object primaryKey);
     public StoreRecord addRecord(String group, Object primarykey, Object curr, Object orig)
         throws CtxException;
+    public StoreRecord addRecord(String group, Object primarykey, Object curr, Object orig, Object relatedKey)
+            throws CtxException;
     public void commit()
         throws CtxException;
     public void rollback()

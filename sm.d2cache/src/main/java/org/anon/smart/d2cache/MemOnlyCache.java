@@ -62,12 +62,6 @@ public class MemOnlyCache extends  AbstractD2Cache {
 	
 
 	@Override
-	public Reader myReader() throws CtxException {
-		return ReaderFactory.getReaderFor(_segments[0].getStore(), _flags, _config.getMemoryConfig());
-		
-	}
-
-	@Override
 	public void cleanupMemory() throws CtxException {
 		// TODO Auto-generated method stub
         for (int i = 0; i < _segments.length; i++)

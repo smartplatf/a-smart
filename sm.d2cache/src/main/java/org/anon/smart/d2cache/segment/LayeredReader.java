@@ -47,10 +47,12 @@ import java.util.ArrayList;
 
 import org.anon.smart.d2cache.QueryObject;
 import org.anon.smart.d2cache.Reader;
+import org.anon.smart.d2cache.DataFilter;
 import org.anon.smart.d2cache.store.MemoryStore;
 import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.IndexedStore;
 import org.anon.smart.d2cache.store.StoreItem;
+
 import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.exception.CtxException;
@@ -58,11 +60,26 @@ import org.anon.utilities.logger.Logger;
 
 public class LayeredReader implements Reader
 {
+    private DataFilter[] _filters;
 	private Store[] _stores;
 	private SegmentWriter _currWriter;
 	private transient Logger _logger;
     
-	public void setCurrentWriter(SegmentWriter writer) {
+	public LayeredReader(Store[] stores, SegmentWriter writer)
+	{
+		_stores = stores;
+		_currWriter = writer;
+    	_logger = logger().rlog(this);
+    	
+	}
+
+    public void userFilters(DataFilter[] filters)
+    {
+        _filters = filters;
+    }
+
+	public void setCurrentWriter(SegmentWriter writer) 
+    {
 		this._currWriter = writer;
 	}
 
@@ -72,10 +89,19 @@ public class LayeredReader implements Reader
     	_logger = logger().rlog(this);
     }
 
+    private boolean isFilter(Object obj, boolean except)
+        throws CtxException
+    {
+        boolean ret = true;
+        for (int i = 0; (ret) && (_filters != null) && (i < _filters.length); i++)
+            ret = _filters[i].filterObject(obj, DataFilter.dataaction.read, except);
 
+        return ret;
+    }
 
-	@Override
-	public Object lookup(String group, Object key) throws CtxException {
+	private Object lookup(String group, Object key, boolean except) 
+        throws CtxException 
+    {
 		//assumption is that the stores are passed in the order 
         //they have to be searched?
         Object ret = null;
@@ -85,25 +111,44 @@ public class LayeredReader implements Reader
         	if((_stores[i] == null) || (_stores[i] instanceof IndexedStore))
         		continue;
         		
-                ret = _stores[i].getConnection().find(group, key);
-                foundat = i;
+            ret = _stores[i].getConnection().find(group, key);
+            if ((ret != null) && (!isFilter(ret, except)))
+                ret = null;
+
+            foundat = i;
         }
 
         if (ret != null)
         {
-            List<StoreItem> item = new ArrayList<StoreItem>();
-            item.add(new StoreItem(new Object[] { key }, ret, group));
+            List<StoreItem> items = new ArrayList<StoreItem>();
+            StoreItem item = new StoreItem(new Object[] { key }, null, group);
+            item.setModified(ret);
+            items.add(item);
             if(_currWriter != null)
-            	_currWriter.handleReadAt(item, _stores, foundat);
+            {
+            	_currWriter.handleReadAt(items, _stores, foundat);
+            }
             else
+            {
+            	System.out.println("!!!!!!!!!!!!!!! Writer is not set in Layered Reader !!!!!!!!!!!!!!!");
             	_logger.debug("Writer is not set in Layered Reader");
+            }
         }
 
         return ret;
 	}
 
 	@Override
-	public List<Object> search(String group, Object query) throws CtxException {
+	public Object lookup(String group, Object key) 
+        throws CtxException 
+    {
+        return lookup(group, key, true);
+    }
+
+	@Override
+	public List<Object> search(String group, Object query) 
+        throws CtxException 
+    {
 		List<Object> ret = new ArrayList<Object>();
 		
 		assertion().assertTrue((query instanceof QueryObject), "query is NOT an instance of QueryObject");
@@ -118,7 +163,8 @@ public class LayeredReader implements Reader
         }
 		for(Object key : resultKeys)
 		{
-			Object obj = this.lookup(group, key);
+            //Lookup takes care of the filter
+			Object obj = this.lookup(group, key, false);
 			if(obj != null)
 				ret.add(obj);
 		}
@@ -126,7 +172,9 @@ public class LayeredReader implements Reader
 	}
 
 	@Override
-	public List<Object> listAll(String group, int size) throws CtxException {
+	public List<Object> listAll(String group, int size) 
+        throws CtxException 
+    {
 		
 		List<Object> resultSet = new ArrayList<Object>();
 		Iterator<Object> keyIter = null;
@@ -139,13 +187,33 @@ public class LayeredReader implements Reader
 				{
 					while(keyIter.hasNext())
 					{
-						resultSet.add(keyIter.next());
+                        Object obj = keyIter.next();
+                        if ((obj != null) && (isFilter(obj, false)))
+                            resultSet.add(obj);
 					}
 				}
 			}
 		}
 		return resultSet;
 	}
+
+    @Override
+    public boolean exists(String group, Object key)
+        throws CtxException
+    {
+        boolean ret = false;
+      //assumption is that the stores are passed in the order 
+        //they have to be searched?
+        for (int i = 0; (!ret) && (i < _stores.length); i++)
+        {
+            if((_stores[i] == null) || (_stores[i] instanceof IndexedStore))
+                continue;
+                
+            ret = _stores[i].getConnection().exists(group, key);
+        }
+        
+        return ret;
+    }
 
 }
 

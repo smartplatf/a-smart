@@ -64,7 +64,7 @@ import static org.anon.smart.base.dspace.DSpaceService.*;
 
 public class MetricsManager implements MonitorConstants {
 
-	public static void handleMetricsfor(D2CacheTransaction txn, SmartData object, int action)
+	/*public static void handleMetricsfor(D2CacheTransaction txn, SmartData object, int action)
 		throws CtxException
 	{
 		List<MetricCounter> counters = getMetricCountersFor(object, action);
@@ -75,9 +75,25 @@ public class MetricsManager implements MonitorConstants {
 			}
 			
 		
-	}
+	}*/
+	
+	public static void handleMetricsfor(D2CacheTransaction txn, Object object, MonitorAction action)
+			throws CtxException
+		{
+			List<MetricCounter> counters = action.getCounters(object);
+			
+			if(counters == null) return;
+			
+				for(MetricCounter c : counters)
+				{
+					c.incrementCount();
+					DSpaceService.addObject(txn, null, c, null); //TODO original
+				}
+				
+			
+		}
 
-	private static List<MetricCounter> getMetricCountersFor(SmartData object, int action)
+	/*private static List<MetricCounter> getMetricCountersFor(SmartData object, int action)
 		throws CtxException 
 	{
 		List<MetricCounter> counters = new ArrayList<MetricCounter>();
@@ -91,8 +107,13 @@ public class MetricsManager implements MonitorConstants {
 		}
 		if((action & OBJECTACCESSACTION) == OBJECTACCESSACTION)
 		{
-			String key = flow+KEYSEPARATOR+object.smart___id();
-			counters.add(getCounterFor(key, OBJECTACCESSGROUP));
+			
+			for(Object k : object.smart___keys())
+			{
+				String key = flow+KEYSEPARATOR+k;
+				counters.add(getCounterFor(key, OBJECTACCESSGROUP));
+			}
+				
 		}
 		
 		return counters;
@@ -105,7 +126,6 @@ public class MetricsManager implements MonitorConstants {
 		CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
 		RuntimeShell shell = (RuntimeShell)(tenant.runtimeShell());
 		assertion().assertNotNull(shell, "MetricsManager: Runtime Shell is NULL");
-		CrossLinkDeploymentShell dShell = new CrossLinkDeploymentShell(tenant.deploymentShell());
 		
 		Object c = shell.lookupFor(TenantConstants.MONITOR_SPACE, group, key);
 		MetricCounter counter = null;
@@ -121,6 +141,6 @@ public class MetricsManager implements MonitorConstants {
 				counter = new ObjectCreationCounter(key);
 		}
 		return counter;
-	}
+	}*/
 
 }

@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.anon.smart.d2cache.store.IndexedStore;
 import org.anon.smart.d2cache.store.MemoryStore;
 import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreItem;
@@ -84,7 +85,8 @@ public class ReplicationWriter implements SegmentWriter {
 		// memory stores
 		List<StoreTransaction> txnList = new ArrayList<StoreTransaction>();
 		for (int i = 0; i < foundat; i++) {
-			if (stores[i] instanceof MemoryStore) {
+			if ((stores[i] instanceof MemoryStore) && (!(stores[i] instanceof IndexedStore))) {
+				//System.out.println("Writing here into JCS on CacheMiss...........");
 				StoreTransaction txn = stores[i].getConnection()
 						.startTransaction(UUID.randomUUID());
 				for (StoreItem item : items) {

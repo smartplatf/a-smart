@@ -42,7 +42,11 @@
 package org.anon.smart.d2cache;
 
 import org.anon.smart.d2cache.segment.CSegment;
+
 import org.anon.utilities.exception.CtxException;
+
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
+
 
 public class MemStoreIndCache extends AbstractD2Cache {
 
@@ -54,11 +58,19 @@ public class MemStoreIndCache extends AbstractD2Cache {
 			throws CtxException {
 
 		super(name, flags, config);
-		_segments = new CSegment[2];
+		
+		int length = 3;
+		boolean noPers = convert().stringToBoolean(System.getProperty("Smart.Development.Mode", "false"));
+		if(noPers)
+		{
+			length = 2;
+		}
+		_segments = new CSegment[length];
 		 int cnt = 0;
 		_segments[cnt++] = createMemSegment();
-		//_segments[cnt++] = createIndexSegment();
-		_segments[cnt++] = createStoreSegment();
+		_segments[cnt++] = createIndexSegment();
+		if(!noPers)
+			_segments[cnt++] = createStoreSegment();
 	}
 
 

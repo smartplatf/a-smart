@@ -44,6 +44,7 @@ package org.anon.smart.d2cache.store.repository.hbase;
 import java.lang.reflect.Field;
 
 import static org.anon.utilities.objservices.ObjectServiceLocator.convert;
+import static org.anon.utilities.services.ServiceLocator.except;
 import static org.anon.utilities.services.ServiceLocator.type;
 
 import java.util.Collection;
@@ -76,7 +77,16 @@ public class ObjectCreatorFromMap extends CreatorFromMap implements Constants{
             
             if(fld != null)
             {
-            	ret = convert().collectionSizeFromMap(check, fld.getName(), ctx.fieldType());
+            	String sizeColumn = ctx.fieldType().getSimpleName()+PART_SEPARATOR+ctx.fieldpath()+SIZE;
+            	if(check.get(sizeColumn) != null)
+            	{
+            		ret = byteArrayToInt((byte[])check.get(sizeColumn));
+            		System.out.println("CollectionSize:"+ret);
+            	}
+            	else
+            	{
+            		ret = collectionSizeFromMap(check, fld.getName(), ctx.fieldType());
+            	}
             }
         }
         else if (ctx instanceof ListItemContext)
@@ -92,33 +102,68 @@ public class ObjectCreatorFromMap extends CreatorFromMap implements Constants{
 	
 	@Override
 	public Object handleDefault(DataContext ctx)
+		throws CtxException
 	{
 		Map checkIn = getContextMap(ctx);
 		String key = ctx.traversingClazz().getSimpleName()+"."+ctx.fieldpath();
-   	 	//System.out.println("HandleDefault:"+key+":::::"+checkIn);
-       if ((ctx.field() != null) && (checkIn != null) && (checkIn.containsKey(key)))
-       {
+   	    if ((ctx.field() != null) && (checkIn != null) && (checkIn.containsKey(key)))
+        {
     	   Object val = checkIn.get(key);
-           if ((val != null) && (type().isAssignable(val.getClass(), ctx.fieldType())))
+           String actualFldType = "";
+           actualFldType = ctx.fieldType().getName();
+           if(HBaseUtil.isFieldTypeNeeded(ctx.fieldType()))
+           {
+               if(checkIn.get(key+FIELDTYPE) != null)
+               {
+                   actualFldType = new String(((byte[])checkIn.get(key+FIELDTYPE)));
+                   //System.out.println("Actual Field Type:"+actualFldType + ":" + key + ":" + val);
+               }
+           }
+           if(actualFldType.startsWith("[")) //TODO: arrays and Maps are not supported yet
+           {
+        	   except().te("DataTypeNotSupported:"+actualFldType);
+           }
+           Class actualFldClass = null;
+           try
+           {
+               actualFldClass = this.getClass().getClassLoader().loadClass(actualFldType);
+               //System.out.println("Actual Field Type:"+actualFldType + ":" + actualFldClass + ":");
+               if(Map.class.isAssignableFrom(actualFldClass))
+               {
+            	   except().te("DataTypeNotSupported:"+actualFldType); //TODO: arrays and Maps are not supported yet
+               }
+           }
+           catch(ClassNotFoundException e)
+           {
+        	   actualFldClass = ctx.fieldType();
+        	   
+           }
+           catch (Exception e)
+           {
+               e.printStackTrace();
+               return null;
+           }
+           if ((val != null) && (type().isAssignable(val.getClass(), actualFldClass)))
            {
         	   return val;
            }
-           else if((val != null) && (type().checkPrimitive(ctx.fieldType()) ||  type().isWrapperType(ctx.fieldType()) ))
+           else if((val != null) && (type().checkPrimitive(actualFldClass) ||  type().isWrapperType(actualFldClass) ) )
            {
-           		return type().convertToPrimitive(ctx.fieldType(), (byte[])val);     	
+           		return type().convertToPrimitive(actualFldClass, (byte[])val);     	
            }
            
-           else if((val != null) && type().convertableFromString(ctx.fieldType()))
+           else if((val != null) && type().convertableFromString(actualFldClass))
            {
-        	   return type().createObjectFromString(ctx.fieldType(), new String((byte[])val));
+        	   return type().createObjectFromString(actualFldClass, new String((byte[])val));
            }
            
+           //System.out.println("Is an object: " + (val instanceof byte[]) + ":" + val);
            /* Adding this and should be changed */
            if((val != null) && val instanceof byte[])
            {
-        	   Object values = createMapForMember(checkIn, ctx.fieldType(), ctx.field().getName());
+        	   Object values = createMapForMember(checkIn, actualFldClass, ctx.fieldpath());
         	   Object obj = null;
-        	   String actualFldType = "";
+        	  /*String actualFldType = "";
         	   actualFldType = ctx.fieldType().getName();
         	   if(HBaseUtil.isFieldTypeNeeded(ctx.fieldType()))
         	   {
@@ -129,7 +174,7 @@ public class ObjectCreatorFromMap extends CreatorFromMap implements Constants{
                 	   
             	   }
         		   
-        	   }
+        	   }*/
         	  
         	   //System.out.println("Setting Field PaRAM:"+ctx.fieldType()+":::"+checkIn.get(key)+":::"+key+":::"+actualFldType+"::CTX:"+ctx);
           	  
@@ -172,15 +217,41 @@ public class ObjectCreatorFromMap extends CreatorFromMap implements Constants{
    }
 
 	@Override
-	public Object handleListItem(ListItemContext lctx)
+	public Object handleListItem(ListItemContext lctx) throws CtxException
     {
         Map checkIn = getContextMap(lctx);
-       // System.out.println("CheckIn:"+checkIn+"::"+lctx.getCount());
+        //System.out.println("CheckIn:"+checkIn+"::"+lctx.getCount());
         Object val = null;
+        //Return element from Map if Primitive list
+        if(type().checkPrimitive(lctx.traversingClazz()))
+        {
+        	//System.out.println("Primtive List");
+        	String type = null;
+        	if(lctx.getActualFieldType() != null)
+        		type = lctx.getActualFieldType().getSimpleName();
+        	if((type == null) && (lctx.listField() != null))
+        		type = lctx.listField().getType().getSimpleName();
+        	String key = type +"."+lctx.fieldpath();
+        	//System.out.println("------_KEY :"+key);
+        	if(checkIn.get(key) != null)
+        	{
+	        	String listAsStr = new String((byte[])checkIn.get(key));
+	        	String[] strList = trim(listAsStr);
+	        	Object o = type().convertToPrimitive(lctx.traversingClazz(), strList[lctx.getCount()].getBytes());
+	        	//System.out.println("ListItem:"+o);
+	        	return o;
+	        	
+        	}
+        	
+        	return null;
+        	
+        }
+        
+        
         if (checkIn != null)
         {
         	//Get Map for ListItem
-            val = convert().mapForCollectionItem(checkIn, lctx);
+            val = mapForCollectionItem(checkIn, lctx);
         }
         else if (lctx.getCustom() instanceof List)
         {
@@ -198,7 +269,6 @@ public class ObjectCreatorFromMap extends CreatorFromMap implements Constants{
 		
 		for(Object key : checkIn.keySet())
 		{
-			
 			String[] tokens = ((String)key).split("\\.", 2);
 			if((tokens.length > 1) && ( tokens[1].startsWith(fldName)))
 			{
@@ -206,11 +276,85 @@ public class ObjectCreatorFromMap extends CreatorFromMap implements Constants{
 				modKey.append(".");
 			
 				modKey.append(tokens[1]);
-			
 				memberMap.put(modKey.toString(), checkIn.get(key));
 			}
 		}
 		
 		return memberMap;
 	}
+	
+	private String[] trim(String listAsStr)
+	    	throws CtxException
+	{
+	    	//assuming listAsStr will be in [x, y, z] format
+	    	//remove []
+			if(listAsStr.length()<3)
+			{
+				return new String[0];
+			}
+	    	String[] stringList = listAsStr.substring(1, listAsStr.length()-1).split(", ");
+	    	
+	    	return stringList;
 	}
+	public int collectionSizeFromMap(Map check, String name, Class fldType) {
+		String keyStr = null;
+		int size = 0;
+		for(Object key : check.keySet())
+		{
+			keyStr = (String)key;
+			if(keyStr.equals(fldType.getSimpleName()+"."+name) )
+			{
+				
+				String fldVal = new String((byte[]) check.get(keyStr));
+				if((fldVal != null) && (fldVal.length() > 2))
+				{
+					String[] tokens = fldVal.split(",");
+				 	size =  tokens.length;
+				}
+				
+				break;
+			}
+			
+				
+		}
+		System.out.println("LIST SIZE.....:"+size);
+		 
+		return size;	
+	}
+	
+	public Object mapForCollectionItem(Map checkIn, ListItemContext lctx) {
+		Map<String, Object> mapForCollection = new HashMap<String, Object>();
+		for(Object key : checkIn.keySet())
+		{
+			String keyStr = (String)key;
+				
+			String fieldType = null;
+			if( lctx.getActualFieldType() != null) 
+				fieldType = lctx.getActualFieldType().getSimpleName();
+			if((fieldType == null) && (lctx.listField() != null))
+				fieldType = lctx.listField().getType().getSimpleName();
+			if((keyStr.startsWith(fieldType+"."+lctx.listField().getName())))
+						
+			{
+				String[] tokens = keyStr.split("\\.", 4);
+				if((tokens.length == 4) && (tokens[2].equals(Integer.toString(lctx.getCount()))))
+				{
+					
+					mapForCollection.put(lctx.traversingClazz().getSimpleName()+"."+lctx.listField().getName()+"."+tokens[3],
+							checkIn.get(key));
+				}
+				
+			}
+		}
+		
+		return mapForCollection;
+	}
+	
+	public int byteArrayToInt(byte[] b) 
+	{
+    		int value = 0;
+    		String str = new String(b);
+    		value = new Integer(str);
+    		return value;
+	}
+}

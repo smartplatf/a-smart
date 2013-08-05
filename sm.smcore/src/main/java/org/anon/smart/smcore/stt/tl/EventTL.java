@@ -47,6 +47,8 @@ import java.util.ArrayList;
 import org.anon.smart.base.stt.tl.BaseTL;
 import org.anon.smart.base.annot.EventAnnotate;
 
+import org.anon.utilities.exception.CtxException;
+
 public class EventTL extends BaseTL
 {
     private String filter;
@@ -58,6 +60,7 @@ public class EventTL extends BaseTL
 
     @Override
     public Class[] getAnnotations(String name)
+        throws CtxException
     {
         List<Class> annons = new ArrayList<Class>();
         Class[] annots = super.getAnnotations(name);
@@ -74,6 +77,11 @@ public class EventTL extends BaseTL
         BaseTL.populateDefault(ret, clsname, type, flow);
         return ret;
     }
-    
+
+    @Override
+    public boolean shouldAdd(String type)
+    {
+        return true;
+    }
 }
 

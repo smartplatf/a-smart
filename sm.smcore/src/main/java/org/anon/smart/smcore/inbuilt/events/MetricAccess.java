@@ -44,13 +44,17 @@ package org.anon.smart.smcore.inbuilt.events;
 import java.io.Serializable;
 
 public class MetricAccess implements Serializable {
-	String objName;
+	String key;
+	String metric;
 	
-	public MetricAccess(String name)
+	public MetricAccess(String k, String metricName)
 	{
-		objName = name;
+		key = k;
+		metric = metricName;
 	}
 	
-	public String getObjectName() { return objName; }
+	public String getKey() { return key; }
+	
+	public String getMetricName() { return metric; }
 	
 }

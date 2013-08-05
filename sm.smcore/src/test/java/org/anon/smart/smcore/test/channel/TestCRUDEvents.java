@@ -56,11 +56,14 @@ import org.anon.smart.channels.data.ContentData;
 import org.anon.smart.channels.data.PData;
 
 import org.anon.smart.smcore.test.CoreServerUtilities;
+import org.anon.smart.smcore.test.TestClient;
+import org.anon.smart.smcore.test.AssertJSONResponse;
 
 import org.anon.utilities.anatomy.CrossLinkApplication;
 
 public class TestCRUDEvents
 {
+    /*
     private HTTPClientChannel postTo(SCShell shell, int port, String server, String uri, String post, boolean wait)
         throws Exception
     {
@@ -83,6 +86,7 @@ public class TestCRUDEvents
 
         return cchnl;
     }
+    */
 
     @Test
     public void testTestCRUDEvents()
@@ -91,8 +95,30 @@ public class TestCRUDEvents
         int port = 9081;
         CoreServerUtilities utils = new CoreServerUtilities(port);
         utils.runServer("org.anon.smart.smcore.test.channel.RunSmartServer");
-        Thread.sleep(3000);
-        SCShell shell = new SCShell();
+        //Thread.sleep(3000);
+        //SCShell shell = new SCShell();
+        TestClient clnt = new TestClient(port, "localhost", "errortenant", "ErrorCases", "ErrorCases.soa");
+        clnt.deployFromSampleJar();
+        clnt.createTenant();
+
+        AssertJSONResponse resp = clnt.post("CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'create':'ErrorObject', 'data':{'name':'ohGod','embed':{'_start':'04/04/2013 10:30'}}}");
+        assertTrue(resp != null);
+
+        //check error
+        resp = clnt.post("ExceptionEvent", "{'ErrorObject':{'___smart_action___':'lookup', '___smart_value___':'ohGod'}, 'test':'ErrorObject1'}");
+        assertTrue(resp != null);
+
+        resp = clnt.post("CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'create':'AdditionalError', 'data':{'name':'addedsome'}}");
+        assertTrue(resp != null);
+
+        //for throwexception
+        resp = clnt.post("CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'create':'ErrorObject', 'data':{'name':'throwexception','embed':{'_start':'04/04/2013 10:00'}}}");
+        assertTrue(resp != null);
+
+        resp = clnt.post("ExceptionEvent", "{'ErrorObject':{'___smart_action___':'lookup', '___smart_value___':'throwexception'}, 'test':'ErrorObject2'}");
+        assertTrue(resp != null);
+
+        /*
         String home = System.getenv("HOME");
         postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'ErrorCases.soa'}", true);
         postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'errortenant','enableFlow':'ErrorCases','enableFeatures':['all']}", false);
@@ -105,6 +131,7 @@ public class TestCRUDEvents
         //for throwexception
         postTo(shell, port, "localhost", "/errortenant/ErrorCases/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'create':'ErrorObject', 'data':{'name':'throwexception','embed':{'_start':'04/04/2013 10:00'}}}", true);
         postTo(shell, port, "localhost", "/errortenant/ErrorCases/ExceptionEvent", "{'ErrorObject':{'___smart_action___':'lookup', '___smart_value___':'throwexception'}, 'test':'ErrorObject2'}", true);
+        */
         utils.stopServer();
     }
 }

@@ -47,6 +47,8 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.anon.smart.base.loader.SmartLoader;
+
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import static org.anon.utilities.services.ServiceLocator.*;
 import org.anon.utilities.exception.CtxException;
@@ -60,7 +62,7 @@ public class STTDescriptor implements Constants
     private Map<String, MethodDet> _enterCalls;
     private Map<String, MethodDet> _exitCalls;
 
-    public STTDescriptor(InputStream istr, STTReader reader)
+    public STTDescriptor(String type, InputStream istr, STTReader reader, ClassLoader ldr)
         throws CtxException
     {
         _reader = reader;
@@ -76,6 +78,14 @@ public class STTDescriptor implements Constants
         _reader.readMethodAnnotations(this);
         _reader.readClassInterfaces(this);
         _reader.addFieldAnnotation(SYNTHETIC_CLASS);
+
+        if (ldr instanceof SmartLoader)
+        {
+            SmartLoader sldr = (SmartLoader)ldr;
+            String[] extras = sldr.addExtraSTT(type);
+            for (int i = 0; (extras != null) && (i < extras.length); i++)
+                addExtraType(extras[i]);
+        }
     }
 
     public void addCustom(String name)

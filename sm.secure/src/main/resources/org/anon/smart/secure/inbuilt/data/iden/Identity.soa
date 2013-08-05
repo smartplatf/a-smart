@@ -1,0 +1,20 @@
+name:   Identity
+type:   PrimeData
+flow:   Security
+attributes:
+    - attribute:    _identity
+      type:         key
+states:
+    - name:         active
+      startState:   true
+    - name:         inactive
+      endState:     true
+security:
+    - name:     authaccess
+      type:     unauthenticated
+      access:   execute
+      parm:     Authenticate
+    - name:     roleaccess
+      type:     smartrole
+      access:   execute
+

@@ -1,0 +1,12 @@
+name:   Session
+type:   PrimeData
+flow:   Security
+attributes:
+    - attribute:    _sessionId
+      type:         key
+states:
+    - name:         active
+      startState:   true
+    - name:         inactive
+      endState:     true
+

@@ -42,6 +42,7 @@
 package org.anon.smart.base.dspace;
 
 import org.anon.smart.d2cache.D2CacheScheme;
+import org.anon.smart.d2cache.DataFilter;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -51,6 +52,12 @@ public class BrowsableTransactDSpace extends TransactDSpaceImpl
         throws CtxException
     {
         super(name);
+    }
+
+    public BrowsableTransactDSpace(String name, DataFilter[] filters)
+        throws CtxException
+    {
+        super(name, filters);
     }
 
     @Override

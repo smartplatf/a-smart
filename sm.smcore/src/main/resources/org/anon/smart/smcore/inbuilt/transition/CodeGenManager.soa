@@ -1,0 +1,10 @@
+name:       CodeGenManager
+type:       Transition
+flow:       AdminSmartFlow
+foreach:        TenantAdmin|DefinePrime
+actions:
+    - name:     generateCode
+      method:   generateCode
+      foreach:  TenantAdmin|DefinePrime
+      from:     active
+      to:       active

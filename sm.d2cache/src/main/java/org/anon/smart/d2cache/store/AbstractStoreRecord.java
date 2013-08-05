@@ -71,5 +71,15 @@ public abstract class AbstractStoreRecord implements StoreRecord
     	return _orig;
     }
     
+    public Object getCurrent()
+    {
+    	return _currentObject;
+    }
+    
+    public void setGroup(String grp)
+    {
+    	_group = grp;
+    }
+    
 }
 

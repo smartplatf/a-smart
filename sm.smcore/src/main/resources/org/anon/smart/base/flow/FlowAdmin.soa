@@ -9,4 +9,12 @@ states:
       startState:   true
     - name:         inactive
       endState:     true
+security:
+    - name:     flowauthaccess
+      type:     unauthenticated
+      parm:     Authenticate
+      access:   execute
+    - name:     roleaccess
+      type:     smartrole
+      access:   execute
 

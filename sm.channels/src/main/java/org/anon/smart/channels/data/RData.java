@@ -111,6 +111,8 @@ public class RData extends Isotope
 
         if (send.size() > 0)
             _dscope.transmit(send.toArray(new PData[0]));
+
+        _dscope.close();
     }
 
     public void commitResponses()
@@ -119,11 +121,18 @@ public class RData extends Isotope
         if (!_committedResponses)
         {
             UUID channelID = _dscope.channelID();
+            if(channelID != null)
+            {
             SmartServerChannel chnl = getChannel(channelID);
             if (chnl != null)
                 chnl.sendResponses(this);
+            }
             _committedResponses = true;
         }
+    }
+    
+    public DScope dScope(){
+    	return _dscope;
     }
 }
 

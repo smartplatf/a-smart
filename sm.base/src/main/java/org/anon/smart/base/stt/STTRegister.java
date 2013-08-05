@@ -181,7 +181,7 @@ public final class STTRegister extends VMSingleton
                 if (!_cache.containsKey(type))
                 {
                     InputStream istr = getSTTStream(type, ldr);
-                    STTDescriptor desc = new STTDescriptor(istr, reader);
+                    STTDescriptor desc = new STTDescriptor(type, istr, reader, ldr);
                     _cache.put(type, desc);
                 }
             }

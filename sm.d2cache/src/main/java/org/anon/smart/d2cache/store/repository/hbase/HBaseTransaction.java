@@ -114,5 +114,12 @@ public class HBaseTransaction extends AbstractStoreTransaction
     {
         //nothing to do, it is not yet committed.
     }
+
+	@Override
+	public StoreRecord addRecord(String group, Object primarykey, Object curr,
+			Object orig, Object relatedKey) throws CtxException {
+		RelatedObject obj = new RelatedObject(relatedKey);
+		return addRecord(group, primarykey, obj, null);
+	}
 }
 

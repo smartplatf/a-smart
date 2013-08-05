@@ -54,6 +54,7 @@ import org.anon.smart.smcore.flow.CrossLinkSmartFlow;
 import org.anon.smart.smcore.channel.server.EventRData;
 import org.anon.smart.smcore.channel.distill.alteration.AlteredData;
 import org.anon.smart.smcore.channel.distill.sanitization.SearchedData;
+import org.anon.smart.smcore.channel.internal.MessagePData;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -90,7 +91,10 @@ public class StorageStage implements Distillation
             Object event = evt.event();
             EventRData rdata = new EventRData(_myRectifier, pdata, event, searched.tenant(), searched.flowDeployment());
             CrossLinkSmartFlow clsf = new CrossLinkSmartFlow(evt.flow());
-            clsf.postExternal(rdata);
+            if(pdata instanceof MessagePData)
+            	clsf.postInternal(rdata);
+            else
+            	clsf.postExternal(rdata);
         }
 
         //shd not be used after this stage

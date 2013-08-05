@@ -1,0 +1,16 @@
+name:   Template
+defaultEnable:  all
+primeData:
+    - org.anon.smart.template.Template
+events:
+     - org.anon.smart.template.inbuilt.events.GetTemplates
+responses:
+    - org.anon.smart.template.inbuilt.responses.TemplateResponse
+transitions:
+    - org.anon.smart.template.inbuilt.transition.TemplateManager
+features:
+    - name: all
+      artefacts:
+        - org.anon.smart.template.inbuilt.events.GetTemplates
+        - org.anon.smart.template.inbuilt.responses.TemplateResponse
+        - org.anon.smart.template.inbuilt.transition.TemplateManager

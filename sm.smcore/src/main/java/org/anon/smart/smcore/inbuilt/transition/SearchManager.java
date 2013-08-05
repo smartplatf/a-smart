@@ -50,9 +50,11 @@ import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
 import org.anon.smart.base.tenant.shell.RuntimeShell;
 import org.anon.smart.smcore.events.SmartEvent;
+import org.anon.smart.smcore.inbuilt.events.CheckExistence;
 import org.anon.smart.smcore.inbuilt.events.ListAllEvent;
 import org.anon.smart.smcore.inbuilt.events.LookupEvent;
 import org.anon.smart.smcore.inbuilt.events.SearchEvent;
+import org.anon.smart.smcore.inbuilt.responses.CheckExistenceResponse;
 import org.anon.smart.smcore.inbuilt.responses.ListAllResponse;
 import org.anon.smart.smcore.inbuilt.responses.LookupResponse;
 import org.anon.smart.smcore.inbuilt.responses.SearchResponse;
@@ -72,9 +74,9 @@ public class SearchManager {
 		assertion().assertNotNull(shell, "SearchManager: Runtime Shell is NULL");
 		CrossLinkDeploymentShell dShell = new CrossLinkDeploymentShell(tenant.deploymentShell());
 		Object o = searchEvent;
-        SmartEvent sevt = (SmartEvent)o;
-        String flow = sevt.smart___flowname();
-		Class clz = dShell.deployment(searchEvent.getGroup(), FlowConstants.PRIMEDATA);
+        	SmartEvent sevt = (SmartEvent)o;
+        	String flow = sevt.smart___flowname();
+		Class clz = dShell.deployment(flow, searchEvent.getGroup(), FlowConstants.PRIMEDATA);
 		if(clz != null)System.out.println("SearchManager:result type is "+clz.getName() );
 		List<Object> searchResult = shell.searchFor(dShell.deploymentFor(flow).deployedName(),
 											clz, searchEvent.getQueryMap());
@@ -111,6 +113,27 @@ public class SearchManager {
 		
 	}
 	
+	public void exists(CheckExistence event) 
+            throws CtxException
+    {
+        assertion().assertNotNull(event, "SearchManager: checkExistence event is NULL");
+        assertion().assertNotNull(event.getKey(), "SearchManager: Key cannot be NULL for CheckExistence");
+        
+        CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+        RuntimeShell shell = (RuntimeShell)(tenant.runtimeShell());
+        assertion().assertNotNull(shell, "SearchManager: Runtime Shell is NULL");
+        CrossLinkDeploymentShell dShell = new CrossLinkDeploymentShell(tenant.deploymentShell());
+        Object o = event;
+        SmartEvent sevt = (SmartEvent)o;
+        String flow = sevt.smart___flowname();
+        boolean res = shell.exists(dShell.deploymentFor(flow).deployedName(),
+                event.getGroup(), event.getKey());
+        System.out.println("----------------CHECK EXISTENCE Result:"+res);
+
+        CheckExistenceResponse resp = new CheckExistenceResponse(res);
+        
+    }
+	
 	public void listAll(ListAllEvent listEvent)
 			throws CtxException
 	{
@@ -126,7 +149,7 @@ public class SearchManager {
         String flow = sevt.smart___flowname();
 		List res = shell.listAll(dShell.deploymentFor(flow).deployedName(),
 				listEvent.getGroup(), listEvent.getSize());
-		System.out.println("List Alll Event returned"+res.size()+" results");
+		System.out.println("List All Event returned "+res.size()+" results");
 		System.out.println("----------------Lookup Result:"+res);
 
 		ListAllResponse resp = new ListAllResponse(res);

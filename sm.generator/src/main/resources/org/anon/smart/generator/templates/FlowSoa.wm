@@ -1,0 +1,28 @@
+name:  ${fd.name}
+defaultEnable: #foreach ($a in ${fd.defaultEnable})
+$a#if($fd.defaultEnable.size()!= $velocityCount), #else $newline#end
+#end
+primeData:
+#foreach($b in ${fd.primeData})
+    - $b
+#end
+data:
+#foreach ($c in ${fd.data}) 
+    - $c 
+#end
+keys:
+#foreach ($d in ${fd.keys})
+    - data : $d.data
+      key  : $d.key
+#end
+features:
+    - name : #foreach($a in ${fd.defaultEnable})
+$a #if($fd.defaultEnable.size() != $velocityCount), #else $newline#end
+#end
+      artefacts:
+#foreach ($b in ${fd.primeData})
+      - $b
+#end
+#foreach ($c in ${fd.data})
+      - $c
+#end

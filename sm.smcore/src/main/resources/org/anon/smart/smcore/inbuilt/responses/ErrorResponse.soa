@@ -1,3 +1,4 @@
 name:   ErrorResponse
 type:   Response
+flow:   AllFlows
 

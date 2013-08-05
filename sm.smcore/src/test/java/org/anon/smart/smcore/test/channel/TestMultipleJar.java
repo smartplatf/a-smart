@@ -56,11 +56,14 @@ import org.anon.smart.channels.data.ContentData;
 import org.anon.smart.channels.data.PData;
 
 import org.anon.smart.smcore.test.CoreServerUtilities;
+import org.anon.smart.smcore.test.TestClient;
+import org.anon.smart.smcore.test.AssertJSONResponse;
 
 import org.anon.utilities.anatomy.CrossLinkApplication;
 
 public class TestMultipleJar
 {
+    /*
     private HTTPClientChannel postTo(SCShell shell, int port, String server, String uri, String post, boolean wait)
         throws Exception
     {
@@ -83,6 +86,8 @@ public class TestMultipleJar
 
         return cchnl;
     }
+    */
+
     @Test
     public void testTestMultipleJar()
         throws Exception
@@ -90,8 +95,28 @@ public class TestMultipleJar
         int port = 9082;
         CoreServerUtilities utils = new CoreServerUtilities(port);
         utils.runServer("org.anon.smart.smcore.test.channel.RunSmartServer");
-        Thread.sleep(3000);
-        SCShell shell = new SCShell();
+        //Thread.sleep(3000);
+
+        String home = System.getenv("HOME");
+        String jarFile1 = home + "/.m2/repository/org/anon/sampleapp/testapp/1.0/testapp-1.0.jar";
+        String jarFile2 = home + "/.m2/repository/org/anon/sampleapp/testapp2/1.0/testapp2-1.0.jar";
+
+        TestClient clnt = new TestClient(port, "localhost", "testapptenant", "TestApp", "TestApp.soa");
+        clnt.deployJar(port,jarFile1, "TestApp.soa");
+        clnt.deployJar(port,jarFile2, "TestApp2.soa");
+        clnt.createTenant();
+        TestClient clnt1 = new TestClient(port, "localhost", "testapptenant2", "TestApp2", "TestApp2.soa");
+        clnt1.createTenant();
+
+        AssertJSONResponse resp = clnt.post("CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'TestApp'}, 'create':'TestData', 'data':{'myKey':'testapp1','something':5}}");
+        assertTrue(resp != null);
+
+        resp = clnt1.post("CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'TestApp2'}, 'create':'TestData', 'data':{'myKey':'testapp2','something':5,'another':'trying'}}");
+        assertTrue(resp != null);
+
+        utils.stopServer();
+
+        /*SCShell shell = new SCShell();
         String home = System.getenv("HOME");
         postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/privategithub/p-sampleapp2/testapp.jar','flowsoa':'TestApp.soa'}", true);
 
@@ -106,6 +131,7 @@ public class TestMultipleJar
         postTo(shell, port, "localhost", "/testapptenant/TestApp/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'TestApp'}, 'create':'TestData', 'data':{'myKey':'testapp1','something':5}}", true);
 
         postTo(shell, port, "localhost", "/testapptenant2/TestApp2/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'TestApp2'}, 'create':'TestData', 'data':{'myKey':'testapp2','something':5,'another':'trying'}}", true);
+        */
     }
 }
 

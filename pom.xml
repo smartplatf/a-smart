@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.anon.smart</groupId>
-  <artifactId>smart</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
+	<groupId>org.anon.smart</groupId>
+	<artifactId>smart</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-  <name>smart</name>
-  <url>http://maven.apache.org</url>
+	<name>smart</name>
+	<url>http://maven.apache.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-    <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <url>http://192.168.1.100:8888/archiva/repository/releases</url>
-        </repository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<url>http://192.168.1.100:8888/archiva/repository/releases</url>
+		</repository>
+	</distributionManagement>
 
-  <repositories>
-    <repository>
-        <id>CloudEra</id>
-        <name>CloudEra</name>
-        <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
-    </repository>
-  </repositories>
+	<repositories>
+		<repository>
+			<id>CloudEra</id>
+			<name>CloudEra</name>
+			<url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
+		</repository>
+                <repository>
+                       <id>javax</id>
+                       <name>java</name>
+                       <url>http://download.java.net/maven/2/</url>
+                </repository>
+	</repositories>
 
   <dependencies>
     <dependency>
@@ -36,6 +42,11 @@
       <version>4.6</version>
       <scope>test</scope>
     </dependency>
+    <dependency> 
+        <groupId>org.slf4j</groupId> 
+        <artifactId>slf4j-log4j12</artifactId> 
+        <version>1.6.4</version> 
+    </dependency> 
     <dependency>
       <groupId>org.anon.utilities</groupId>
       <artifactId>utilities</artifactId>
@@ -88,14 +99,26 @@
             <version>2.5</version>
             <configuration>
                 <forkMode>always</forkMode>
-                <argLine>-Xms512m -Xmx512m</argLine>
+                <argLine>-Djava.security.debug="access,failure" -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -Xms512m -Xmx512m</argLine>
+            <!--    <argLine>-DSmart.Development.Mode=true</argLine> -->
                 <includes>
                     <include>**/Test*Suite*</include>
                 </includes>
                 <systemProperties combine.children="append">
                     <property>
+                        <name>java.security.debug</name>
+                        <value>"all"</value>
+                    </property>
+                    <property>
+                        <name>java.security.manager</name>
+                    </property>
+                    <property>
                         <name>maven.repository</name>
                         <value>.m2/repository/</value>
+                    </property>
+                    <property>
+                        <name>SMART_PATH</name>
+                        <value>${env.HOME}/.m2/repository/</value>
                     </property>
                     <property>
                         <name>deployment.group</name>
@@ -133,19 +156,22 @@
                         <name>sampleapp</name>
                         <value>sampleapp/sampleapp/${project.version}/sampleapp-${project.version}.jar</value>
                     </property>
-
-                </systemProperties>
-            </configuration>
-        </plugin>
-    </plugins>
-  </build>
-  <modules>
-    <module>sm.base</module>
-    <module>sm.d2cache</module>
-    <module>sm.atomicity</module>
-    <module>sm.channels</module>
-    <module>sm.deployment</module>
-    <module>sm.smcore</module>
-    <module>sm.kernel</module>
-  </modules>
+					</systemProperties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<modules>
+		<module>sm.base</module>
+		<module>sm.d2cache</module>
+		<module>sm.atomicity</module>
+		<module>sm.channels</module>
+		<module>sm.deployment</module>
+		<module>sm.smcore</module>
+		<module>sm.kernel</module>
+		<module>sm.secure</module>
+		<module>sm.codegen</module>
+		<module>sm.template</module>
+		<module>sm.generator</module>
+	</modules>
 </project>

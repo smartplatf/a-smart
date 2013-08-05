@@ -53,6 +53,7 @@ public class EventLegend
 
     public EventLegend()
     {
+    	_eventID = UUID.randomUUID();
     }
 
     public EventLegend(UUID sessID)

@@ -50,6 +50,8 @@ import org.anon.smart.smcore.anatomy.SMCoreConfig;
 import org.anon.smart.kernel.config.SmartConfig;
 import org.anon.smart.kernel.config.ChannelConfig;
 import org.anon.smart.smcore.channel.server.EventServerConfig;
+import org.anon.smart.smcore.channel.server.UploadServerConfig;
+import org.anon.smart.secure.channel.server.SecureEventServerConfig;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -83,8 +85,14 @@ public class SmartModuleConfig implements SMCoreConfig
         boolean https = (cfg.getProtocol().equals("https"));
         int[] ports = cfg.getPortRange();
         int port = SCShell.getNextAvailablePort(ports);
+        
         if (type.equals("event"))
             ccfg = new EventServerConfig(port, https);
+        //if the channel type is upload create a httpuploadConfig
+        else if (type.equals("upload"))
+        	ccfg = new UploadServerConfig(port, https);
+        else if (type.equals("secureevent"))
+            ccfg = new SecureEventServerConfig(port, https);
         return ccfg;
     }
 

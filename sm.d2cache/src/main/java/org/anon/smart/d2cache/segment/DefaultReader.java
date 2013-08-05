@@ -44,6 +44,7 @@ package org.anon.smart.d2cache.segment;
 import java.util.List;
 
 import org.anon.smart.d2cache.Reader;
+import org.anon.smart.d2cache.DataFilter;
 import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.utilities.exception.CtxException;
@@ -54,16 +55,35 @@ public class DefaultReader implements Reader {
 
 	protected Store _store;
 	protected StoreConfig _config;
+    protected DataFilter[] _filters;
 	
 	public DefaultReader(Store store, StoreConfig cfg)
 	{
 		_store = store;
 		_config = cfg;
 	}
+
+    public void userFilters(DataFilter[] filter)
+    {
+        _filters = filter;
+    }
+
+    private boolean isFilter(Object obj, boolean except)
+        throws CtxException
+    {
+        boolean ret = true;
+        for (int i = 0; (ret) && (_filters != null) && (i < _filters.length); i++)
+            ret = _filters[i].filterObject(obj, DataFilter.dataaction.read, except);
+
+        return ret;
+    }
+
 	@Override
 	public Object lookup(String group, Object key) throws CtxException {
 		Object ret = null;
 		ret = _store.getConnection().find(group, key);
+        if ((ret != null) && (!isFilter(ret, true)))
+            ret = null;
 		return ret;
 	}
 
@@ -76,5 +96,14 @@ public class DefaultReader implements Reader {
 	public List<Object> listAll(String group, int size) throws CtxException {
 		return null;
 	}
+
+    @Override
+    public boolean exists(String group, Object key) throws CtxException
+    {
+        boolean ret = false;
+        ret = _store.getConnection().exists(group, key);
+        
+        return ret;
+    }
 
 }

@@ -41,6 +41,7 @@
 
 package org.anon.smart.d2cache.store.repository.hbase;
 
+
 import java.util.Collection;
 
 import org.apache.hadoop.hbase.client.Put;
@@ -58,11 +59,20 @@ public class HBaseRecord extends AbstractStoreRecord implements Constants
     private String _table;
     private HBaseConnection _conn;
     private int _keyCount;
-
+    private String _simpleName;
+    
     public HBaseRecord(String group, Object primarykey, Object curr, Object orig, HBaseConnection conn)
         throws CtxException
     {
         super(group, primarykey, curr, orig);
+        
+        if(curr instanceof RelatedObject)
+        {
+        	setGroup(RelatedObject.class.getSimpleName());
+            _simpleName = RelatedObject.class.getSimpleName();
+        }
+        else
+            _simpleName = curr.getClass().getSimpleName();
 
         try
         {
@@ -87,17 +97,22 @@ public class HBaseRecord extends AbstractStoreRecord implements Constants
     {
         try
         {
-            if (ctx.field() != null)
+        	if (ctx.field() != null)
             {
-                String key = _group + PART_SEPARATOR + ctx.fieldpath();
+                //String key = _group + PART_SEPARATOR + ctx.fieldpath();
+                String key = _simpleName + PART_SEPARATOR + ctx.fieldpath();
                 Object fldval = ctx.fieldVal();
                 if (fldval != null)
                 {
-                    _conn.getCRUD().addTo(_putRecord, DATA_COL_FAMILY, key, fldval);
+                   _conn.getCRUD().addTo(_putRecord, DATA_COL_FAMILY, key, fldval);
                    if(HBaseUtil.isFieldTypeNeeded(ctx.fieldType()))
-                    {
+                   {
                     	_conn.getCRUD().addTo(_putRecord, SYNTHETIC_COL_FAMILY, key+FIELDTYPE, fldval.getClass().getName());
-                    }
+                   }
+                   if(Collection.class.isAssignableFrom(ctx.fieldType()))
+                   {
+                	   _conn.getCRUD().addTo(_putRecord, SYNTHETIC_COL_FAMILY, key+SIZE, ((Collection)fldval).size());
+                   }
                     if (ctx.field().isAnnotationPresent(CacheKeyAnnotate.class))
                     {
                         _conn.getCRUD().addTo(_putRecord, DATA_COL_FAMILY, KEY_NAME + _keyCount, fldval);

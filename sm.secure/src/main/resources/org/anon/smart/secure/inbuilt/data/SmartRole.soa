@@ -1,0 +1,12 @@
+name:   SmartRole
+type:   PrimeData
+flow:   Security
+attributes:
+    - attribute:    _roleName
+      type:         key
+states:
+    - name:         active
+      startState:   true
+    - name:         inactive
+      endState:     true
+

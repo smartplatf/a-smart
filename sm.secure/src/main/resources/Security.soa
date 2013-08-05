@@ -1,0 +1,38 @@
+name:   Security
+defaultEnable:  all
+primeData:
+    - org.anon.smart.secure.inbuilt.data.SmartUser
+    - org.anon.smart.secure.inbuilt.data.SmartRole
+    - org.anon.smart.secure.inbuilt.data.Session
+    - org.anon.smart.secure.inbuilt.data.iden.Identity
+events:
+    - org.anon.smart.secure.inbuilt.events.CreateUser
+    - org.anon.smart.secure.inbuilt.events.CreateRole
+    - org.anon.smart.secure.inbuilt.events.AddIdentity
+    - org.anon.smart.secure.inbuilt.events.AddRolesToUser
+    - org.anon.smart.secure.inbuilt.events.Authenticate
+responses:
+    - org.anon.smart.secure.inbuilt.responses.SecurityResponse
+transitions:
+    - org.anon.smart.secure.inbuilt.transition.ManageUsers
+    - org.anon.smart.secure.inbuilt.transition.ManageRoles
+    - org.anon.smart.secure.inbuilt.transition.AuthenticateUser
+features:
+    - name: all
+      artefacts:
+        - org.anon.smart.secure.inbuilt.data.SmartUser
+        - org.anon.smart.secure.inbuilt.data.SmartRole
+        - org.anon.smart.secure.inbuilt.data.Session
+        - org.anon.smart.secure.inbuilt.data.iden.Identity
+        - org.anon.smart.secure.inbuilt.events.CreateUser
+        - org.anon.smart.secure.inbuilt.events.CreateRole
+        - org.anon.smart.secure.inbuilt.events.AddIdentity
+        - org.anon.smart.secure.inbuilt.events.AddRolesToUser
+        - org.anon.smart.secure.inbuilt.events.Authenticate
+        - org.anon.smart.secure.inbuilt.responses.SecurityResponse
+        - org.anon.smart.secure.inbuilt.transition.ManageUsers
+        - org.anon.smart.secure.inbuilt.transition.ManageRoles
+        - org.anon.smart.secure.inbuilt.transition.AuthenticateUser
+links:
+    - from: Identity._smartUser(n)
+      to: SmartUser._id

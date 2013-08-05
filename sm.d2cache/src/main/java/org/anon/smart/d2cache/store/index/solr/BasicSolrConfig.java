@@ -53,7 +53,13 @@ public class BasicSolrConfig implements SolrConfig {
         {
             String path = System.getenv("SMART_PATH");
             if ((path == null) || (path.length() <= 0))
+            {
+            	path = System.getProperty("SMART_PATH");
+            }
+            if ((path == null) || (path.length() <= 0))
+            {
                 path = System.getenv("HOME") + "/solr/";
+            }
             _solrHome = path + "/solr-datastore/";
         }
 	}

@@ -46,10 +46,14 @@ import java.util.Map;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
+import org.anon.smart.base.tenant.shell.RuntimeShell;
 
+import org.anon.smart.smcore.data.SmartPrimeData;
 import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.inbuilt.events.CreatePrime;
+import org.anon.smart.smcore.inbuilt.events.UpdatePrime;
 import org.anon.smart.smcore.inbuilt.responses.SuccessCreated;
+import org.anon.smart.smcore.inbuilt.responses.SuccessUpdated;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
@@ -103,5 +107,36 @@ public class CRUDManager
 
         SuccessCreated created = new SuccessCreated("Object for: " + type + " created.");
     }
+    
+    public void updatePrimeData(SmartPrimeData obj, UpdatePrime event)
+    	throws CtxException
+  	{
+    	String type = event.getPrimeType();
+        assertion().assertNotNull(type, "Cannot update for a null PrimeClass. Please specify the prime object to update.");
+        Object o = event;
+        SmartEvent sevt = (SmartEvent)o;
+        // Object obj = sevt.smart___primeData();
+        System.out.println("------------------:"+obj);
+        
+        String flow = sevt.smart___flowname();
+        CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+        CrossLinkDeploymentShell dShell = tenant.deploymentShell();
+        RuntimeShell shell = (RuntimeShell)(tenant.runtimeShell());
+        CrossLinkFlowDeployment dep = dShell.deploymentFor(flow);
+        assertion().assertNotNull(dep, "Cannot find the deployment for " + flow);
+        String clsname = dep.classFor(type);
+        assertion().assertNotNull(clsname, "Cannot find the deployment class for: " + type + " in " + flow);
+        Class cls = dShell.primeClass(flow, type); 
+        String nm = cls.getName().replaceAll("\\.", "/") + ".class";
+        System.out.println("Got the flow for: " + type + ":" + flow + ":" + cls + ":" + 
+                nm + ":" + cls.getClassLoader().getResource(nm));
+        assertion().assertNotNull(cls, "Cannot find the class for: " + type + ":" + clsname);
+        
+        Map<String, Object> values = event.getData();
+        convert().updateObject(obj, cls, values);
+        SuccessUpdated response = new SuccessUpdated("Object for: " + type + " and for obj :" + obj + " updated.");
+  	}
+    	
+    	
 }
 

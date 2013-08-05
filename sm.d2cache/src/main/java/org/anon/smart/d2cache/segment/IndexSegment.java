@@ -61,7 +61,7 @@ public class IndexSegment implements CSegment {
 	@Override
 	public void setupSegment(String name, StoreConfig cfg)
 			throws CtxException {
-		_store = new SolrStore(new SolrConnection());
+		_store = new SolrStore(SolrConnection.getConnection());
 		_store.setup(name, cfg);
 	}
 

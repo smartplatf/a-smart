@@ -1,3 +1,4 @@
 name:   SuccessCreated
 type:   Response
+flow:   AdminSmartFlow
 

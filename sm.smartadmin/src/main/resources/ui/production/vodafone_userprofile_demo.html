@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<head>
+	<meta charset="utf-8" />
+
+	<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+	Remove this if you use the .htaccess -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<title>Smart Demo</title>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<script src="js/smartcom2.js"></script>
+	<script src="js/vodafone_demo.js"></script>
+
+	<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+	<script type="text/javascript" src="js/bootstrap.js"></script>
+
+	<style>
+		body {
+			background-color: #606060;
+		}
+
+		#maincontent {
+			background-color: white;
+			border-radius: 15px;
+			padding: 20px 30px;
+			margin: 2% 5%;
+			min-height: 500px;
+			width: 87%;
+		}
+
+		#resultdiv {
+			min-height: 200px;
+			background-color: #8cc63f;
+			margin-top: 1%;
+			border-radius: 14px;
+			left: 10%;
+			padding: 10px 10px;
+			word-wrap: break-word;
+		}
+		#formdiv {
+			margin-top: 2%;
+		}
+
+		#header {
+			background-image: url("images/pattern.png");
+			background-repeat: repeat-x;
+		}
+		#logo {
+			position: relative;
+			display: inline-block;
+			margin-top: -1%;
+		}
+
+		#tagline {
+			position: absolute;
+			font-family: Verdana, Geneva, sans-serif;
+			color: #626262;
+			font-size: 12px;
+			font-weight: bold;
+			font-style: italic;
+			top: 52px;
+			left: 1%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="row">
+		<div id="header" class="row">
+			<img id="logo" class="offset2" src="images/smartlogo.png">
+			<p class="span4 offset2" id="tagline">
+				Building Cloud Applications – Accelerated
+			</p>
+		</div>
+
+		<div id="maincontent" class="row">
+			<div>
+				<h4 class="StepTitle">Select a customer mobile number to view the complete profile information</h4>
+				<img id="wait" src="images/working.gif" width="60px;" style=" display:inline; position:relative; left:0px; top:50px; z-index:100;">
+				<div class="span4" style="margin-left:10%;" id="formdiv">
+					<h5>Select a subscriber to view full details</h5>
+					<select id="listalldrop">
+						<option id=0 selected>Select a phone number</option>
+					</select>
+					<div id="customlink" class="span5" style='position:relative; margin-top:10%; margin-left:1%;'>
+
+					</div>
+				</div>
+			</div>
+			<div id="resultdiv" class="span6" style="margin-left:10%;" hidden>
+				<h4><u>Complete Subscriber Details</u></h4>
+				<div id="listresultdiv">
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+        String.prototype.toProperCase = function() {
+            return this.toLowerCase().replace(/^(.)|\s(.)/g, function($1) {
+                return $1.toUpperCase();
+            });
+        }
+	</script>
+
+	<script id='widget' type='text/javascript'>
+        var _saProp = [];
+        (function() {
+            _saProp.push(['tenant', 'vodafone']);
+            _saProp.push(['flow', 'UserProfileFlow']);
+            _saProp.push(['group', 'UserProfile']);
+            _saProp.push(['evnt', 'list']);
+            _saProp.push(['success', 'success']);
+            _saProp.push(['fail', 'fail']);
+            var _sa = document.createElement('script');
+            _sa.type = 'text/javascript';
+            _sa.async = true;
+            _sa.src = 'http://demo.smart-platform.com/js/smart_loader.js';
+            var _sNode = document.getElementById('widget');
+            _sNode.parentNode.insertBefore(_sa, _sNode);
+        })();
+
+	</script>
+
+</body>
+</html>

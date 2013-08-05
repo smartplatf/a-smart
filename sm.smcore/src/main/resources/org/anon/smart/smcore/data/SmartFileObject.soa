@@ -1,0 +1,11 @@
+name:   SmartFileObject
+type:   PrimeData
+flow:   AllFlows
+attributes:
+    - attribute:    _fileName
+      type:         key
+states:
+    - name:         active
+      startState:   true
+    - name:         inactive
+      endState:     true

@@ -64,5 +64,11 @@ public class CrossLinkSmartEvent extends CrossLinker
     {
         linkMethod("smarteventstt____init");
     }
+
+    public Object smart___legend()
+        throws CtxException
+    {
+        return linkMethod("smart___legend");
+    }
 }
 

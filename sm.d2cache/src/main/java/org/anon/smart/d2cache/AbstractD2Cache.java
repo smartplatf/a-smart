@@ -82,11 +82,21 @@ public abstract class AbstractD2Cache implements D2Cache {
 
 	@Override
 	public Reader myReader() throws CtxException {
+		return myReader(false);
+	}
+	
+	@Override
+	public Reader myReader(boolean memOnly) throws CtxException {
 		Store[] stores = new Store[_segments.length];
 		for (int i = 0; i < _segments.length; i++) {
 			stores[i] = _segments[i].getStore();
 		}
-		return ReaderFactory.getReaderFor(stores, _flags);
+		return ReaderFactory.getReaderFor(stores, _flags, memOnly);
+	}
+
+	@Override
+	public Reader getBrowsableReader() throws CtxException {
+		return ReaderFactory.getReaderFor(_segments[0].getStore(), _flags, null); 
 	}
 
 	@Override

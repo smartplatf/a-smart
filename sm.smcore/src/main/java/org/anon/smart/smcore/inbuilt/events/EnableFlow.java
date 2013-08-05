@@ -48,6 +48,7 @@ public class EnableFlow implements java.io.Serializable
     private String tenant;
     private String enableFlow;
     private List<String> enableFeatures;
+    private List<LinkFor> links;
 
     public EnableFlow()
     {
@@ -67,5 +68,7 @@ public class EnableFlow implements java.io.Serializable
     {
         return tenant;
     }
+
+    public List<LinkFor> getLinks() { return links; }
 }
 

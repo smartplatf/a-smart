@@ -1,2 +1,3 @@
 name:   SearchResponse
 type:   Response
+flow:   AllFlows

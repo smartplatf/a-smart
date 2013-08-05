@@ -42,11 +42,18 @@
 package org.anon.smart.smcore.channel.distill.translation;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Field;
 
+import org.anon.smart.base.dspace.DSpaceObject;
+import org.anon.smart.base.flow.CrossLinkFlowDeployment;
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
+import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
+import org.anon.smart.base.utils.AnnotationUtils;
 import org.anon.smart.channels.data.PData;
 import org.anon.smart.channels.data.RData;
 import org.anon.smart.channels.data.ContentData;
@@ -56,11 +63,17 @@ import org.anon.smart.channels.distill.Distillation;
 import org.anon.smart.channels.distill.Distillate;
 import org.anon.smart.smcore.channel.server.EventPData;
 import org.anon.smart.smcore.channel.distill.alteration.AlteredData;
+import org.anon.smart.smcore.channel.internal.MessagePData;
+import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.data.SmartPrimeData;
 
+import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import static org.anon.utilities.objservices.ConvertService.*;
+import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.exception.CtxException;
+
 
 public class TranslationStage implements Distillation
 {
@@ -80,6 +93,26 @@ public class TranslationStage implements Distillation
     public Distillate distill(Distillate prev)
         throws CtxException
     {
+    	if(prev.current() instanceof MessagePData)
+    	{
+    		
+    		MessagePData data = (MessagePData)prev.current();
+    		
+    		Map<String, Object> convert = objectToMapForInternalMessage(data.event());  
+    		/*//TEMP
+    		Map<String, Object> intMap = new HashMap<String, Object>();
+    		
+    		Map dest = new HashMap();
+    		dest.put("___smart_action___", "lookup");
+    		dest.put("___smart_value___", "vjaasti@gmail.com");
+    		
+    		intMap.put("Registration", dest);
+    		//TEMP END    		
+*/    		Isotope translated = new MapData(data, convert);
+    		return new Distillate(prev, translated);
+    		
+    	}
+    	
         PData data = (PData)prev.current();
         InputStream str = data.cdata().data();
         Object convert = convert().readObject(str, Map.class, _type);
@@ -143,5 +176,59 @@ public class TranslationStage implements Distillation
     {
         return (prev.current() instanceof MapData);
     }
+    
+    private Map<String, Object> objectToMapForInternalMessage(Object event) 
+    	throws CtxException
+    {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Field[] flds = event.getClass().getDeclaredFields();
+		CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+		CrossLinkDeploymentShell dshell = tenant.deploymentShell();
+        String nm = objectName(event);
+		List<CrossLinkFlowDeployment> fds = dshell.flowForType(nm);
+        assertion().assertTrue(fds.size() > 0, "Cannot find deployment for: " + nm);
+        CrossLinkFlowDeployment fd = fds.get(0);
+		
+		
+		String  flow = fd.deployedName(); 
+		for(Field f : flds)
+		{
+			f.setAccessible(true);
+			Class fType = f.getType();
+			Class dCls = null;
+			if(AnnotationUtils.className(fType) != null)
+				dCls = dshell.dataClass(flow, AnnotationUtils.className(fType));
+			Object fldVal = reflect().getAnyFieldValue(event.getClass(), event, f.getName());
+			
+			if(dCls != null) // FLD IS DATA CLASS
+			{
+				assertion().assertNotNull(fldVal, "Data field "+ f.getName() +" is NULL in internal event");
+				
+				String clsName = AnnotationUtils.className(fType);
+				assertion().assertTrue((fldVal instanceof DSpaceObject), "Fld value is not DSpaceObject"); 
+				Map dataObj = new HashMap();
+				DSpaceObject dspaceObj = (DSpaceObject)fldVal;
+	    		dataObj.put("___smart_action___", "lookup");
+	    		dataObj.put("___smart_value___", dspaceObj.smart___keys().get(1)); //TODO passing User key instead of smart_id
+	    		map.put(clsName, dataObj);
+			}
+			else if((fldVal != null) && (!(f.getName().startsWith("___smart"))))
+			{
+				if(type().checkPrimitive(fType))
+				{
+					map.put(f.getName(), fldVal);
+				}
+				else
+				{
+					map.put(f.getName(), convert().objectToMap(fldVal));
+				}
+			}
+				
+			
+		}
+		
+		System.out.println("Converted for INTERNAL MESSAGE:"+map);
+		return map;
+	}
 }
 

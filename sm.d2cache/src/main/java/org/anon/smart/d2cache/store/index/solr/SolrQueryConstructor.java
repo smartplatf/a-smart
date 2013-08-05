@@ -53,7 +53,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 public class SolrQueryConstructor implements Constants{
 
 	public static final String QUERY_DELIM = ":";
-	public static final String DEFUALT_OPER = "AND";
+	public static final String DEFUALT_OPER = " AND ";
 	public static SolrQuery getQuery(String group, QueryObject qo)
 		throws CtxException
 	{

@@ -42,18 +42,48 @@
 package org.anon.smart.d2cache.test;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-public class MyTestClass implements Serializable{
+import org.anon.smart.d2cache.CacheableObject;
+import org.anon.utilities.exception.CtxException;
+import org.apache.commons.collections.CollectionUtils;
+
+public class MyTestClass implements CacheableObject, Serializable{
 	
 	private String _name;
-	private MyAnotherTestClass at;
+	//private MyAnotherTestClass at;
+	private List<MyAnotherTestClass> nonPrimList;
+	private List<String> primList;
+	private List<UUID> uuidList;
 	public MyTestClass()
 	{
 		_name = "default name";
-		at = new MyAnotherTestClass();
+		MyAnotherTestClass at = new MyAnotherTestClass();
+		
+		nonPrimList = new ArrayList<MyAnotherTestClass>();
+		nonPrimList.add(at);
+		
+		primList = new ArrayList<String>();
+		primList.add("String1");
+		primList.add("String2");
+		
+		uuidList = new ArrayList<UUID>();
+		uuidList.add(UUID.randomUUID());
+		uuidList.add(UUID.randomUUID());
+		
 	}
 	
+	
 	public String toString(){
-		return "MyTestClass:"+at.getDate()+":"+_name;
+		//return "MyTestClass:"+at.getDate()+":"+_name+"::"+"NonPrimList size:"+nonPrimList.size()+":: primList size:"+primList.size();
+		return "MyTestClass:"+":"+_name+"::"+"NonPrimList size:"+nonPrimList.toString()+":: primList size:"+primList.toString()+"::"+uuidList.toString();
+	}
+
+	@Override
+	public void smart___initOnLoad() throws CtxException {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -66,6 +66,10 @@ public class SolrRecord extends AbstractStoreRecord implements Constants
         SUFFIXES.put(String.class, "_s");
         SUFFIXES.put(Long.TYPE, "_l");
         SUFFIXES.put(Long.class, "_l");
+        SUFFIXES.put(Double.class, "_d");
+        SUFFIXES.put(Double.TYPE, "_d");
+        SUFFIXES.put(Float.class, "_f");
+        SUFFIXES.put(Float.TYPE, "_f");
     }
 
     private SolrInputDocument _document;

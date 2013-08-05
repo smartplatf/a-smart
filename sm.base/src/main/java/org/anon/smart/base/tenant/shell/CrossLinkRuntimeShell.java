@@ -66,6 +66,8 @@ public class CrossLinkRuntimeShell extends CrossLinker
             return new Class[] { String.class, String.class, Object.class };
         else if (method.equals("enabledFlowClazzez"))
             return new Class[] { Object.class, Class[].class };
+        else if (method.equals("commitInternalObjects"))
+            return new Class[] { String.class, Object[].class };
 
         return super.parmTypes(method, params);
     }
@@ -92,6 +94,12 @@ public class CrossLinkRuntimeShell extends CrossLinker
         throws CtxException
     {
         linkMethod("enabledFlowClazzez", model, clazzez);
+    }
+
+    public void commitInternalObjects(String spacemodel, Object[] objs)
+        throws CtxException
+    {
+        linkMethod("commitInternalObjects", spacemodel, objs);
     }
 }
 

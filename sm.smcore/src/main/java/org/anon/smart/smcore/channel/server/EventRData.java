@@ -45,8 +45,10 @@ import java.util.UUID;
 
 import org.anon.smart.base.tenant.SmartTenant;
 import org.anon.smart.base.flow.FlowDeployment;
+import org.anon.smart.smcore.channel.internal.MessagePData;
 import org.anon.smart.smcore.events.CrossLinkSmartEvent;
 
+import org.anon.smart.channels.data.DScope;
 import org.anon.smart.channels.data.PData;
 import org.anon.smart.channels.data.RData;
 import org.anon.smart.channels.data.Responses;
@@ -76,8 +78,10 @@ public class EventRData extends RData
     {
         super(data);
         _myRectifier = rectifier;
-        EventPData epdata = (EventPData)data;
-        EventDScope dscope = (EventDScope)epdata.dscope();
+        
+        //EventPData epdata = (EventPData)data;
+        //EventDScope dscope = (EventDScope)epdata.dscope();
+        DScope dscope = data.dscope();
         _origin = dscope.origin();
         _requestID = dscope.requestID();
         _flow = dscope.flow();
@@ -86,6 +90,8 @@ public class EventRData extends RData
         _event = event;
         CrossLinkSmartEvent cle = new CrossLinkSmartEvent(_event);
         _eventID = cle.smart___eventID();
+        
+        
     }
 
     public Object event() { return _event; }

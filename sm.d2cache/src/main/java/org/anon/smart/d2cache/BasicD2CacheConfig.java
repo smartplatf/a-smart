@@ -21,7 +21,7 @@
  *
  *
  * */
- 
+
 /**
  * ************************************************************
  * HEADERS
@@ -42,36 +42,42 @@
 package org.anon.smart.d2cache;
 
 import org.anon.smart.d2cache.store.StoreConfig;
+import org.anon.smart.d2cache.store.fileStore.disk.DiskFSConfig;
+import org.anon.smart.d2cache.store.fileStore.hadoop.HadoopFSConfig;
 import org.anon.smart.d2cache.store.index.solr.BasicSolrConfig;
-import org.anon.smart.d2cache.store.index.solr.SolrConfig;
-import org.anon.smart.d2cache.store.memory.jcs.JCSConfig;
 import org.anon.smart.d2cache.store.repository.hbase.TestHBaseConfig;
 
 public class BasicD2CacheConfig implements D2CacheConfig {
-	
+
 	private StoreConfig _memConfig;
 	private StoreConfig _solrConfig;
 	private StoreConfig _storeConfig;
-	
-	public BasicD2CacheConfig()
-	{
-	
+	private StoreConfig _diskConfig;
+	private StoreConfig _hadoopConfig;
+
+	public BasicD2CacheConfig() {
+
 	}
-	
-	public BasicD2CacheConfig(String solrHome, String zookeeper, String zookeeperPort, String hbaseHost, boolean isLocal) {
+
+	public BasicD2CacheConfig(String solrHome, String zookeeper,
+			String zookeeperPort, String hbaseHost, boolean isLocal) {
 		_solrConfig = new BasicSolrConfig(solrHome);
-		_storeConfig = new TestHBaseConfig(zookeeper, zookeeperPort, hbaseHost, isLocal);
+		_storeConfig = new TestHBaseConfig(zookeeper, zookeeperPort, hbaseHost,
+				isLocal);
+		createHadoopStoreConfig();
+		createDiskStoreConfig();
 	}
-	
-	public void createIndexConfig(String solrHome)
-	{
+
+	public void createIndexConfig(String solrHome) {
 		_solrConfig = new BasicSolrConfig(solrHome);
 	}
-	
-	public void createStoreConfig(String zookeeper, String zookeeperPort, String hbaseHost, boolean isLocal)
-	{
-		_storeConfig = new TestHBaseConfig(zookeeper, zookeeperPort, hbaseHost, isLocal);
+
+	public void createStoreConfig(String zookeeper, String zookeeperPort,
+			String hbaseHost, boolean isLocal) {
+		_storeConfig = new TestHBaseConfig(zookeeper, zookeeperPort, hbaseHost,
+				isLocal);
 	}
+
 	@Override
 	public StoreConfig getMemoryConfig() {
 		// TODO Auto-generated method stub
@@ -93,8 +99,32 @@ public class BasicD2CacheConfig implements D2CacheConfig {
 	@Override
 	public void createMemoryConfig() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	@Override
+	public StoreConfig getDiskStoreConfig() {
+		// TODO Auto-generated method stub
+		return _diskConfig;
+	}
+
+	@Override
+	public StoreConfig getHadoopStoreConfig() {
+		// TODO Auto-generated method stub
+		return _hadoopConfig;
+	}
+
+	@Override
+	public void createHadoopStoreConfig() {
+		_hadoopConfig = new HadoopFSConfig("hdfs://hadoop:9000",
+				"/#hadoophome#/hadoop/datastore", "1");
+
+	}
+
+	@Override
+	public void createDiskStoreConfig() {
+		_diskConfig = new DiskFSConfig();
+
+	}
 
 }

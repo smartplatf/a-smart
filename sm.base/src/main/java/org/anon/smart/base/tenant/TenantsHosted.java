@@ -81,9 +81,15 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
     public Object getTenant(String name)
         throws CtxException
     {
-        return lookupIn(_tenantSpace, name, TENANTGROUP);
+        return getTenant(name, false);
     }
 
+    public Object getTenant(String name, boolean memOnly)
+        throws CtxException
+    {
+        return lookupIn(_tenantSpace, name, TENANTGROUP, memOnly);
+    }
+    
     protected static Object tenantsSpace()
         throws CtxException
     {
@@ -121,10 +127,17 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
     }
 
     public static SmartTenant tenantFor(String name)
+            throws CtxException
+    {
+            TenantsHosted ts = (TenantsHosted)tenantsSpace();
+            return (SmartTenant)ts.getTenant(name);
+    }
+    
+    public static SmartTenant tenantFor(String name, boolean memOnly)
         throws CtxException
     {
         TenantsHosted ts = (TenantsHosted)tenantsSpace();
-        return (SmartTenant)ts.getTenant(name);
+        return (SmartTenant)ts.getTenant(name, memOnly);
     }
 
     public static CrossLinkSmartTenant crosslinkedTenantFor(String name)
@@ -143,7 +156,7 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
     public void cleanMe()
         throws CtxException
     {
-        /* TODO: gives an exception for browsablereader??
+        /* TODO: gives an exception for browsablereader?? */
         BrowsableReader rdr = browsableReaderFor(_tenantSpace);
         Set tenants = rdr.currentKeySet(TENANTGROUP);
         for (Object tenant : tenants)
@@ -152,7 +165,7 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
             if (t != null)
                 t.cleanup();
         }
-        */
+        
         SmartTenant ts = tenantFor(PLATFORMOWNER);
         if (ts != null)
             ts.cleanup();

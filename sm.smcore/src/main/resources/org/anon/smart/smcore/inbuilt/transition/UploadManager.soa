@@ -1,0 +1,15 @@
+name:       UploadManager
+type:       Transition
+flow:       AllFlows
+foreach:        FlowAdmin|UploadEvent,SmartFileObject|DownloadEvent
+actions:
+    - name:     upload
+      method:   handleUploads
+      foreach:  FlowAdmin|UploadEvent
+      from:     active
+      to:       active
+    - name:     download
+      method:   handleDownloads
+      foreach:  SmartFileObject|DownloadEvent
+      from:     active
+      to:       active

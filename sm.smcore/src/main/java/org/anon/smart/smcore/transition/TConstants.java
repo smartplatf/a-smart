@@ -48,5 +48,6 @@ public interface TConstants
     public static final String RELATED = "related";
     public static final String CONFIG = "config";
     public static final String TXN = "txn";
+    public static final String LINK = "link";
 }
 

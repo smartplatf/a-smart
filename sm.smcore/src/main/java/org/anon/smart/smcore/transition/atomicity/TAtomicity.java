@@ -42,12 +42,19 @@
 package org.anon.smart.smcore.transition.atomicity;
 
 import org.anon.smart.atomicity.Atomicity;
+import org.anon.smart.base.flow.FlowAdmin;
 import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.data.SmartDataED;
 import org.anon.smart.smcore.data.SmartDataTruth;
+import org.anon.smart.smcore.data.ConfigData;
+import org.anon.smart.smcore.data.ConfigDataED;
+import org.anon.smart.smcore.data.FileItemEd;
+import org.anon.smart.smcore.data.FileItem;
+import org.anon.smart.smcore.data.SmartFileObject;
 import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.events.SmartEventResponse;
 import org.anon.smart.smcore.events.SmartERTxnObject;
+import org.anon.smart.smcore.events.internal.SmartMessageObject;
 import org.anon.smart.smcore.transition.TransitionContext;
 
 import org.anon.utilities.exception.CtxException;
@@ -62,6 +69,8 @@ public class TAtomicity extends Atomicity implements AtomicityConstants
         super();
         addDataType(SMARTDATA);
         addDataType(RESPONSE);
+        addDataType(MESSAGE);
+        addDataType(CONFIG);
         _context = ctx;
         SmartDataED ed = includeData(_context.primeData());
         ctx.setupPrimeED(ed);
@@ -90,7 +99,12 @@ public class TAtomicity extends Atomicity implements AtomicityConstants
         throws CtxException
     {
         if (outcome)
+	{
+	    /** Metrics **/	
+	    _context.eventSuccess();
+	    /** Metrics **/	
             _context.transaction().commit();
+	}
         else
             _context.transaction().rollback();
     }
@@ -122,6 +136,15 @@ public class TAtomicity extends Atomicity implements AtomicityConstants
         return ed;
     }
 
+    public ConfigDataED includeNewConfig(ConfigData data)
+        throws CtxException
+    {
+        System.out.println("Including config: " + data);
+        ConfigDataED ed = new ConfigDataED(data);
+        includeEmpiricalData(ed);
+        return ed;
+    }
+
     public void includeResponse(SmartEventResponse resp)
         throws CtxException
     {
@@ -129,5 +152,20 @@ public class TAtomicity extends Atomicity implements AtomicityConstants
         SmartERTxnObject rtxn = new SmartERTxnObject(resp);
         includeEmpiricalData(rtxn);
     }
+    
+    public void includeMessage(SmartEvent event)
+    	throws CtxException
+    {
+    	System.out.println("Including Message: " + event);
+    	SmartMessageObject mo = new SmartMessageObject(event);
+    	includeEmpiricalData(mo);
+    }
+    
+    public void includeUpload(SmartFileObject data, FlowAdmin flw)
+			throws CtxException {
+		FileItem i = new FileItem(data._fileSrc, flw.myFlow());
+		FileItemEd ed = new FileItemEd(i);
+		includeEmpiricalData(ed);
+	}
 }
 

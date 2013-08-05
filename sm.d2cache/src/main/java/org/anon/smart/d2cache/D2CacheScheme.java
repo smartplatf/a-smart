@@ -21,7 +21,7 @@
  *
  *
  * */
- 
+
 /**
  * ************************************************************
  * HEADERS
@@ -41,77 +41,74 @@
 
 package org.anon.smart.d2cache;
 
-
 import org.anon.utilities.exception.CtxException;
 
-public class D2CacheScheme
-{
-    public static enum scheme
-    {
-        mem, memind, memstoreind;
-    }
+public class D2CacheScheme {
+	public static enum scheme {
+		mem, memind, memstoreind, filestore;
+	}
 
-    public static final int BROWSABLE_CACHE = 0x01;
-    public static final int REPLICATION_CACHE = 0x02;
-    public static final int DISTRIBUTED_CACHE = 0x04;
-    public static final int LAYEREDREAD_CACHE = 0x08;
+	public static final int BROWSABLE_CACHE = 0x01;
+	public static final int REPLICATION_CACHE = 0x02;
+	public static final int DISTRIBUTED_CACHE = 0x04;
+	public static final int LAYEREDREAD_CACHE = 0x08;
 
-    private D2CacheScheme()
-    {
-    }
+	private D2CacheScheme() {
+	}
 
-    protected static D2Cache memoryOnlyCache(String name, int flags, D2CacheConfig config)
-        throws CtxException
-    {
-        return new MemOnlyCache(name, flags, config);
-    }
+	protected static D2Cache memoryOnlyCache(String name, int flags,
+			D2CacheConfig config) throws CtxException {
+		return new MemOnlyCache(name, flags, config);
+	}
 
-    protected static D2Cache memIndexedCache(String name, int flags, D2CacheConfig config)
-        throws CtxException
-    {
-        return new MemIndCache(name, flags, config);
-    }
+	protected static D2Cache memIndexedCache(String name, int flags,
+			D2CacheConfig config) throws CtxException {
+		return new MemIndCache(name, flags, config);
+	}
 
-    protected static D2Cache memStoreIndexedCache(String name, int flags, D2CacheConfig config)
-        throws CtxException
-    {
-        return new MemStoreIndCache(name, flags, config);
-    }
+	protected static D2Cache memStoreIndexedCache(String name, int flags,
+			D2CacheConfig config) throws CtxException {
+		return new MemStoreIndCache(name, flags, config);
+	}
 
-    //TODO Have to remove this method
-    public static D2Cache getCache(scheme s, String name, int flags)
-            throws CtxException
-    {
-    		D2CacheConfig conf = new BasicD2CacheConfig(null, "hadoop", "2181", "hadoop:60000", false);
-        	return getCache(s, name, flags, conf);
-    }
-    public static D2Cache getCache(scheme s, String name, int flags, D2CacheConfig cacheConfig)
-        throws CtxException
-    {
-        D2Cache ret = null;
-        switch (s)
-        {
-        case mem:
-            ret = memoryOnlyCache(name, flags, cacheConfig);
-            break;
-        case memind:
-            ret = memIndexedCache(name, flags, cacheConfig);
-            break;
-        case memstoreind:
-        default:
-            ret = memStoreIndexedCache(name, flags, cacheConfig);
-            break;
-        }
+	protected static D2Cache fileStoreCache(String name, int flags,
+			D2CacheConfig config) throws CtxException {
+		return new FileStoreCache(name, flags, config);
+	}
 
-        return ret;
-    }
+	// TODO Have to remove this method
+	public static D2Cache getCache(scheme s, String name, int flags)
+			throws CtxException {
+		D2CacheConfig conf = new BasicD2CacheConfig(null, "hadoop", "2181",
+				"hadoop:60000", false);
+		return getCache(s, name, flags, conf);
+	}
 
-    //this has to get the appropriate reader based on the flags
-    //passed during cache creation
-    public static Reader readerFor(D2Cache[] cache)
-        throws CtxException
-    {
-        return null;
-    }
+	public static D2Cache getCache(scheme s, String name, int flags,
+			D2CacheConfig cacheConfig) throws CtxException {
+		D2Cache ret = null;
+		switch (s) {
+		case mem:
+			ret = memoryOnlyCache(name, flags, cacheConfig);
+			break;
+		case memind:
+			ret = memIndexedCache(name, flags, cacheConfig);
+			break;
+		case filestore:
+			ret = fileStoreCache(name, flags, cacheConfig);
+			break;
+		case memstoreind:
+		default:
+			ret = memStoreIndexedCache(name, flags, cacheConfig);
+			break;
+		}
+
+		return ret;
+	}
+
+	// this has to get the appropriate reader based on the flags
+	// passed during cache creation
+	public static Reader readerFor(D2Cache[] cache) throws CtxException {
+		return null;
+	}
 }
-

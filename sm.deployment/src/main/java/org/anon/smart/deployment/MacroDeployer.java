@@ -97,7 +97,7 @@ public class MacroDeployer
                 Class cls = ldr.loadClass(cName);
                 cldeprt.invoke("setupDeploying", new Class[] { Object.class }, new Object[] { null });
                 Artefact[] arts = assist.deployClazz(fname, cls);
-                System.out.println("Adding artefacts for: " + cName + ":" + arts.length);
+                //System.out.println("Adding artefacts for: " + cName + ":" + arts.length);
                 dep.addArtefacts(arts);
             }
             catch (Exception e)

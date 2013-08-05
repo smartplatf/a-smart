@@ -1,0 +1,8 @@
+name:       Authenticate
+type:       Event
+flow:       Security
+security:
+    - name:     authaccess
+      type:     unauthenticated
+      access:   execute
+      parm:     Authenticate

@@ -72,7 +72,7 @@ public class TestObjectStorage {
 		TestCacheUtil.setTestData(cache, obj, keys, "MyTestClass");
 		
 		Reader reader = cache.myReader();
-		Object fromCache = reader.lookup("MyTestClass", "MyTestClass");
+		Object fromCache = reader.lookup("MyTestClass", "myTestClass");
 		
 		assertTrue(fromCache != null);
 		assertTrue(fromCache instanceof MyTestClass);

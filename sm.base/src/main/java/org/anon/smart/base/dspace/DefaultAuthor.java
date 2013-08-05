@@ -62,5 +62,11 @@ public class DefaultAuthor implements DSpaceAuthor
     {
         return new BrowsableTransactDSpace(name);
     }
+
+    public SpaceFilter[] spaceFilters()
+        throws CtxException
+    {
+        return null;
+    }
 }
 

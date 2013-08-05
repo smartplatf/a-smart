@@ -1,0 +1,185 @@
+<!DOCTYPE HTML>
+<head>
+	<meta charset="utf-8" />
+
+	<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+	Remove this if you use the .htaccess -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<title>Hands-On SMART</title>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+	<link href="css/smart_wizard_vertical.css" rel="stylesheet" type="text/css">
+	<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="js/jquery.smartWizard.js"></script>
+	<script type="text/javascript" src="js/bootstrap.js"></script>
+	<script type="text/javascript" src="js/smart.dform.js"></script>
+
+	<script type="text/javascript" src="js/jquery.toObject.js"></script>
+	<script type="text/javascript" src="js/form2js.js"></script>
+
+	<script type="text/javascript" src="js/logger.js"></script>
+	<script type="text/javascript" src="js/cookiemanager.js"></script>
+	<script type="text/javascript" src="js/vodafone.js"></script>
+	<script type="text/javascript" src="js/forminputs.js"></script>
+	<script type="text/javascript" src="http://demo.smart-platform.com/js/smartcom2.js"></script>
+
+	<style>
+		.actionBar {
+			display: none;
+		}
+		a > img {
+			position: relative;
+			top: 10px;
+		}
+		#resultdiv {
+			min-height: 10%;
+			background-color: white;
+			margin-top: 1%;
+			border-radius: 14px;
+			left: 10%;
+			padding: 10px 10px;
+			word-wrap: break-word;
+		}
+		#formdiv {
+			margin-top: 2%;
+		}
+		#addresult, #updateresult {
+			margin: 30px 10px;
+			font-size: 30px;
+			display: none;
+		}
+		#done {
+			display:none;
+			position: relative;
+			top: -450px;
+			left: 850px;
+			z-index: 200;
+		}
+	</style>
+</head>
+
+<body>
+	<table align="center" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><h2>Try SMART </h2>
+			<div id="wizard" class="swMain">
+				<ul>
+					<li>
+						<a href="#step-1"> <img src="images/Home-icon.png" alt="home"><span class="stepDesc"> Home
+							<br />
+							<small>General Info</small> </span> </a>
+					</li>
+					<li>
+						<a href="#step-2"> <img src="images/add-icon.png" alt="add"><span class="stepDesc"> Add
+							<br />
+							<small>Add items</small> </span> </a>
+					</li>
+					<li>
+						<a href="#step-3"><img src="images/iSync-icon.png" alt="update"><span class="stepDesc"> Update
+							<br />
+							<small>Update Items</small> </span> </a>
+					</li>
+					<li>
+						<a href="#step-4"><img src="images/Find-icon.png" alt="find"><span class="stepDesc"> Find
+							<br />
+							<small>Find Items</small> </span> </a>
+					</li>
+					<li>
+						<a href="#step-5"><img src="images/search-icon.png" alt="search"><span class="stepDesc"> Search
+							<br />
+							<small>Search Items</small> </span> </a>
+					</li>
+					<li>
+						<a href="#step-6"><img src="images/list-icon.png" alt="list"><span class="stepDesc"> List
+							<br />
+							<small>List Items</small> </span> </a>
+					</li>
+
+				</ul>
+				<div id="step-1">
+					<h2 class="StepTitle">Step 1 Content</h2>
+					<div id="homecontainer" class="offset1">
+						<form id="formdiv" class="form-horizontal">
+							<div class="control-group">
+								<label class="control-label" for="tenantfill">Tenant ID</label>
+								<div class="controls">
+									<input id="tenantfill" type="text" value="" readonly>
+								</div>
+							</div>
+						</form>
+						<h5>Your Flows: </h5><span id="flowfill"> </span>
+						<br>
+					</div>
+
+				</div>
+				<div id="step-2">
+					<h2 class="StepTitle">Add Entries to Flow</h2>
+					<div class="span5" id="formdiv">
+						<form id="addform">
+
+						</form>
+					</div>
+					<div id="addresult" class="span3 offset3 alert alert-success"></div>
+				</div>
+				<div id="step-3">
+					<h2 class="StepTitle">Update Entries</h2>
+					<div class="span5" id="formdiv">
+						<form id="updateform">
+
+						</form>
+					</div>
+					<div id="updateresult" class="span3 offset3 alert alert-success"></div>
+				</div>
+				<div id="step-4">
+					<h2 class="StepTitle">Find an entry with a key</h2>
+					<div class="span5" id="formdiv">
+						<form id="lookupform">
+
+						</form>
+					</div>
+					<div id="resultdiv" class="span6">
+						<h4>Result List:</h4>
+						<div id="lookupresultdiv">
+
+						</div>
+					</div>
+				</div>
+				<div id="step-5">
+					<h2 class="StepTitle">Search for an entry with any field</h2>
+					<div class="span5" id="formdiv">
+						<form id="searchform">
+
+						</form>
+					</div>
+					<div id="resultdiv" class="span6">
+						<h4>Result List:</h4>
+						<div id="searchresultdiv">
+
+						</div>
+					</div>
+				</div>
+				<div id="step-6">
+					<h2 class="StepTitle">See all entries</h2>
+					<div class="span5" id="formdiv">
+						<h5>Select a subscriber to view full details</h5>
+						<select id="listalldrop">
+							<option id=0 selected>Select a phone number</option>
+						</select>
+					</div>
+					<div id="resultdiv" class="span6">
+						<h4>Result List:</h4>
+						<div id="listresultdiv">
+
+						</div>
+					</div>
+				</div>
+
+			</div></td>
+		</tr>
+	</table>
+
+	<img id="done" src="images/notification_done.png" alt="done">
+</body>
+</html>

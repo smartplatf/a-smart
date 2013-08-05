@@ -60,5 +60,17 @@ public class TestDScope extends HTTPMessageDScope
         throws CtxException
     {
     }
+
+	@Override
+	public Object eventLegend(ClassLoader ldr) throws CtxException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String flow() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

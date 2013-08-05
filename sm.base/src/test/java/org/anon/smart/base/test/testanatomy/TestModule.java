@@ -101,7 +101,7 @@ public class TestModule extends AModule
                 {
                     Class cls = this.getClass().getClassLoader().loadClass(cName);
                     Artefact[] arts = assist.deployClazz(fname, cls);
-                    System.out.println("Adding artefacts for: " + cName + ":" + arts.length);
+                    //System.out.println("Adding artefacts for: " + cName + ":" + arts.length);
                     dep.addArtefacts(arts);
                 }
                 catch (Exception e)
@@ -122,7 +122,7 @@ public class TestModule extends AModule
             for (int t = 0; (tenants != null) && (t < tenants.length); t++)
             {
                 System.out.println("Enabling deployments for: " +  dep.deployedName() + ":" + tenants[t].getName());
-                tenants[t].deploymentShell().enableForMe(dep.deployedName(), fnames);
+                tenants[t].deploymentShell().enableForMe(dep.deployedName(), fnames, new HashMap<String, String>());
             }
         }
 
@@ -182,6 +182,8 @@ public class TestModule extends AModule
                 thrd.start();
                 thrd.join();
             }
+
+            System.out.println("STARTED TESTANATOMY MODULE... THE SERVER IS STARTED.");
         }
         catch (Exception e)
         {

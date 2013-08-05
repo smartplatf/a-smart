@@ -41,8 +41,13 @@
 
 package org.anon.smart.base.tenant;
 
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
 import org.anon.smart.base.dspace.RelatedObject;
 import org.anon.smart.base.dspace.DSpaceObject;
+import org.anon.smart.base.tenant.shell.CrossLinkRuntimeShell;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -50,11 +55,20 @@ public class TenantAdmin implements RelatedObject, java.io.Serializable
 {
     private String _tenantName;
     private transient SmartTenant _newTenant;
+    private transient Map<String, List<Object>> _defaultTenantObjects;
 
     public TenantAdmin(String name, SmartTenant tenant)
     {
         _tenantName = name;
         _newTenant = tenant;
+        _defaultTenantObjects = new HashMap<String, List<Object>>();
+    }
+
+    public void addTenantObjects(String model, List<Object> objs)
+    {
+        //need to add validations for things like only smart objects,
+        //only smart models etc.
+        _defaultTenantObjects.put(model, objs);
     }
 
     public String tenantName()
@@ -94,7 +108,19 @@ public class TenantAdmin implements RelatedObject, java.io.Serializable
         if (_newTenant == null)
             tenant = (SmartTenant)CrossLinkSmartTenant.currentTenant().link();
         TenantsHosted.commitTenant(tenant);
-        
+        if(_defaultTenantObjects != null)
+        {
+            for (String model : _defaultTenantObjects.keySet())
+            {
+                List<Object> commitObjs = (List<Object>)_defaultTenantObjects.get(model);
+                Object[] objs = commitObjs.toArray();
+                if ((objs.length > 0) && (_newTenant != null))
+                {
+                    CrossLinkRuntimeShell shell = _newTenant.rshell();
+                    shell.commitInternalObjects(model, objs);
+                }
+            }
+        }
     }
 }
 

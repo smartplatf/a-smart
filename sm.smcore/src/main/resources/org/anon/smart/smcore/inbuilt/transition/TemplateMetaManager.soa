@@ -1,0 +1,10 @@
+name:       TemplateMetaManager
+type:       Transition
+flow:       AllFlows
+foreach:        FlowAdmin|GetTemplateMeta
+actions:
+    - name:     getTemplateMeta
+      method:   getTemplateMeta
+      foreach:  FlowAdmin|GetTemplateMeta
+      from:     active
+      to:       active

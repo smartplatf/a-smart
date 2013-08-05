@@ -101,6 +101,14 @@ public class SmartFlow extends BasicFlow
     public void postInternal(Object event)
         throws CtxException
     {
+    	if(_internalQueue == null)
+    	{
+    		String tenant = CrossLinkSmartTenant.currentTenant().getName();
+    		 FlowEventListener ielsnr = new FlowEventListener();
+    	    _internalQueue = anatomy().jvmEnv().jitQueueFor(tenant, model().name() + "-Internal", this, ielsnr);
+            ielsnr.setQueue(_internalQueue);
+            
+    	}
         _internalQueue.add(event);
     }
 }

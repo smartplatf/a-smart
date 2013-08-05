@@ -46,8 +46,15 @@ public interface MonitorConstants {
 	//public static final String OBJECTCREATIONCOUNTER = "ObjectCrationCounter";
 	public static final String OBJECTTYPEGROUP = "ObjectCreationCounter";
 	public static final String OBJECTACCESSGROUP = "ObjectAccessCounter";
+	public static final String EVENTEXECUTIONGROUP = "EventExecutionCounter";
 	public static final String KEYSEPARATOR = "-";
 	public static final int OBJECTACCESSACTION = 0x1;
 	public static final int OBJECTCREATEACTION = 0x2;
+	public static final String INSTANCECOUNT = "instancecount";
+	public static final String ACCESSCOUNT = "accesscount";
+	public static final String EVENTCOUNT = "eventcount";
+	
 	
 }
+
+

@@ -42,15 +42,17 @@
 package org.anon.smart.d2cache;
 
 import org.anon.smart.d2cache.store.StoreConfig;
-import org.anon.smart.d2cache.store.index.solr.SolrConfig;
-import org.anon.smart.d2cache.store.memory.jcs.JCSConfig;
 public interface D2CacheConfig {
 
 	public void createMemoryConfig();
 	public void createIndexConfig(String indexHome);
 	public void createStoreConfig(String zookeeper, String zookeeperPort, String hbaseHost, boolean isLocal);
+	public void createHadoopStoreConfig();
+	public void createDiskStoreConfig();
 	
 	public StoreConfig getMemoryConfig();
 	public StoreConfig getIndexConfig();
 	public StoreConfig getStoreConfig();
+	public StoreConfig getDiskStoreConfig();
+	public StoreConfig getHadoopStoreConfig();
 }

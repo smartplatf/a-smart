@@ -83,12 +83,18 @@ public class SmartDataSTT implements SmartData, DSpaceObject, MonitorableObject
     {
         ___smart_legend___ = new DataLegend();
         ___smart_name___ = objectName(this);
-        FiniteStateMachine mc = fsm().fsm(___smart_name___);
-        assertion().assertNotNull(mc, "The finite state machine for " + ___smart_name___ + " has not been setup correctly.");
-        mc.start(this);
+	    startFSM();
         TransitionContext ctx = (TransitionContext)threads().threadContext();
         if (ctx != null)
             ctx.atomicity().includeNewData(this);
+    }
+
+    private void startFSM()
+        throws CtxException
+    {
+        FiniteStateMachine mc = fsm().fsm(___smart_name___);
+        assertion().assertNotNull(mc, "The finite state machine for " + ___smart_name___ + " has not been setup correctly.");
+        mc.start(this);
     }
 
     public String smart___name()
@@ -192,10 +198,10 @@ public class SmartDataSTT implements SmartData, DSpaceObject, MonitorableObject
     }
 
 	@Override
-	public void initOnLoad() throws CtxException {
-		smartdatastt___init();
+	public void smart___initOnLoad() throws CtxException {
+		startFSM();
 		if(this instanceof SmartPrimeData)
-			((SmartPrimeData)this).intiPrimeObject();
+			((SmartPrimeData)this).initPrimeObject();
 		
 	}
 

@@ -56,10 +56,14 @@ import org.anon.smart.base.tenant.shell.RuntimeShell;
 import org.anon.smart.base.dspace.TransactDSpace;
 import org.anon.smart.d2cache.D2CacheTransaction;
 import org.anon.smart.base.dspace.DSpaceService;
+import org.anon.smart.smcore.data.FileItem;
 import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.data.SmartDataED;
 import org.anon.smart.smcore.data.SmartDataTruth;
+import org.anon.smart.smcore.data.ConfigData;
 import org.anon.smart.smcore.monitor.MetricsManager;
+import org.anon.smart.smcore.data.datalinks.LinkedData;
+import org.anon.smart.smcore.monitor.MonitorAction;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -81,19 +85,51 @@ public class TTransaction
         throws CtxException
     {
         String flow = flowFor(object.getClass());
-        System.out.println("Got flow for: " + flow);
         if (!_transactions.containsKey(flow))
         {
         	createTransaction(flow);
         }
-        
-        if(object instanceof MonitorableObject)
+        if(!_transactions.containsKey(TenantConstants.MONITOR_SPACE))
         {
-        	String monitoringSpace = TenantConstants.MONITOR_SPACE;
-        	createTransaction(monitoringSpace);
+        	createTransaction(TenantConstants.MONITOR_SPACE);
         }
 
         return _transactions.get(flow);
+    }
+    
+    public D2CacheTransaction startTransaction(FileItem object)
+			throws CtxException {
+
+		if (!_transactions.containsKey(object.getFlowName() + "-files")) {
+			CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+			RuntimeShell rshell = (RuntimeShell) tenant.runtimeShell();
+			TransactDSpace space = rshell.getSpaceFor(object.getFlowName());
+			System.out.println("Got flow for: " + object.getFlowName() + ":"
+					+ space + ":" + tenant.getName());
+			D2CacheTransaction txn = DSpaceService.startFSTransaction(space,
+					_txnID);
+			_transactions.put(object.getFlowName() + "-files", txn);
+		}
+
+		return _transactions.get(object.getFlowName() + "-files");
+	}
+
+    public D2CacheTransaction startTransaction(ConfigData object)
+        throws CtxException
+    {
+        if (!_transactions.containsKey(TenantConstants.CONFIG_SPACE))
+            createTransaction(TenantConstants.CONFIG_SPACE);
+
+        return _transactions.get(TenantConstants.CONFIG_SPACE);
+    }
+    
+    public D2CacheTransaction getTransaction(String space)
+    	throws CtxException
+    {
+    	if (!_transactions.containsKey(space))
+    		createTransaction(space);
+    	
+    	return _transactions.get(space);
     }
     
     private void createTransaction(String flow)
@@ -102,7 +138,6 @@ public class TTransaction
     	   CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
            RuntimeShell rshell = (RuntimeShell)tenant.runtimeShell();
            TransactDSpace space = rshell.getSpaceFor(flow);
-           System.out.println("Got flow for: " + flow + ":" + space + ":" + tenant.getName());
            D2CacheTransaction txn = DSpaceService.startTransaction(space, _txnID);
            _transactions.put(flow, txn);
     }
@@ -116,6 +151,31 @@ public class TTransaction
         assertion().assertNotNull(txn, "No transaction has been started for: " + flow);
         DSpaceService.addObject(txn, object);
     }
+
+    public void addToTransaction(LinkedData data, String flow)
+        throws CtxException
+    {
+        D2CacheTransaction txn = _transactions.get(flow);
+        assertion().assertNotNull(txn, "No transaction has been started for: " + flow); //assumption this is the from flow, hence shd be started
+        DSpaceService.addObject(txn, data);
+    }
+
+    public void addToTransaction(ConfigData config)
+        throws CtxException
+    {
+        D2CacheTransaction txn = _transactions.get(TenantConstants.CONFIG_SPACE);
+        assertion().assertNotNull(txn, "No transaction has been started for config space");
+        DSpaceService.addObject(txn, config);
+    }
+    
+    public void addToTransaction(FileItem object) throws CtxException {
+		D2CacheTransaction txn = _transactions.get(object.getFlowName()
+				+ "-files");
+		assertion().assertNotNull(txn,
+				"No transaction has been started for FILE space");
+		DSpaceService.addFSObject(txn, object.getSrcFile(),
+				object.getFlowName());
+	}
     
     public void addToTransaction(SmartDataED object)
             throws CtxException
@@ -126,24 +186,34 @@ public class TTransaction
             assertion().assertNotNull(txn, "No transaction has been started for: " + flow);
             DSpaceService.addObject(txn, ((SmartDataTruth)object.truth()).smartData(), object.empirical(), object.original());
             
+            /** Metrics **/
             if(object.empirical() instanceof MonitorableObject)
             {
             	txn = _transactions.get(TenantConstants.MONITOR_SPACE);
             	SmartData parentObj = object.empirical();
-            	int action = MonitorConstants.OBJECTACCESSACTION;
+            	/*int action = MonitorConstants.OBJECTACCESSACTION;
             	SmartData truth = ((SmartDataTruth)object.truth()).smartData();
             	if((truth == null) || (truth.equals(object.empirical()))) 
-            		action = action | MonitorConstants.OBJECTCREATEACTION;
+            		action = action | MonitorConstants.OBJECTCREATEACTION;*/
             	
-            	MetricsManager.handleMetricsfor(txn, parentObj, action);            	
+            	MonitorAction action = MonitorAction.OBJECTACCESS;
+            	MetricsManager.handleMetricsfor(txn, parentObj, action);
+            	
+            	SmartData truth = ((SmartDataTruth)object.truth()).smartData();
+            	if((truth == null) || (truth.equals(object.empirical())))
+            	{
+            		action = MonitorAction.OBJECTCREATION;
+            		MetricsManager.handleMetricsfor(txn, parentObj, action);
+            	}
             	
             }
+            /** Metrics **/
     }
 
     public void commit()
         throws CtxException
     {
-        for (D2CacheTransaction txn : _transactions.values())
+    	for (D2CacheTransaction txn : _transactions.values())
             txn.commit();
     }
 

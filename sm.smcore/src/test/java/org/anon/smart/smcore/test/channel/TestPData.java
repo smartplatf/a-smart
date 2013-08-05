@@ -46,11 +46,12 @@ import java.util.UUID;
 import org.anon.smart.channels.data.PData;
 import org.anon.smart.channels.data.CData;
 import org.anon.smart.channels.data.DScope;
+import org.anon.smart.channels.http.HTTPRequestPData;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 import org.anon.utilities.exception.CtxException;
 
-public class TestPData extends PData
+public class TestPData extends HTTPRequestPData
 {
     private String _tenant;
     private String _flowType;
@@ -82,6 +83,8 @@ public class TestPData extends PData
     public String flowType() { return _flowType; }
     public String eventType() { return _eventType; }
     public UUID session() { return _sessionID; }
+
+    public String getPosted() { return _posted; }
 
     public String toString()
     {

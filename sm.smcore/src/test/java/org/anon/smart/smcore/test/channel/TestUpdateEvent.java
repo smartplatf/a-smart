@@ -62,8 +62,12 @@ import org.anon.utilities.test.reflect.ComplexTestObject;
 import org.anon.utilities.test.reflect.SimpleOT;
 import org.junit.Test;
 
+import org.anon.smart.smcore.test.TestClient;
+import org.anon.smart.smcore.test.AssertJSONResponse;
+
 public class TestUpdateEvent {
 
+    /*
 	private void postTo(SCShell shell, int port, String server, String uri, String post)
 	        throws Exception
 	    {
@@ -80,6 +84,7 @@ public class TestUpdateEvent {
 	        cchnl.post(uri, new PData[] { d });
 	        cchnl.disconnect();
 	    }
+        */
 
 	    @Test
 	    public void dummyTest()
@@ -95,39 +100,54 @@ public class TestUpdateEvent {
 	        int port = 9085;
 	        CoreServerUtilities utils = new CoreServerUtilities(port);
 	        utils.runServer("org.anon.smart.smcore.test.channel.RunSmartServer");
-	        SCShell shell = new SCShell();
-	        Thread.sleep(30000);
+	     //   SCShell shell = new SCShell();
+	        //Thread.sleep(3000);
 	        String home = System.getenv("HOME");
+
+            TestClient clnt = new TestClient(port, "localhost", "newtenant", "RegistrationFlow", "RegistrationFlow.soa");
+            clnt.deployFromSampleJar();
+            clnt.createTenant();
+
+            /*
 	        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", 
 	        		"{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, " +
 	        		"'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'RegistrationFlow.soa'}");
 	        System.out.println("Zzzzzzzz  after deploy------------------------");
-	        Thread.sleep(30000); //response shd have come within 3s
-	        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'newtenant','enableFlow':'RegistrationFlow','enableFeatures':['all']}");
-	        System.out.println("Zzzzzzzz 10 Sec after Tenant Creation-----------------------");
-	        Thread.sleep(30000);
+	        Thread.sleep(10000); //response shd have come within 3s
+            */
 
-	        postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'vjaasti100@gmail.com', 'phone':'+919972532247'}");
+	        /*postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'newtenant','enableFlow':'RegistrationFlow','enableFeatures':['all']}");
+	        System.out.println("Zzzzzzzz 10 Sec after Tenant Creation-----------------------");
+	        Thread.sleep(30000);*/
+
+	        /*AssertJSONResponse resp = clnt.post("RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'vjaasti@gmail.com', 'phone':'+919972532247', 'profile':{'name':'profileName','workRecord':'bt'}}");
+            assertTrue(resp != null);*/
 	        
-	        System.out.println("Zzzzzzzz 1 Min after Registration----------------------");
-	        Thread.sleep(30000);
-	        
+            AssertJSONResponse resp = clnt.post("CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'create':'Registration', 'data':{'email':'vjaasti@gmail.com', 'phone':'+919972532247', 'tags':['user','admin'],'profile':{'name':'profileName','workRecord':'bt'}}}");
+            assertTrue(resp != null);
+            
+	        /*System.out.println("Zzzzzzzz 1 Min after Registration----------------------");
+	        Thread.sleep(10000);
 	        System.out.println("Ended Registration------------------------");
+            */
 	       
 	        System.out.println("Posting update event.................");
 	        //update registration
-	        postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/UpdateRegistration",
-	        		"{'Registration':{'___smart_action___':'lookup', '___smart_value___':'vjaasti100@gmail.com'}, 'phone':'+918000000000'}");
-	        System.out.println("Zzzzzzzz 1 Min after event UPDATE----------------------");
-	        Thread.sleep(60000);
-	        
+	        /*resp = clnt.post("UpdateRegistration",
+	        		"{'Registration':{'___smart_action___':'lookup', '___smart_value___':'vjaasti@gmail.com'}, 'phone':'+918000000000'}");
+	        assertTrue(resp != null); 
+	        System.out.println("Sleeping for 10 Sec");
+	        Thread.sleep(10 * 1000);
+	        */resp = clnt.post("UpdatePrime",
+			"{'Registration':{'___smart_action___':'lookup', '___smart_value___':'vjaasti@gmail.com'},'update':'Registration','data':{'phone':'32247','tags':['user','manager'],'profile':{'workRecord':'smart'}}}");
+            assertTrue(resp != null);
 	        
 	        //Lookup
-	        postTo(shell, port, "localhost", "/newtenant/RegistrationFlow/LookupEvent",
-	        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'key':'vjaasti100@gmail.com'}");
-	        System.out.println("Zzzzzzzz 1 Min after lookup----------------------");
-	        Thread.sleep(10000);
+	        resp = clnt.post("LookupEvent",
+	        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'key':'vjaasti@gmail.com'}");
+            assertTrue(resp != null);
 	        
+	        //System.out.println("");
 	        utils.stopServer();
 	    }
 	    
@@ -139,7 +159,7 @@ public class TestUpdateEvent {
 	    	ComplexTestObject o1 = new ComplexTestObject();
 	    	ComplexTestObject o2 = new ComplexTestObject();
 	            SimpleOT visit = new SimpleOT();
-	            DirtyFieldTraversal dtraverse = new DirtyFieldTraversal(visit, o1, o2, false);
+	            DirtyFieldTraversal dtraverse = new DirtyFieldTraversal(visit, o1, o2, o2, false);
 	            dtraverse.traverse();
 	    }
 }

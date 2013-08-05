@@ -50,5 +50,8 @@ public interface DSpaceAuthor
 
     public DSpace browsableSpaceFor(String name)
         throws CtxException;
+
+    public SpaceFilter[] spaceFilters()
+        throws CtxException;
 }
 

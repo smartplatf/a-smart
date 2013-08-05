@@ -72,6 +72,23 @@ public class Feature implements Deployable, VerifiableObject
         _belongsTo = dep;
     }
 
+    public void deployedURI(String nm, String relative, List<String> addTo)
+    {
+        String retURI = "";
+        if (artefacts.contains(nm))
+        {
+            String uri = relative + "/" + name;
+            addTo.add(uri);
+        }
+
+        for (int i = 0; (subFeatures != null) && (i < subFeatures.size()); i++)
+        {
+            Feature f = _belongsTo.featureFor(subFeatures.get(i));
+            if (f != null)
+                f.deployedURI(nm, relative + "/" + name, addTo);
+        }
+    }
+
     public String deployedURI()
     {
         return _belongsTo.deployedURI() + "/" + name;

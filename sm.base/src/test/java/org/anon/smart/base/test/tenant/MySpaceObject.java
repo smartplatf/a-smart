@@ -72,7 +72,7 @@ public class MySpaceObject implements DSpaceObject, java.io.Serializable
     }
 
 	@Override
-	public void initOnLoad() throws CtxException {
+	public void smart___initOnLoad() throws CtxException {
 		// TODO Auto-generated method stub
 		
 	}

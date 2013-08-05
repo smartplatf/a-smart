@@ -1,3 +1,4 @@
 name:   DeploymentList
 type:   Response
+flow:   AdminSmartFlow
 

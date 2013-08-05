@@ -1,0 +1,10 @@
+name:       JavaScriptManager
+type:       Transition
+flow:       AllFlows
+foreach:        FlowAdmin|GetJavaScript
+actions:
+    - name:     getJavaScrpt
+      method:   generateSnippet
+      foreach:  FlowAdmin|GetJavaScript
+      from:     active
+      to:       active

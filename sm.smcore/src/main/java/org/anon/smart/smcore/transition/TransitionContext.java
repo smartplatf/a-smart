@@ -47,10 +47,18 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
 import org.anon.smart.atomicity.Atomicity;
+import org.anon.smart.base.dspace.DSpaceService;
+import org.anon.smart.base.dspace.TransactDSpace;
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
+import org.anon.smart.base.tenant.TenantConstants;
+import org.anon.smart.base.tenant.shell.RuntimeShell;
+import org.anon.smart.d2cache.D2CacheTransaction;
 import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.data.SmartDataED;
 import org.anon.smart.smcore.data.SmartPrimeData;
 import org.anon.smart.smcore.channel.server.CrossLinkEventRData;
+import org.anon.smart.smcore.monitor.MetricsManager;
+import org.anon.smart.smcore.monitor.MonitorAction;
 import org.anon.smart.smcore.transition.graph.TransitionGraphExecutor;
 import org.anon.smart.smcore.transition.parms.TransitionProbeParms;
 import org.anon.smart.smcore.transition.atomicity.TAtomicity;
@@ -99,9 +107,20 @@ public class TransitionContext extends AbstractGraphContext implements CThreadCo
     public void doneWithContext()
         throws CtxException
     {
-        _source.doneMessage();
+    	_source.doneMessage();
     }
-
+    
+    /** Metrics 
+     * @throws CtxException **/
+    public void eventSuccess() throws CtxException
+    {
+    	MonitorAction action = MonitorAction.EVENTEXECUTED;
+        MetricsManager.handleMetricsfor(transaction().getTransaction(TenantConstants.MONITOR_SPACE),
+        		_event, action);
+    	
+    }
+    /** Metrics **/
+    
     protected ExecuteGraph executorFor(GraphRuntimeNode rtnde, ProbeParms parms)
         throws CtxException
     {

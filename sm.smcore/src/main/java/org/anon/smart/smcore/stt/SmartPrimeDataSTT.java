@@ -93,7 +93,7 @@ public class SmartPrimeDataSTT extends SmartDataSTT implements SmartPrimeData
         return ___smart_flow___;
     }
 
-	public void intiPrimeObject()
+	public void initPrimeObject()
 		throws CtxException
 	{
 		smart___initPrime();

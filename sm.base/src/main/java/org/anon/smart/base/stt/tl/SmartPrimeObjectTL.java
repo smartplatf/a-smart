@@ -47,6 +47,8 @@ import java.util.ArrayList;
 import org.anon.smart.base.annot.SmartDataAnnotate;
 import org.anon.smart.base.annot.PrimeDataAnnotate;
 
+import org.anon.utilities.exception.CtxException;
+
 public class SmartPrimeObjectTL extends SmartObjectTL
 {
     public SmartPrimeObjectTL()
@@ -55,6 +57,7 @@ public class SmartPrimeObjectTL extends SmartObjectTL
 
     @Override
     public Class[] getAnnotations(String name)
+        throws CtxException
     {
         List<Class> annons = new ArrayList<Class>();
         Class[] annots = super.getAnnotations(name);

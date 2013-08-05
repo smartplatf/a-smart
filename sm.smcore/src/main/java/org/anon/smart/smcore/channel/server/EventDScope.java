@@ -97,7 +97,7 @@ public class EventDScope extends HTTPMessageDScope
     }
 
     public String tenant() { return _tenant; }
-    String flow() { return _flow; }
+    public String flow() { return _flow; }
     String eventName() { return _eventName; }
     UUID sessionId() { return _sessionId; }
 

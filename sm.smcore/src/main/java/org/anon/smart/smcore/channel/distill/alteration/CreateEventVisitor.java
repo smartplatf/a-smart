@@ -56,7 +56,7 @@ public class CreateEventVisitor extends CreatorFromMap
 {
     private SearchedData _searched;
 
-    public CreateEventVisitor(SearchedData data, SearchedData.PrimeFlow prime)
+    public CreateEventVisitor(SearchedData data, SearchedData.PrimeFlow prime) throws CtxException
     {
         super(data.mappedData());
         _searched = data;
@@ -72,12 +72,12 @@ public class CreateEventVisitor extends CreatorFromMap
             Object val = _searched.searchedValue(ctx.field().getName());
             if (val == null)
                 return val; //have to set to null.
-
+            
             if (type().isAssignable(val.getClass(), ctx.fieldType()))
             {
                 //directly set here, so we do not create a new one
                 ctx.modify(val);
-                return val;
+                return null; //directly set, so don't traverse inside
             }
             
             if ((val instanceof List) && (((List)val).size() > 0))

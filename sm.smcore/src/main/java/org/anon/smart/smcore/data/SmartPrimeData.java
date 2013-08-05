@@ -48,6 +48,6 @@ public interface SmartPrimeData extends SmartData
 {
     public SmartFlow smart___flow();
 
-	public void intiPrimeObject() throws CtxException;
+	public void initPrimeObject() throws CtxException;
 }
 

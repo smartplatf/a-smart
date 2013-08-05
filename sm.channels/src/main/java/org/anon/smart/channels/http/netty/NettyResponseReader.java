@@ -43,6 +43,7 @@ package org.anon.smart.channels.http.netty;
 
 import java.util.Map;
 import java.util.List;
+import java.util.HashMap;
 import java.io.InputStream;
 
 import static org.jboss.netty.handler.codec.http.HttpHeaders.*;
@@ -62,6 +63,7 @@ import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 
 import org.anon.smart.channels.data.PData;
+import org.anon.smart.channels.http.HTTPRequestPData;
 import org.anon.smart.channels.http.HTTPMessageReader;
 
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -114,14 +116,29 @@ public class NettyResponseReader implements HTTPMessageReader
         throws CtxException
     {
         HttpRequest request = new DefaultHttpRequest(HTTP_1_1, POST, _uri);
+        String contentType = "application/json";
+        Map<String, String> headers = new HashMap<String, String>();
         for (int i = 0; i < req.length; i++)
         {
             StringBuffer buff = io().readStream(req[i].cdata().data());
             request.setContent(ChannelBuffers.copiedBuffer(buff.toString(), CharsetUtil.UTF_8));
+            if (req[i] instanceof HTTPRequestPData)
+            {
+                HTTPRequestPData hpdata = (HTTPRequestPData)req[i];
+                if ((hpdata.getContentType() != null) && (hpdata.getContentType().length() > 0))
+                    contentType = hpdata.getContentType();
+
+                Map<String, String> hdrs = hpdata.getHeaders();
+                for (String name : hdrs.keySet())
+                    headers.put(name, hdrs.get(name));
+            }
         }
-        request.setHeader(CONTENT_TYPE, "application/json");
+        request.setHeader(CONTENT_TYPE, contentType);
         request.setHeader("Access-Control-Allow-Origin", "*");
         request.setHeader(CONTENT_LENGTH, request.getContent().readableBytes());
+
+        for (String nm : headers.keySet())
+            request.setHeader(nm, headers.get(nm));
 
         return request;
     }

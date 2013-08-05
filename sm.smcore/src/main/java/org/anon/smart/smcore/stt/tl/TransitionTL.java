@@ -47,6 +47,8 @@ import java.util.ArrayList;
 import org.anon.smart.base.stt.tl.BaseTL;
 import org.anon.smart.base.annot.TransitionAnnotate;
 
+import org.anon.utilities.exception.CtxException;
+
 public class TransitionTL extends BaseTL
 {
     private String prime;
@@ -60,6 +62,7 @@ public class TransitionTL extends BaseTL
 
     @Override
     public Class[] getAnnotations(String name)
+        throws CtxException
     {
         List<Class> annons = new ArrayList<Class>();
         Class[] annots = super.getAnnotations(name);
@@ -74,5 +77,12 @@ public class TransitionTL extends BaseTL
     {
         return null; //no defaults, has to be provided.
     }
+
+    @Override
+    public boolean shouldAdd(String type)
+    {
+        return true;
+    }
+
 }
 

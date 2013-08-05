@@ -41,10 +41,12 @@
 
 package org.anon.smart.base.tenant;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.anon.smart.base.flow.FlowModel;
 import org.anon.smart.base.flow.FlowAdmin;
@@ -141,6 +143,7 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 		start = std.addStandardSpaces();
 		_data.put(STANDARD_GROUP, std);
 		GROUP_MAPPING.put(MONITOR_SPACE, STANDARD_GROUP);
+        GROUP_MAPPING.put(CONFIG_SPACE, STANDARD_GROUP);
 		_runtimeShell = new CrossLinkRuntimeShell(_loader);
 		_deploymentShell = new DeploymentShell(this, _loader);
 	}
@@ -174,6 +177,11 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 	public Object runtimeShell() {
 		return _runtimeShell.link();
 	}
+
+    public CrossLinkRuntimeShell rshell()
+    {
+        return _runtimeShell;
+    }
 
 	public DeploymentShell deploymentShell() {
 		return _deploymentShell;
@@ -221,7 +229,7 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 	}
 
 	@Override
-	public void initOnLoad() throws CtxException {
+	public void smart___initOnLoad() throws CtxException {
 		System.out.println("Initializing Tenant after loading from store.."+_name+":Features::"+_enabledFeatureList);
 		initTenant();
 		enableFlows();
@@ -254,7 +262,8 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 		for(Map.Entry<String, List<String>> me : flowFeatureMap.entrySet())
 		{
 			//System.out.println("Enabling:"+me.getKey()+"::"+me.getValue());
-			_deploymentShell.enableForMe(me.getKey(), me.getValue().toArray(new String[0]));
+            //TODO: need to check how to reenable the links
+			_deploymentShell.enableForMe(me.getKey(), me.getValue().toArray(new String[0]), new HashMap<String, String>());
 		}
 		
 	}
@@ -266,6 +275,20 @@ public class SmartTenant implements RelatedObject, TenantConstants,
                 _enabledFeatureList.add(new FeatureName(name+FLOW_FEATURE_SEPARATOR+feature));
         }
         System.out.println("Currently enabled flows are: " + _enabledFeatureList);
+	}
+	
+	public Set<String> listEnableFlows()
+	    throws CtxException
+	{
+	    Set<String> enabledFlows = new HashSet<String>();
+	    for(FeatureName feature: _enabledFeatureList)
+        {
+            String[] flowFeatureStr = feature.toString().split(FLOW_FEATURE_SEPARATOR, 2);
+            assertion().assertTrue((flowFeatureStr.length == 2), feature.toString()+" is NOT WELL FORMED");
+            String flowName = flowFeatureStr[0];
+            enabledFlows.add(flowName);
+        }
+	    return enabledFlows;
 	}
 	
 	private class FeatureName{

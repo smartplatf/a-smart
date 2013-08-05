@@ -41,57 +41,55 @@
 
 package org.anon.smart.d2cache.store.repository.hbase;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
+import static org.anon.utilities.objservices.ObjectServiceLocator.convert;
+import static org.anon.utilities.services.ServiceLocator.except;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.anon.utilities.exception.CtxException;
-import org.anon.utilities.services.ServiceLocator;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.MasterNotRunningException;
-import org.apache.hadoop.hbase.TableNotFoundException;
-import org.apache.hadoop.hbase.ZooKeeperConnectionException;
-import org.apache.hadoop.hbase.TableNotFoundException;
-import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.filter.FirstKeyOnlyFilter;
 import org.apache.hadoop.hbase.filter.KeyOnlyFilter;
 import org.apache.hadoop.hbase.util.Bytes;
-import static org.anon.utilities.services.ServiceLocator.*;
-
-import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 public class HBaseCRUD implements Constants
 {
-    private Configuration _config;
+    private static Configuration _config;
+    private static HBaseAdmin _admin;
 
-    public HBaseCRUD(Configuration conf)
+    public HBaseCRUD(Configuration conf) throws Exception
     {
-        _config = conf;
+    	if(_config == null)
+    		_config = conf;
+    	if(_admin == null)
+    		_admin = new HBaseAdmin(_config);
     }
 
     void newTable(String tableName, String[] cf)
         throws Exception 
     {
-        HBaseAdmin admin = new HBaseAdmin(_config);
-        if (!admin.tableExists(tableName)) 
+        //HBaseAdmin admin = new HBaseAdmin(_config);
+        if (!_admin.tableExists(tableName)) 
         {
             HTableDescriptor desc = new HTableDescriptor(tableName);
             for (int i = 0; i < cf.length; i++) 
                 desc.addFamily(new HColumnDescriptor(cf[i]));
-            admin.createTable(desc);
+            _admin.createTable(desc);
             System.out.println("Table Created:"+tableName);
         }
         
@@ -99,11 +97,11 @@ public class HBaseCRUD implements Constants
     void deleteTable(String tableName)
     	throws Exception
     {
-    	HBaseAdmin admin = new HBaseAdmin(_config);
-    	if(admin.tableExists(tableName))
+    	//HBaseAdmin admin = new HBaseAdmin(_config);
+    	if(_admin.tableExists(tableName))
     	{
-    		admin.disableTable(tableName);
-    		admin.deleteTable(tableName);
+    		_admin.disableTable(tableName);
+    		_admin.deleteTable(tableName);
     	}
     	
     }
@@ -137,25 +135,40 @@ public class HBaseCRUD implements Constants
 
         return ret;
     }
-
-	Iterator<Object> listAll(String tableName, int size)
-		throws IOException 
+	
+	public boolean exists(String tableName, String rowKey)
+	    throws CtxException
 	{
-		List<Object> resultSet = new ArrayList<Object>();
-		HTable table = new HTable(_config, tableName);
-        Scan s = new Scan();
-        //add filters to s
-        s.setFilter(new FirstKeyOnlyFilter());
-        s.setFilter(new KeyOnlyFilter());
-        ResultScanner rs = table.getScanner(s);
-        for (Result result = rs.next(); result != null; result = rs.next())
+	    HTable table  = null;
+	    try
+	    {
+	        if(tableExists(tableName))
+	        {
+	            table = new HTable(_config, tableName);
+	        }
+	        else
+	        {
+	            return false;
+	        }
+	    
+	        Get get = new Get(rowKey.getBytes());
+	        return table.exists(get);
+	    }
+        catch(Exception ex)
         {
-        	
-           
-            resultSet.add(new String(result.getRow()));
+            return false;
         }
         
-        return resultSet.iterator();
+	        
+	}
+
+	ResultScanner listAll(String tableName, int size, Scan s)
+		throws IOException 
+	{
+		HTable table = new HTable(_config, tableName);
+        
+        ResultScanner rs = table.getScanner(s);
+        return rs;
 	}
 	Put newRecord(String rowKey, String family, String qualifier, Object value)
         throws Exception
@@ -186,18 +199,12 @@ public class HBaseCRUD implements Constants
 
     public boolean tableExists(String tableName) throws CtxException
     {
-    	try {
-			HBaseAdmin admin = new HBaseAdmin(_config);
-			try {
-				if(admin.tableExists(tableName))
-						return true;
-			} catch (IOException e) {
-				except().rt(e, "IOException while checking existance of table:"+tableName, null);
-			}
-		} catch (MasterNotRunningException e) {
-			except().rt(e, "Master NOT running for HBase", null);
-		} catch (ZooKeeperConnectionException e) {
-			except().rt(e, "Exception while connecting to ZooKeeper", null);
+    	//HBaseAdmin admin = new HBaseAdmin(_config);
+		try {
+			if(_admin.tableExists(tableName))
+					return true;
+		} catch (IOException e) {
+			except().rt(e, "IOException while checking existance of table:"+tableName, null);
 		}
     	
 		return false;

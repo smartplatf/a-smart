@@ -1,0 +1,10 @@
+name:       TemplateManager
+type:       Transition
+flow:       Template
+foreach:        FlowAdmin|GetTemplates
+actions:
+    - name:     getTemplates
+      method:   getTemplates
+      foreach:  FlowAdmin|GetTemplates
+      from:     active
+      to:       active

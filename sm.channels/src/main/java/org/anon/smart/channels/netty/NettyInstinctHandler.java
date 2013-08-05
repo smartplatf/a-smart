@@ -99,7 +99,7 @@ public class NettyInstinctHandler extends SimpleChannelUpstreamHandler
         {
             Object send = _reader.transmitException(e.getCause());
             NettyRoute route = new NettyRoute(ctx.getChannel(), _channelID);
-            route.send(send);
+            //route.send(send);
         }
         catch (Exception e1)
         {

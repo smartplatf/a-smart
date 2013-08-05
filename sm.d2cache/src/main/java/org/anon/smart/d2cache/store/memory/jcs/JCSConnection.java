@@ -112,7 +112,7 @@ public class JCSConnection implements StoreConnection
                 ret = _cache.getFromGroup(key, group);
             else
                 ret = _cache.get(key);
-            System.out.println("FOUND:"+group+":::"+key+ "::" + ret + "::" + _cache);
+            //System.out.println("FOUND: grp:"+group+"::: key:"+key+ ":---->" + ret);
         }
         catch (Exception e)
         {
@@ -176,4 +176,26 @@ public class JCSConnection implements StoreConnection
 
         return null;
 	}
+
+    @Override
+    public boolean exists(String group, Object key) 
+        throws CtxException
+    {
+        assertion().assertNotNull(_cache, "JCS region is Null");
+        Object obj = null;
+        try
+        {
+            if (group != null)
+                obj = _cache.getFromGroup(key, group);
+            else
+                obj = _cache.get(key);
+            //System.out.println("FOUND: grp:"+group+"::: key:"+key+ ":---->" + ret);
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("JCSConnection.find", "Exception"));
+        }
+
+        return (obj != null) ? true:false;
+    }
 }

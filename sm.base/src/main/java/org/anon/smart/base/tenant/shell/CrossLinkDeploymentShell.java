@@ -41,7 +41,10 @@
 
 package org.anon.smart.base.tenant.shell;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 
@@ -63,10 +66,10 @@ public class CrossLinkDeploymentShell extends CrossLinker
         linkMethod("cleanup");
     }
 
-    public Class deployment(String name, String type)
+    public Class deployment(String flow, String name, String type)
         throws CtxException
     {
-        return (Class)linkMethod("deployment", name, type);
+        return (Class)linkMethod("deployment", flow, name, type);
     }
 
     public List<Class> searchDeployment(String dep, String wild, String type)
@@ -91,12 +94,16 @@ public class CrossLinkDeploymentShell extends CrossLinker
         return new CrossLinkFlowDeployment(obj);
     }
 
-    public CrossLinkFlowDeployment flowForType(String name)
+    public List<CrossLinkFlowDeployment> flowForType(String name)
         throws CtxException
     {
-        Object obj = linkMethod("flowForType", name);
+        List obj = (List)linkMethod("flowForType", name);
         assertion().assertNotNull(obj, "There is no deployment found for: " + name);
-        return new CrossLinkFlowDeployment(obj);
+        List<CrossLinkFlowDeployment> ret = new ArrayList<CrossLinkFlowDeployment>();
+        for (Object o : obj)
+        	ret.add(new CrossLinkFlowDeployment(o));
+
+        return ret;
     }
 
     public List<Class> transitionsFor(String dep, String prime, String event, String extra)
@@ -113,10 +120,37 @@ public class CrossLinkDeploymentShell extends CrossLinker
         return (Class)linkMethod("primeClass", dep, type);
     }
 
+    public Class dataClass(String dep, String type)
+        throws CtxException
+    {
+        return (Class)linkMethod("dataClass", dep, type);
+    }
+
+    public Class configClass(String dep, String type)
+        throws CtxException
+    {
+        return (Class)linkMethod("configClass", dep, type);
+    }
+
     public void enableForMe(String name, String[] features)
         throws CtxException
     {
         linkMethod("enableForMe", name, features);
+    }
+
+    public List<CrossLinkFlowDeployment> linkedDeploymentsFor(String flow, String object)
+        throws CtxException
+    {
+        List lst = (List)linkMethod("linkedDeploymentsFor", flow, object);
+        List<CrossLinkFlowDeployment> ret = null;
+        if (lst != null)
+        {
+            ret = new ArrayList<CrossLinkFlowDeployment>();
+            for (Object o : lst)
+                ret.add(new CrossLinkFlowDeployment(o));
+        }
+
+        return ret;
     }
 }
 

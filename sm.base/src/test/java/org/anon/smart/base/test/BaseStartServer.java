@@ -56,15 +56,43 @@ public abstract class BaseStartServer implements Runnable
     private boolean _start;
     protected int _port;
     protected List<String> _tenants;
+    private Object _waitStart;
+    private boolean _started;
 
     public BaseStartServer(boolean start, int port)
     {
         _start = start;
         _port = port;
         _tenants = new ArrayList<String>();
+        _waitStart = new Object();
+        _started = false;
+    }
+
+    public void waitToStart()
+        throws Exception
+    {
+        synchronized(_waitStart)
+        {
+            if (!_started)
+                _waitStart.wait();
+        }
+    }
+
+    public void waitToStop()
+        throws Exception
+    {
+        synchronized(_waitStart)
+        {
+            if (_started)
+                _waitStart.wait();
+        }
     }
 
     protected abstract BaseStartConfig getConfig();
+    protected String[] getStartOrder()
+    {
+        return null;
+    }
 
     public void run()
     {
@@ -73,18 +101,32 @@ public abstract class BaseStartServer implements Runnable
             if (_start)
             {
                 BaseStartConfig cfg = getConfig();
-                anatomy().startup(cfg);
+                String[] order = getStartOrder();
+                if (order == null)
+                    anatomy().startup(cfg);
+                else
+                    anatomy().startup(cfg, order);
+                synchronized(_waitStart)
+                {
+                    _started = true;
+                    _waitStart.notifyAll();
+                }
             }
             else
             {
-                for (String tenant : _tenants)
+            	for (String tenant : _tenants)
                 {
-                    SmartTenant ten = TenantsHosted.tenantFor(tenant);
+                    SmartTenant ten = TenantsHosted.tenantFor(tenant, true);
                     if (ten != null)
                         ten.cleanup();
                 }
 
                 anatomy().shutDown();
+                synchronized(_waitStart)
+                {
+                    _started = false;
+                    _waitStart.notifyAll();
+                }
             }
         }
         catch (Exception e)

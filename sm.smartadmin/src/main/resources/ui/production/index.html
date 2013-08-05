@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+		<title>SMART</title>
+		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+		<link href="css/smart_wizard_vertical.css" rel="stylesheet" type="text/css">
+		<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+		<script type="text/javascript" src="js/wizardscript.js"></script>
+		<script type="text/javascript" src="js/bootstrap.js"></script>
+		<script type="text/javascript" src="js/jquery.smartWizard.js"></script>
+		<script type="text/javascript" src="js/cookiemanager.js"></script>
+		<script type="text/javascript" src="js/email.js"></script>
+		<script type="text/javascript" src="js/logger.js"></script>
+
+		<script type="text/javascript" src="js/smartcom2.js"></script>
+
+		<style>
+			.inputfield {
+				font-size:15px;
+			}
+			label {
+				font-size:18px;
+			}
+			#step1, #step2, #step3, #step4 {
+				padding-top:10%;
+			}
+			#entry {
+				padding-top:4%;
+			}
+			#step3progress {
+				overflow-y:scroll;
+			}
+			#proceedcontainer {
+				position:relative;
+				margin-top:20px;
+				top:40px;
+			}
+			a> img {
+				position:relative;
+				top:10px;
+			}
+			span#tenantinfo {
+				font-family:Arial Blackadder ITC;
+				font-size:medium;
+				color:blue;
+			}
+			#go {
+				margin-top:-40px;
+			}
+			#loading {
+				position:relative;
+				top:-350px;
+				left:750px;
+				z-index:200;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="wizard" class="swMain offset1" style="top:2%;">
+			<ul>
+				<li>
+					<a href="#step-1"><img src="images/registrationIcon.png" alt="registration"><span class="stepDesc"> Step 1
+						<br />
+						<small>Register or Sign in</small> </span> </a>
+				</li>
+				<li>
+					<a href="#step-2"><img src="images/choose.png" alt="choose"><span class="stepDesc"> Step 2
+						<br />
+						<small>Choose</small> </span> </a>
+				</li>
+				<li>
+					<a href="#step-3"><img src="images/user-info-icon.png" alt="userinfo"><span class="stepDesc"> Step 3
+						<br />
+						<small>Your Information</small> </span> </a>
+				</li>
+				<li>
+					<a href="#step-4"><img src="images/objects-icon.png" alt="object"><span class="stepDesc"> Step 4
+						<br />
+						<small>Data Description</small> </span> </a>
+				</li>
+				<li>
+					<a href="#step-5"> <img src="images/additems.png" alt="additems"><span class="stepDesc"> Step 5
+						<br />
+						<small>Add Attributes</small> </span> </a>
+				</li>
+				<li>
+					<a href="#step-6"><img src="images/Preview-icon.png" alt="preview"> <span class="stepDesc"> Step 6
+						<br />
+						<small>Overview</small> </span> </a>
+				</li>
+				<li>
+					<p id="error" class="alert alert-error" style="display:none;"></p>
+					<p id="success" class="alert alert-success" style="display:none;"></p>
+				</li>
+			</ul>
+
+			<!-- wizard body -->
+			<div id="step-1">
+				<h2 class="StepTitle">Please provide your e-mail address to register or sign in</h2>
+				<div id="step1" class="span4 offset4">
+					<label for='email'>Email ID*</label>
+					<input id="email" type="email" value="" placeholder="example@bcd.com">
+				</div>
+				<span class = "span1 offset7">
+					<input id="go" type="button" value="Go" class="btn btn-medium btn-block btn-info">
+				</span>
+			</div>
+			<div id="step-2">
+				<h2 class="StepTitle">Select an option</h2>
+				<div id="step2" class="span3 offset4">
+					<input id="choosefromflow" type="button" value="Choose From My Flows" class="btn btn-large btn-block btn-info">
+
+					<input id="newflow" type="button" value="Create New Flow" class="btn btn-large btn-block btn-warning" style="margin-top: 30px;">
+				</div>
+			</div>
+			<div id="step-3">
+				<h2 class="StepTitle">Provide a Name</h2>
+				<h5 class="span3 offset8">Your Tenant ID: &nbsp;<i><span id="tenantinfo"></span></i></h5>
+				<div id="step3" class="span4 offset4">
+					<label for='tenant'>Tenant ID*</label>
+					<input id='tenant' type='text' value="bt" readonly="readonly">
+					<br>
+					<label for='flow'>Flow Name*</label>
+					<input id='flow' type='text' value="">
+					<br>
+					<span id="flowduplicateerror" class="error-message"></span>
+				</div>
+			</div>
+			<div id="step-4">
+				<h2 class="StepTitle">Provide a Name</h2>
+				<div id="step4" class="span4 offset4">
+					<label for='objname'>Object Name*</label>
+					<input id='objname' type='text' value="" placeholder="Please Enter a object Name" maxlength="70">
+				</div>
+			</div>
+			<div id="step-5">
+				<h2 class="StepTitle">Add the Fields and their Type</h2>
+				<div id="entry" class="span7">
+					<div id="step5">
+						<h4>Create Your Own</h4>
+						<form id="meta">
+							Field Name*
+							<input id='fieldname' type='text' value="">
+							<br>
+							Entry Type*
+							<select id='fieldtype'>
+								<option id="0">Select a Type</option>
+								<option id="1"> AlphaNumeric </option>
+								<option id="2"> Character </option>
+								<option id="3"> Number </option>
+							</select>
+							<input id="save" class="button" type="button" value="Add This Field">
+						</form>
+						<h5>(Or)</h5>
+						<br>
+					</div>
+					<div id="temp">
+						<h4> Select from available Templates </h4>
+						<select id="template">
+							<option id="0">Select One..</option>
+						</select>
+						<input type="button" value="Add Fields" id="post">
+						<br>
+						<span id="description"></span>
+					</div>
+				</div>
+				<div>
+					<h3><b id="object"></b><small>fields</small></h3>
+					<div id="step5progress" class="span4">
+
+					</div>
+				</div>
+			</div>
+			<div id="step-6">
+				<h2 class="StepTitle">Your Record will look like</h2>
+				<h4>Please Select the Key for your Object</h4>
+				<div class="span6 offset1">
+					<table id ='step6' class="table table-hover">
+						<tr>
+							<th>#</th>
+							<th>Key</th>
+							<th>Field</th>
+							<th>Type</th>
+						</tr>
+						<tr>
+							<td>1</td>
+							<td>
+							<input type='radio' name = 'field'>
+							</td>
+							<td>id</td>
+							<td>number</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>
+							<input type='radio' name = 'field'>
+							</td>
+							<td>FirstName</td>
+							<td>Character</td>
+						</tr>
+						<tr>
+							<td>3</td>
+							<td>
+							<input type='radio' name = 'field'>
+							</td>
+							<td>email</td>
+							<td>email</td>
+						</tr>
+					</table>
+					<div id="comment"></div>
+				</div>
+			</div>
+		</div>
+
+		<h4 id="proceedcontainer" class="offset4"><span>
+			<input id="proceed" type="button" class="btn btn-success " value="Proceed" disabled>
+		</span> &nbsp will take you to Hands-On SMART PAGE. </h4>
+
+		<img id="loading" src="images/loading.gif" alt="working" style="display:none;">
+
+		<!-------------modals------------------>
+
+		<!-- loading templates-->
+		<div id="loadingtemplates" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+			<div class="modal-header">
+				<h3>Loading...</h3>
+			</div>
+			<div class="modal-body">
+				<img src="images/working.gif" width="50px;" class ="span1">
+				<h4 class="offset1"> Loading Smart Templates..... </h4>
+			</div>
+		</div>
+
+		<!--flow creation success--->
+		<div id="flowcreated" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h3 id="myModalLabel">Flow Creation Success!!!</h3>
+			</div>
+			<div id="flowcreatedbody" class="modal-body">
+				<p>
+					Your flow was Successfully Created. Would you like to Deploy it NOW?
+					<br>
+					<b>Note:Deploying a flow will activate it for you.</b>
+				</p>
+			</div>
+			<div id="flowfooter" class="modal-footer">
+				<button id="deploybutton" class="btn btn-primary">
+					Deploy
+				</button>
+				<!-- <button class="btn" data-dismiss="modal" aria-hidden="true">
+				Close
+				</button> -->
+			</div>
+		</div>
+
+		<!-- deploying flow and tenant creation-->
+		<div id="deployprogress" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+			<div id="finalheader" class="modal-header">
+				<h3>Processing...</h3>
+			</div>
+			<div class="modal-body" id="deployprogressbody">
+
+				<img src="images/working.gif" width="50px;" class ="span1">
+				<h4 id="deployprogresscontent" class="offset1">Please wait while SMART is deploying your flow..... </h4>
+
+			</div>
+			<div class="modal-footer">
+				<button id="proceeed" data-dismiss="modal" class="btn btn-success" aria-hidden="true" disabled>
+					Proceed
+				</button>
+				<button id="okbutton" data-dismiss="modal" class="btn btn-primary" disabled>
+					OK
+				</button>
+			</div>
+		</div>
+
+		<!-- first time user modal-->
+		<div id="firstusermodal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+			<div class="modal-header">
+				<h3>Welcome New User</h3>
+			</div>
+			<div class="modal-body">
+				<img src="images/e-mail-marketing.jpg" alt="image" class ="span1">
+				<h5 class="offset1"> Welcome TO SMART Community. An e-mail has been sent out to you on this address.</h5>
+				<h5>Please check your email to continue. Thankyou for Registering.</h5>
+			</div>
+			<div class="modal-footer">
+				<button id="okbutton" data-dismiss="modal" class="btn btn-success">
+					OK
+				</button>
+			</div>
+		</div>
+
+		<!-- email not verified modal-->
+		<div id="notverified" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+			<div class="modal-header">
+				<h3>Email not Verified...</h3>
+			</div>
+			<div class="modal-body">
+				<img src="images/e-mail-marketing.jpg" alt="image" class ="span1">
+				<h5 class="offset1"> Your Email is not yet verified. Please Check your Email to verify. Problem in receiving email???</h5>
+			</div>
+			<div class="modal-footer">
+				<button id="sendagain" data-dismiss="modal" class="btn btn-success">
+					Send Again
+				</button>
+			</div>
+		</div>
+	</body>
+</html>

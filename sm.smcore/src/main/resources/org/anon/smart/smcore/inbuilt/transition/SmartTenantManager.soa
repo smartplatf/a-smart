@@ -1,7 +1,7 @@
 name:       SmartTenantManager
 type:       Transition
 flow:       AdminSmartFlow
-foreach:        TenantAdmin|NewTenant,TenantAdmin|EnableFlow
+foreach:        TenantAdmin|NewTenant,TenantAdmin|EnableFlow,TenantAdmin|ListEnabledFlows
 actions:
     - name:     newTenant
       method:   newTenant
@@ -11,6 +11,11 @@ actions:
     - name:     enableFlow
       method:   enableFlow
       foreach:  TenantAdmin|EnableFlow
+      from:     active
+      to:       active
+    - name:     listEnabledFlows
+      method:   listEnabledFlows
+      foreach:  TenantAdmin|ListEnabledFlows
       from:     active
       to:       active
 

@@ -48,6 +48,8 @@ import org.anon.smart.base.loader.SmartLoader;
 import org.anon.utilities.test.PathHelper;
 import org.anon.utilities.anatomy.CrossLinkApplication;
 
+import static org.anon.utilities.services.ServiceLocator.*;
+
 public class ServerUtilities implements ModConstants
 {
     protected SmartLoader _loader;
@@ -107,8 +109,9 @@ public class ServerUtilities implements ModConstants
         Thread thrd = new Thread((Runnable)run);
         thrd.setContextClassLoader(ldr);
         thrd.start();
+        reflect().getAnyMethod(cls, "waitToStart").invoke(run);
         //for now, wait for server to start up
-        Thread.currentThread().sleep(10000);
+        //Thread.currentThread().sleep(10000);
     }
 
     public void stopServer()
@@ -119,8 +122,9 @@ public class ServerUtilities implements ModConstants
         Thread thrd = new Thread((Runnable)run);
         thrd.setContextClassLoader(_loader);
         thrd.start();
-        //for now, wait for server to start up
-        Thread.currentThread().sleep(10000);
+        reflect().getAnyMethod(cls, "waitToStop").invoke(run);
+        //for now, wait for server to stop 
+        //Thread.currentThread().sleep(10000);
         System.out.println("Stopped.");
     }
 

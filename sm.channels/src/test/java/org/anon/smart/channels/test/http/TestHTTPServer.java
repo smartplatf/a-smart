@@ -82,7 +82,7 @@ public class TestHTTPServer
         ByteArrayInputStream istr = new ByteArrayInputStream(post.getBytes());
         PData d = new TestPData(null, new ContentData(istr));
         cchnl.post("/test", new PData[] { d });
-        Thread.sleep(10000);
+        Thread.sleep(3000);
         cchnl.disconnect();
 
         shell.stopAllChannels();

@@ -48,6 +48,7 @@ public interface StoreRecord
 {
     public Object getRowId();
     public String getGroup();
+    public Object getCurrent();
     public void append(DataContext ctx)
         throws CtxException;
 }

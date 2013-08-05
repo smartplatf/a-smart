@@ -42,6 +42,7 @@
 package org.anon.smart.base.flow;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.anon.utilities.crosslink.CrossLinker;
 import org.anon.utilities.exception.CtxException;
@@ -53,10 +54,10 @@ public class CrossLinkFlowDeployment extends CrossLinker
         super(obj);
     }
 
-    public String getPrimeData()
+    public List<String> getPrimeData()
         throws CtxException
     {
-        return (String)linkMethod("getPrimeData");
+        return (List<String>)linkMethod("getPrimeData");
     }
 
     public Object model(ClassLoader ldr)
@@ -91,6 +92,52 @@ public class CrossLinkFlowDeployment extends CrossLinker
         throws CtxException
     {
         return (List<String>)linkMethod("getDeploymentFor", dtype);
+    }
+    
+    public String nameFor(String p)
+    	throws CtxException
+    {
+    	return (String)linkMethod("nameFor", p);
+    }
+
+    private List<CrossLinkLink> linkGetMethod(List lst)
+        throws CtxException
+    {
+        List<CrossLinkLink> ret = null;
+        if (lst != null)
+        {
+            ret = new ArrayList<CrossLinkLink>();
+            for (Object o : lst)
+                ret.add(new CrossLinkLink(o));
+        }
+        return ret;
+    }
+
+    public List<CrossLinkLink> getLinks()
+        throws CtxException
+    {
+        List lst = (List)linkMethod("getLinks");
+        return linkGetMethod(lst);
+    }
+
+    public List<CrossLinkLink> linksFor(String flow, String name)
+        throws CtxException
+    {
+        List lst = (List)linkMethod("linksFor", flow, name);
+        return linkGetMethod(lst);
+    }
+
+    public List<CrossLinkLink> toLinksFor(String flow, String name)
+        throws CtxException
+    {
+        List lst = (List)linkMethod("toLinksFor", flow, name);
+        return linkGetMethod(lst);
+    }
+
+    public String[] deployedURI(String nm)
+        throws CtxException
+    {
+        return (String[])linkMethod("deployedURI", nm);
     }
 }
 
