@@ -37,9 +37,9 @@ function wget_url
 #################################################################################################
 # Modify the following dirtories to reflect your set up
 #################################################################################################
-$scriptdir = "C:\smarttest\scripts\"
-$install = "C:\smarttest\smartinstall"
-
+$currpath = (Get-Location).Path
+$scriptdir = $($currpath + "\scripts\")
+$install = $($currpath + "\smartinstall")
 
 #################################################################################################
 # Set up smart code
