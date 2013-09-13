@@ -81,10 +81,10 @@ public class HBaseRecord extends AbstractStoreRecord implements Constants
         	//_table = _conn.getTableName(group);
         	_table = group;
             HBaseCRUD crud = conn.getCRUD();
-            _putRecord = crud.newRecord(primarykey.toString(), SYNTHETIC_COL_FAMILY, CLASSNAME, cls);
+            //RS -- change it from to String to nothing.
+            //if it is an object, then this has to convert. TODO. Will come back
+            _putRecord = crud.newRecord(primarykey, SYNTHETIC_COL_FAMILY, CLASSNAME, cls);
             _keyCount = 0;
-            //vinay
-            //crud.addTo(_putRecord, DATA_COL_FAMILY, "DATA", curr);
         }
         catch (Exception e)
         {
@@ -92,7 +92,7 @@ public class HBaseRecord extends AbstractStoreRecord implements Constants
         }
     }
 
-    public void append(DataContext ctx)
+    public void append(DataContext ctx, boolean update)
         throws CtxException
     {
         try

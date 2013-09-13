@@ -91,10 +91,13 @@ public class ManageRoles
         }
 
         String allaccess = role.getAllAccess();
-        Access a = Access.valueOf(allaccess);
-        assertion().assertNotNull(a, "Cannot find access " + allaccess);
-        srole.allowAll(a);
-        boolean issmartadmin = role.isSmartAdmin();
+        if ((allaccess != null) && (allaccess.length() > 0))
+        {
+            Access a = Access.valueOf(allaccess);
+            assertion().assertNotNull(a, "Cannot find access " + allaccess);
+            srole.allowAll(a);
+            boolean issmartadmin = role.isSmartAdmin();
+        }
         //TODO:
         resp = new SecurityResponse("Created a role for: " + role.getRoleName());
     }

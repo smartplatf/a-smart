@@ -48,16 +48,16 @@ import org.anon.utilities.exception.CtxException;
 
 public class BrowsableTransactDSpace extends TransactDSpaceImpl
 {
-    public BrowsableTransactDSpace(String name)
+    public BrowsableTransactDSpace(String name, String filestore)
         throws CtxException
     {
-        super(name);
+        super(name, filestore);
     }
 
-    public BrowsableTransactDSpace(String name, DataFilter[] filters)
+    public BrowsableTransactDSpace(String name, DataFilter[] filters, String filestore)
         throws CtxException
     {
-        super(name, filters);
+        super(name, filters, filestore);
     }
 
     @Override

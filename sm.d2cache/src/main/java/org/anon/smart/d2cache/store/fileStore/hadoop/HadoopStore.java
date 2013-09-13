@@ -57,6 +57,7 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
+import static org.anon.utilities.services.ServiceLocator.except;
 /**
  * @author raooll
  * 
@@ -101,18 +102,26 @@ public class HadoopStore extends AbstractStore implements FileStore{
 		
 			
 		FileSystem fs = ((HadoopFileStoreConnection) _connection).getHadoopFS();
-		
-		Path p = new Path(group + "/" + fileName);
+	
+		Path p = new Path(fileName);
 		try {
 			if(fs.exists(p)){
 				FSDataInputStream in = fs.open(p);
 				return in;
 			}
+			else{
+			//	except().te(this, "File not found : " + fileName);	
+				return null;
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			except().rt(e, new CtxException.Context("HadoopStore.getFileAsStream", "Exception"));
 		}
 		return null;
+	}
+
+	public String getBaseDir(){
+		return ((HadoopFileStoreConnection) _connection).getHadoopConf().baseDirectory();
 	}
 
 }

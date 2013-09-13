@@ -46,11 +46,23 @@ import org.anon.utilities.exception.CtxException;
 
 public class CrossLinkFlowModel extends CrossLinker
 {
-    public CrossLinkFlowModel(String name, ClassLoader ldr)
+    public CrossLinkFlowModel(String name, String fileStore, ClassLoader ldr)
         throws CtxException
     {
         super(ldr);
-        create(name);
+        create(name, fileStore);
     }
+
+    @Override
+    protected Class[] parmTypes(String mthd, Object ... params)
+    {
+        if (mthd.equals("<init>"))
+        {
+            return new Class[] { String.class, String.class };
+        }
+
+        return super.parmTypes(mthd, params);
+    }
+
 }
 

@@ -56,17 +56,31 @@ public class UploadRequest {
 
 	private HttpRequest r;
 
+    private String customGroup;
+
+    private Map postData;
+
 	private Map msg;
 
 	private String uri;
 
 	private String[] params;
 
-	public UploadRequest(HttpRequest h, Map o) {
+	public UploadRequest(HttpRequest h, Map o, String grp, Map post) {
 		r = h;
 		params = r.getUri().split("/");
 		msg = o;
+        customGroup = grp;
+        postData = post;
 	}
+
+    public String getCustomGroup() {
+        return customGroup;
+    }
+
+    public Map getPostData() {
+        return postData;
+    }
 
 	public HttpRequest getRequest() {
 		return r;
@@ -75,6 +89,17 @@ public class UploadRequest {
 	public Map getMsg() {
 		return msg;
 	}
+
+    public String postDataString() {
+		String ret = "{";
+		for (Object k : postData.keySet()) {
+			ret = ret + "'" + k.toString() + "'" + ":" + "'" + postData.get(k) + "'"
+					+ ",";
+		}
+		ret = ret.substring(0, ret.length() - 1);
+		ret = ret + "}";
+		return ret;
+    }
 
 	public String toString() {
 		String ret = "{";

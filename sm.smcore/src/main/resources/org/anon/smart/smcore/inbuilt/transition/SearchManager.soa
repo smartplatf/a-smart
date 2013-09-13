@@ -1,7 +1,7 @@
 name:       SearchManager
 type:       Transition
 flow:       AllFlows
-foreach:    FlowAdmin|LookupEvent,FlowAdmin|SearchEvent,FlowAdmin|ListAllEvent,FlowAdmin|CheckExistence
+foreach:    FlowAdmin|LookupEvent,FlowAdmin|SearchEvent,FlowAdmin|ListAllEvent,FlowAdmin|CheckExistence,FlowAdmin|GetListings
 actions:
     - name:     search
       method:   search
@@ -23,5 +23,11 @@ actions:
       foreach:  FlowAdmin|CheckExistence
       from:     active
       to:       active
+    - name:     getListings
+      method:   getListings
+      foreach:  FlowAdmin|GetListings
+      from:     active
+      to:       active
+
  
 

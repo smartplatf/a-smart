@@ -52,6 +52,7 @@ public class ModuleConfig implements VerifiableObject, java.io.Serializable
     private String name;
     private String module;
     private int loadorder;
+    private int startorder;
     private String classloader;
     private String defaultmod;
     private String jars;
@@ -68,6 +69,7 @@ public class ModuleConfig implements VerifiableObject, java.io.Serializable
     public String getModule() { return module; }
     public boolean isVerified() { return _isVerified; }
     public int getLoadOrder() { return loadorder; }
+    public int getStartOrder() { return startorder; }
     public String getClassLoader() { return classloader; }
     public String[] getSmartJars()
         throws CtxException

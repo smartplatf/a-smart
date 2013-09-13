@@ -45,6 +45,9 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.anon.smart.smcore.transition.TransitionContext;
+import org.anon.smart.smcore.events.SmartEventResponse;
+import org.anon.smart.smcore.events.SmartERTxnObject;
+import org.anon.smart.smcore.inbuilt.responses.ErrorResponse;
 
 import org.anon.utilities.cthreads.CtxRunnable;
 import org.anon.utilities.cthreads.CThreadContext;
@@ -80,15 +83,31 @@ public class EndTransitionExecutor implements CtxRunnable
                 TransitionContext gctx = (TransitionContext)_context;
                 if (gctx.graphDone())
                 {
-                    gctx.atomicity().finish();
+                    try
+                    {
+                        gctx.atomicity().finish();
+                    }
+                    catch (Exception e1)
+                    {
+                        e1.printStackTrace();
+                        //force send. Atomicity has not given an exception
+                        Object response = new ErrorResponse(ErrorResponse.servererrors.exception, e1);
+                        SmartERTxnObject txnobj = new SmartERTxnObject((SmartEventResponse)response);
+                        txnobj.accept(gctx.id(), txnobj);
+                        txnobj.end(gctx.id());
+                        gctx.doneWithContext();//finish it so that we can continue further.
+                    }
                 }
             }
-            _hasCompleted = true;
         }
         catch (Exception e)
         {
             //TODO:
             e.printStackTrace();
+        }
+        finally
+        {
+            _hasCompleted = true;
         }
     }
 

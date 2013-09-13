@@ -41,6 +41,8 @@
 
 package org.anon.smart.smcore.data;
 
+import java.util.List;
+
 import org.anon.utilities.crosslink.CrossLinker;
 import org.anon.utilities.exception.CtxException;
 
@@ -55,6 +57,12 @@ public class CrossLinkSmartPrimeData extends CrossLinker
         throws CtxException
     {
         return linkMethod("smart___flow");
+    }
+
+    public List smart___keys()
+        throws CtxException
+    {
+        return (List)linkMethod("smart___keys");
     }
 }
 

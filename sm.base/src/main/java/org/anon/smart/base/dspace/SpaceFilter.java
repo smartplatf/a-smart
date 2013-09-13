@@ -45,7 +45,7 @@ import org.anon.utilities.exception.CtxException;
 
 public interface SpaceFilter
 {
-    public enum spaceaction { read, write };
+    public enum spaceaction { read, write, create };
 
     public boolean filter(DSpace space, spaceaction action, boolean except)
         throws CtxException;

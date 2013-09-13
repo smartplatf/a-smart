@@ -121,5 +121,10 @@ public class HBaseTransaction extends AbstractStoreTransaction
 		RelatedObject obj = new RelatedObject(relatedKey);
 		return addRecord(group, primarykey, obj, null);
 	}
+
+    public boolean shouldStore(String storeIn)
+    {
+        return ((storeIn == null) || (storeIn.length() <= 0) || (storeIn.indexOf("repository") >= 0));
+    }
 }
 

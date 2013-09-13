@@ -1,0 +1,37 @@
+#!/bin/sh
+
+set -e
+
+# Must be a valid filename
+NAME=runsmart.sh
+#This is the command to be run, give the full pathname
+DAEMON="/usr/bin/runsmart.sh"
+USER=smartuser
+SMART_INSTALL=/home/smartuser/smartinstall
+DAEMON_OPTS="$1 $SMART_INSTALL"
+
+export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
+
+case "$1" in
+  start)
+        echo -n "Starting daemon: "$NAME
+	start-stop-daemon --start --quiet --chuid $USER --exec $DAEMON $DAEMON_OPTS
+        echo "."
+	;;
+  stop)
+        echo -n "Stopping daemon: "$NAME
+	start-stop-daemon --start --quiet --chuid $USER --exec $DAEMON $DAEMON_OPTS
+        echo "."
+	;;
+  restart)
+        echo -n "Restarting daemon: "$NAME
+	start-stop-daemon --start --quiet --chuid $USER --exec $DAEMON $DAEMON_OPTS
+	echo "."
+	;;
+
+  *)
+	echo "Usage: "$1" {start|stop|restart}"
+	exit 1
+esac
+
+exit 0

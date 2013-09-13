@@ -54,5 +54,6 @@ public @interface SmartDataAnnotate
     public String merge() default "";
     public String config() default "";
     public String commit() default "";
+    public String store() default "";
 }
 

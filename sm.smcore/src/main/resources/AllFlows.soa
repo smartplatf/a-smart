@@ -2,7 +2,9 @@ name:   AllFlows
 defaultEnable:  all
 primeData:
     - org.anon.smart.base.flow.FlowAdmin
-    - org.anon.smart.smcore.data.SmartFileObject
+    - org.anon.smart.smcore.inbuilt.data.SmartFileObject
+config:
+    - org.anon.smart.smcore.inbuilt.config.EmailConfig
 events:
     - org.anon.smart.smcore.inbuilt.events.SearchEvent
     - org.anon.smart.smcore.inbuilt.events.LookupEvent
@@ -12,13 +14,14 @@ events:
     - org.anon.smart.smcore.inbuilt.events.MetricAccess
     - org.anon.smart.smcore.inbuilt.events.ConfigFlow
     - org.anon.smart.smcore.inbuilt.events.GetPrimeMeta
-    - org.anon.smart.smcore.inbuilt.events.ConfigFlow
     - org.anon.smart.smcore.inbuilt.events.DefinePrime
     - org.anon.smart.smcore.inbuilt.events.UploadEvent
     - org.anon.smart.smcore.inbuilt.events.DownloadEvent
     - org.anon.smart.smcore.inbuilt.events.GetJavaScript
     - org.anon.smart.smcore.inbuilt.events.GetTemplateMeta
     - org.anon.smart.smcore.inbuilt.events.CheckExistence
+    - org.anon.smart.smcore.inbuilt.events.GetListings
+    - org.anon.smart.smcore.inbuilt.events.ChangeStateEvent
 transitions:
     - org.anon.smart.smcore.inbuilt.transition.SearchManager
     - org.anon.smart.smcore.inbuilt.transition.CRUDManager
@@ -28,6 +31,7 @@ transitions:
     - org.anon.smart.smcore.inbuilt.transition.MetaManager
     - org.anon.smart.smcore.inbuilt.transition.JavaScriptManager
     - org.anon.smart.smcore.inbuilt.transition.TemplateMetaManager
+    - org.anon.smart.smcore.inbuilt.transition.TransitionServices
 responses:
     - org.anon.smart.smcore.inbuilt.responses.SearchResponse
     - org.anon.smart.smcore.inbuilt.responses.LookupResponse
@@ -44,7 +48,7 @@ features:
     - name: all
       artefacts:
         - org.anon.smart.base.flow.FlowAdmin
-        - org.anon.smart.smcore.data.SmartFileObject
+        - org.anon.smart.smcore.inbuilt.data.SmartFileObject
         - org.anon.smart.smcore.inbuilt.events.SearchEvent
         - org.anon.smart.smcore.inbuilt.events.LookupEvent
         - org.anon.smart.smcore.inbuilt.events.ListAllEvent
@@ -67,6 +71,7 @@ features:
         - org.anon.smart.smcore.inbuilt.transition.MetaManager
         - org.anon.smart.smcore.inbuilt.transition.JavaScriptManager
         - org.anon.smart.smcore.inbuilt.transition.TemplateMetaManager
+        - org.anon.smart.smcore.inbuilt.transition.TransitionServices
         - org.anon.smart.smcore.inbuilt.responses.SearchResponse
         - org.anon.smart.smcore.inbuilt.responses.LookupResponse
         - org.anon.smart.smcore.inbuilt.responses.ListAllResponse
@@ -77,4 +82,7 @@ features:
         - org.anon.smart.smcore.inbuilt.responses.DownloadResponse
         - org.anon.smart.smcore.inbuilt.responses.JavaScriptSnippet
         - org.anon.smart.smcore.inbuilt.responses.TemplateMetaResponse    
-        - org.anon.smart.smcore.inbuilt.responses.CheckExistenceResponse        
+        - org.anon.smart.smcore.inbuilt.responses.CheckExistenceResponse
+        - org.anon.smart.smcore.inbuilt.events.GetListings
+        - org.anon.smart.smcore.inbuilt.config.EmailConfig
+        - org.anon.smart.smcore.inbuilt.events.ChangeStateEvent

@@ -52,6 +52,7 @@ import org.anon.smart.d2cache.store.MemoryStore;
 import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.IndexedStore;
 import org.anon.smart.d2cache.store.StoreItem;
+import org.anon.smart.d2cache.ListParams;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
@@ -146,7 +147,7 @@ public class LayeredReader implements Reader
     }
 
 	@Override
-	public List<Object> search(String group, Object query) 
+	public List<Object> search(String group, Object query, long size) 
         throws CtxException 
     {
 		List<Object> ret = new ArrayList<Object>();
@@ -161,18 +162,27 @@ public class LayeredReader implements Reader
 				resultKeys.addAll(((IndexedStore)_stores[i]).search(group, query));
 			}
         }
+        int totsize = 0;
+        System.out.println("Searching for size: " + size + ":" + resultKeys.size());
 		for(Object key : resultKeys)
 		{
+            if ((size >= 0) && (totsize >= size))
+                break;
+
             //Lookup takes care of the filter
 			Object obj = this.lookup(group, key, false);
-			if(obj != null)
+
+			if (obj != null)
+            {
 				ret.add(obj);
+                totsize++;
+            }
 		}
 		return ret;
 	}
 
 	@Override
-	public List<Object> listAll(String group, int size) 
+	public List<Object> list(ListParams parms)
         throws CtxException 
     {
 		
@@ -182,7 +192,7 @@ public class LayeredReader implements Reader
 		{
 			if(!(_stores[i] instanceof IndexedStore))
 			{
-				keyIter = (_stores[i].getConnection().listAll(group, size));
+				keyIter = _stores[i].getConnection().list(parms);
 				if(keyIter != null)
 				{
 					while(keyIter.hasNext())
@@ -215,5 +225,31 @@ public class LayeredReader implements Reader
         return ret;
     }
 
+    @Override
+    public List<Object> getListings(String group, String sortBy,
+            int listingsPerPage, int pageNum)
+            throws CtxException
+    {
+        List<Object> resultSet = new ArrayList<Object>();
+        Iterator<Object> keyIter = null;
+        for(int i = 0; (i < _stores.length); i++)
+        {
+            //if(!(_stores[i] instanceof MemoryStore) && !(_stores[i] instanceof IndexedStore))
+            if(!(_stores[i] instanceof IndexedStore))
+            {
+                keyIter = (_stores[i].getConnection().getListings(group, sortBy, listingsPerPage, pageNum));
+                if(keyIter != null)
+                {
+                    while(keyIter.hasNext())
+                    {
+                        Object obj = keyIter.next();
+                        if ((obj != null) && (isFilter(obj, false)))
+                            resultSet.add(obj);
+                    }
+                }
+            }
+        }
+        return resultSet;
+    }
 }
 

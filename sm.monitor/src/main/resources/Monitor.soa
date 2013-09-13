@@ -1,0 +1,15 @@
+name:   Monitor
+defaultEnable:  all
+events:
+    - org.anon.smart.monitor.inbuilt.events.ReadMonitorData
+responses:
+    - org.anon.smart.monitor.inbuilt.responses.MonitorResponse
+transitions:
+    - org.anon.smart.monitor.inbuilt.transitions.MonitorManager
+features:
+    - name: all
+      artefacts:
+        - org.anon.smart.monitor.inbuilt.events.ReadMonitorData
+        - org.anon.smart.monitor.inbuilt.responses.MonitorResponse
+        - org.anon.smart.monitor.inbuilt.transitions.MonitorManager
+

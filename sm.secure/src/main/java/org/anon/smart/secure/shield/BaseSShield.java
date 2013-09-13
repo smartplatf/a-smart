@@ -127,8 +127,8 @@ public abstract class BaseSShield implements SmartShield
     private static enum shields
     {
         //for now this name shd match the AccessScope name
-        klass(new KlassShield(), SGuardType.smartrole, SGuardType.unauthenticated, SGuardType.system), 
-        instance(new InstanceShield()), 
+        klass(new KlassShield(), SGuardType.smartrole, SGuardType.unauthenticated, SGuardType.system, SGuardType.flow), 
+        instance(new InstanceShield(), SGuardType.owned), 
         attribute(new AttributeShield());
 
         private SmartShield _shield;

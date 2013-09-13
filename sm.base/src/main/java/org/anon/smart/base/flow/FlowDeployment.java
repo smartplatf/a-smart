@@ -60,6 +60,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
 {
     private transient Map<Class<? extends Annotation>, List<String>> _mapTypes;
 
+    private String fileStore;
     private List<String> _internalData;
     private List<String> primeData;
     private List<String> data;
@@ -97,6 +98,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
         config = new ArrayList<String>();
         keys = new ArrayList<Key>();
         links = new ArrayList<Link>();
+        fileStore = "";
         needlinks = new ArrayList<Link>();
         _internalData = new ArrayList<String>();
         _classToName = new HashMap<String, String>();
@@ -106,7 +108,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
         initialize();
     }
 
-    private void copy(List from, List to)
+    protected void copy(List from, List to)
     {
         if ((from != null) && (to != null))
         {
@@ -120,6 +122,8 @@ public class FlowDeployment extends Deployment implements FlowConstants
     {
         super(dep, features);
         initialize();
+        fileStore = dep.fileStore;
+        System.out.println("For deployment: " + deployedName() + ":" + fileStore);
         _classToName = new HashMap<String, String>();
         _nameToClass = new HashMap<String, String>();
         _keyMap = new HashMap<String, String>();
@@ -248,7 +252,8 @@ public class FlowDeployment extends Deployment implements FlowConstants
     public List<String> artefacts()
     {
         List<String> ret = new ArrayList<String>();
-        ret.addAll(primeData);
+        if (primeData != null)
+            ret.addAll(primeData);
         if (data != null)
             ret.addAll(data);
 
@@ -273,10 +278,11 @@ public class FlowDeployment extends Deployment implements FlowConstants
     public Object model(ClassLoader ldr) 
         throws CtxException
     { 
-        CrossLinkFlowModel m = new CrossLinkFlowModel(deployedName(), ldr);
+        CrossLinkFlowModel m = new CrossLinkFlowModel(deployedName(), fileStore, ldr);
         return m.link(); 
     }
 
+    public String getFileStore() { return fileStore; }
     public List<String> getPrimeData() { return primeData; }
     public String nameFor(String cls)
     {

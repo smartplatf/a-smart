@@ -56,6 +56,7 @@ public class SmartKernel
     private SmartConfig _config;
     private SmartActiveModules _active;
     private ClassLoader _startLoader;
+    private String[] _startOrder;
 
     public SmartKernel(String svr)
         throws CtxException
@@ -64,7 +65,9 @@ public class SmartKernel
         _config = SmartConfigReader.readConfigForServer(svr);
         _active = new SmartActiveModules(_config);
         _startLoader = _active.activeLoader();
+        _startOrder = _active.startOrder();
         CrossLinkApplication.getApplication().setStartLoader(_startLoader);
+        System.out.println("Created Kernel" + _startLoader);
     }
 
     public void startServer(boolean master)
@@ -73,7 +76,7 @@ public class SmartKernel
         try
         {
             Object cfg = serial().cloneIn(_config, _startLoader);
-            CrossLinkSmartStarter starter = new CrossLinkSmartStarter(cfg, master, _startLoader);
+            CrossLinkSmartStarter starter = new CrossLinkSmartStarter(cfg, master, _startOrder, _startLoader);
             Object run = starter.link();
             Thread thrd = new Thread((Runnable)run);
             thrd.setContextClassLoader(_startLoader);
@@ -82,6 +85,7 @@ public class SmartKernel
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             except().rt(e, new CtxException.Context("Error starting server: " + _serverType, "Exception"));
         }
     }

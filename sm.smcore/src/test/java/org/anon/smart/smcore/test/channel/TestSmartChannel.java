@@ -125,19 +125,6 @@ public class TestSmartChannel
         clnt.deployFromSampleJar();
         clnt.createTenant();
 
-        /*
-        SCShell shell = new SCShell();
-        postTo(shell, port, "localhost", "/invalidtenant", "", true);
-        postTo(shell, port, "localhost", "/invalidtenant/invalidflow/invalidevent", "{'order':'testorder'}", true);
-        postTo(shell, port, "localhost", "/SmartOwner/invalidflow/", "{'order':'testorder'}", true);
-        postTo(shell, port, "localhost", "/coreanon/ReviewFlow/WriteReview", "{'ReviewObject':{'___smart_action___':'lookup', '___smart_value___':'Not present'}, 'review':'Reviewed','rating':1}", true);
-        postTo(shell, port, "localhost", "/coreanon/ReviewFlow/WriteReview", "{'ReviewObject':'Object1', 'review':'Reviewed','rating':1}", true); //error
-        postTo(shell, port, "localhost", "/coreanon/ReviewFlow/WriteReview", "{'ReviewObject':{'___smart_action___':'lookup', '___smart_value___':'Object1'}, 'review':'Reviewed','rating':1}", true);
-        String home = System.getenv("HOME");
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'RegistrationFlow.soa'}", true);
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'newtenant','enableFlow':'RegistrationFlow','enableFeatures':['all']}", false);
-        Thread.sleep(6000);//tenant creation takes time
-        */
         for (int i = 0; i < 10; i++)
         {
             clnt.postTo(port, "localhost", "/newtenant/RegistrationFlow/RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'rsankarx" + i + "@gmail.com'}", false);

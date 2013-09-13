@@ -51,7 +51,9 @@ public enum SGuardType
 {
     smartrole(new SmartRoleGuard()),
     system(new SystemGuard()),
-    unauthenticated(new UnAuthenticatedGuard());
+    unauthenticated(new UnAuthenticatedGuard()),
+    flow(new FlowGuard()),
+    owned(new OwnerGuard());
 
     private SGuard _guard;
 
@@ -66,6 +68,16 @@ public enum SGuardType
         SGuardType gt = SGuardType.valueOf(annon.type());
         assertion().assertNotNull(gt, "Cannot find a guard of type: " + annon.type());
         SGuardParms parm = new SGuardParms(annon, cls);
+        SGuard ret = (SGuard)gt._guard.repeatMe(parm);
+        return ret;
+    }
+
+    public static SGuard guardFor(String type, String parms, Class cls)
+        throws CtxException
+    {
+        SGuardType gt = SGuardType.valueOf(type);
+        assertion().assertNotNull(gt, "Cannot find a guard of type: " + type);
+        SGuardParms parm = new SGuardParms(type, parms, cls);
         SGuard ret = (SGuard)gt._guard.repeatMe(parm);
         return ret;
     }

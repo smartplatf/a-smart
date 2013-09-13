@@ -41,7 +41,7 @@
 
 package org.anon.smart.secure.inbuilt.events;
 
-public class Authenticate
+public class Authenticate implements java.io.Serializable
 {
     private String identity;
     private String password;

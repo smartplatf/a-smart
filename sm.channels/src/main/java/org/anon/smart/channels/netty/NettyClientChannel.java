@@ -135,7 +135,7 @@ public abstract class NettyClientChannel extends AbstractClientChannel
     public void post(PData[] post)
         throws CtxException
     {
-        Object obj = _reader.transmitObject(post);
+        Object obj = _reader.transmitObject(post , _route);
         System.out.println("posting: " + obj);
         _route.send(obj);
     }

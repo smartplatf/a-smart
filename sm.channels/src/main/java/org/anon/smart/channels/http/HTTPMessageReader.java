@@ -58,5 +58,6 @@ public interface HTTPMessageReader extends MessageReader
     public InputStream contentStream(Object msg)
         throws CtxException;
     public boolean isKeepAlive(Object msg);
+    public boolean isOptionsRequest(Object msg);
 }
 

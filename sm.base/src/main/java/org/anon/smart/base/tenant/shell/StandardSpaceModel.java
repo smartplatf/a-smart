@@ -72,5 +72,10 @@ public class StandardSpaceModel implements SpaceModel, java.io.Serializable
     {
         return _browsable;
     }
+
+    public String getFileStore()
+    {
+        return null;
+    }
 }
 

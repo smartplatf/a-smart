@@ -1,11 +1,16 @@
 name:       AuthenticateUser
 type:       Transition
 flow:       Security
-foreach:        FlowAdmin|Authenticate
+foreach:        FlowAdmin|Authenticate,Session|Logout
 actions:
     - name:     authenticateUser
       method:   authenticateUser
       foreach:  FlowAdmin|Authenticate
       from:     active
       to:       active
+    - name:     logoutUser
+      method:   logoutUser
+      foreach:  Session|Logout
+      from:     active
+      to:       inactive
 

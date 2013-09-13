@@ -9,4 +9,11 @@ states:
       startState:   true
     - name:         inactive
       endState:     true
+security:
+    - name:     roleaccess
+      type:     smartrole
+      access:   execute
+    - name:     flowaccess
+      type:     flow
+      access:   create
 

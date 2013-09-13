@@ -63,6 +63,7 @@ import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 
 import org.anon.smart.channels.data.PData;
+import org.anon.smart.channels.Route;
 import org.anon.smart.channels.http.HTTPRequestPData;
 import org.anon.smart.channels.http.HTTPMessageReader;
 
@@ -112,7 +113,7 @@ public class NettyResponseReader implements HTTPMessageReader
         return stream;
     }
 
-    public Object transmitObject(PData[] req)
+    public Object transmitObject(PData[] req,Route r)
         throws CtxException
     {
         HttpRequest request = new DefaultHttpRequest(HTTP_1_1, POST, _uri);
@@ -172,6 +173,12 @@ public class NettyResponseReader implements HTTPMessageReader
     {
         HttpMessage request = (HttpMessage)msg;
         return HttpHeaders.isKeepAlive(request);
+    }
+
+    public boolean isOptionsRequest(Object msg)
+    {
+        HttpMessage request = (HttpMessage)msg;
+        return false;
     }
 }
 

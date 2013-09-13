@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 
 import org.anon.smart.channels.distill.Isotope;
-import org.anon.smart.base.tenant.SmartTenant;
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 import org.anon.smart.base.flow.FlowDeployment;
 import org.anon.smart.smcore.channel.distill.ChannelConstants;
@@ -69,7 +69,7 @@ public class SearchedData extends Isotope implements ChannelConstants
         public Object flow() { return _flowObject; }
     }
 
-    private SmartTenant _tenant;
+    private CrossLinkSmartTenant _tenant;
     private String _flow;
     private FlowDeployment _flowDeployment;
     private CrossLinkFlowDeployment _clFlowDeployment;
@@ -92,12 +92,12 @@ public class SearchedData extends Isotope implements ChannelConstants
     public void setupMappedData(Map<String, Object> m) { _mappedData = m; }
     public Map<String, Object> mappedData() { return _mappedData; }
 
-    void setupTenant(SmartTenant tenant)
+    void setupTenant(CrossLinkSmartTenant tenant)
     {
         _tenant = tenant;
     }
 
-    public SmartTenant tenant() { return _tenant; }
+    public CrossLinkSmartTenant tenant() { return _tenant; }
 
     void setupFlow(String flow)
     {

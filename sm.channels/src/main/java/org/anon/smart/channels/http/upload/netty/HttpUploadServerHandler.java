@@ -86,9 +86,12 @@ public class HttpUploadServerHandler extends SimpleChannelUpstreamHandler {
 	public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
 	public static final int HTTP_CACHE_SECONDS = 60;
 
+	private String tmpUploadDir;
 	private HttpRequest request;
 	private boolean readingChunks;
 	private HashMap<String, String> filesUploaded;
+	private String customGroup;
+	private Map<String, String> postData;
 
 	private static final HttpDataFactory factory = new DefaultHttpDataFactory(
 			DefaultHttpDataFactory.MINSIZE); // Disk if size exceed MINSIZE
@@ -116,6 +119,8 @@ public class HttpUploadServerHandler extends SimpleChannelUpstreamHandler {
 		_instinct = cfg.instinct();
 		System.out.println("cfg :: " + cfg);
 		System.out.println("instinct :: " + _instinct);
+		tmpUploadDir = System.getProperty("java.io.tmpdir");		
+		System.out.println("tmpUploadDir :: " + tmpUploadDir);
 		_upReader = upRdr;
 		_dwnReader = dwnRdr;
 		_channelID = channelID;
@@ -141,6 +146,7 @@ public class HttpUploadServerHandler extends SimpleChannelUpstreamHandler {
 			}
 
 			request = (HttpRequest) e.getMessage();
+            System.out.println(request);
 			// System.out.println("request.getMethod() == " +
 			// request.getMethod());
 
@@ -150,6 +156,12 @@ public class HttpUploadServerHandler extends SimpleChannelUpstreamHandler {
 				getFiles(ctx, request,e.getChannel());
 				return;
 			}
+            else if (request.getMethod() == HttpMethod.OPTIONS) {
+                Object send = _upReader.transmitDefault();
+                NettyRoute route = new NettyRoute(e.getChannel(), _channelID);
+                route.send(send);
+                return;
+            }
 
 			// if GET Method: should not try to create a
 			// HttpPostRequestDecoder
@@ -229,6 +241,7 @@ public class HttpUploadServerHandler extends SimpleChannelUpstreamHandler {
 			return;
 		}
 		filesUploaded = new HashMap<String, String>();
+        postData = new HashMap<String, String>();
 		for (InterfaceHttpData data : datas) {
 			writeHttpData(data, channel);
 		}
@@ -243,6 +256,12 @@ public class HttpUploadServerHandler extends SimpleChannelUpstreamHandler {
 			String value;
 			try {
 				value = attribute.getValue();
+                String name = attribute.getName();
+                if (name.equals("group"))
+                    customGroup = value;
+                else
+                    postData.put(name, value);
+                System.out.println("Got HTTP data: " + attribute.getName() + ":" + attribute.getValue() + ":" + customGroup);
 				// System.out.println("Attribute : " + attribute.getName());
 				// System.out.println("AttributeValue : " + value);
 			} catch (IOException e1) {
@@ -271,7 +290,7 @@ public class HttpUploadServerHandler extends SimpleChannelUpstreamHandler {
 					// fileUpload.isInMemory();// tells if the file is in Memory
 					// or on File
 					try {
-						File upld = new File("/tmp" + "/"
+						File upld = new File(tmpUploadDir + File.separator 
 								+ fileUpload.getFilename());
 						fileUpload.renameTo(upld);
 						filesUploaded.put(upld.getAbsolutePath(),
@@ -291,7 +310,7 @@ public class HttpUploadServerHandler extends SimpleChannelUpstreamHandler {
 	private void handleUploadedFile(HashMap files, Channel channel)
 			throws Exception {
 
-		UploadRequest r = new UploadRequest(request, files);
+		UploadRequest r = new UploadRequest(request, files, customGroup, postData);
 		NettyRoute route = new NettyRoute(channel, _channelID);
 		boolean transmitdefault = _instinct.whenMessage(route, r, _upReader);
 		if (transmitdefault) {

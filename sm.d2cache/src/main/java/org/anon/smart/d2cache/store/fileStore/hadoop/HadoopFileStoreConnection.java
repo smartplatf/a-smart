@@ -53,6 +53,8 @@ import java.util.UUID;
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreTransaction;
+import org.anon.smart.d2cache.ListParams;
+
 import org.anon.utilities.exception.CtxException;
 import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
@@ -115,6 +117,7 @@ public class HadoopFileStoreConnection implements StoreConnection {
 
 			try {
 				_hadoopFs = FileSystem.get(_conf);
+				_hadoopFs.setWorkingDirectory(new Path(hfsCfg.baseDirectory()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -199,18 +202,12 @@ public class HadoopFileStoreConnection implements StoreConnection {
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.anon.smart.d2cache.store.StoreConnection#listAll(java.lang.String,
-	 * int)
-	 */
-	@Override
-	public Iterator<Object> listAll(String group, int size) throws CtxException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+	public Iterator<Object> list(ListParams parms)
+        throws CtxException 
+    {
+        return null;
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -239,6 +236,14 @@ public class HadoopFileStoreConnection implements StoreConnection {
     {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public Iterator<Object> getListings(String group, String sortBy,
+            int listingsPerPage, int pageNum)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

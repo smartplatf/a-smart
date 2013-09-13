@@ -47,14 +47,29 @@ public class NewTenant implements java.io.Serializable
 {
     private String tenant;
     private String enableFlow;
+    private String domain;
+    private String clientOf;
+    private String controlsAdmin;
     private List<String> enableFeatures;
 
     public NewTenant()
     {
     }
 
+    protected NewTenant(String nm, String ef, String dom, String co, List<String> f)
+    {
+        tenant = nm;
+        enableFlow = ef;
+        domain = dom;
+        clientOf = co;
+        enableFeatures = f;
+    }
+
     public String tenantName() { return tenant; }
     public String getEnableFlow() { return enableFlow; }
     public List<String> getEnableFeatures() { return enableFeatures; }
+    public String getDomain() { return domain; }
+    public String getClientOf() { return clientOf; }
+    public String getControlsAdmin() { return controlsAdmin; }
 }
 

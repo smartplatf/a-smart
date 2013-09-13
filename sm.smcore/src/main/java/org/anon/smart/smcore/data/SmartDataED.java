@@ -68,6 +68,7 @@ public class SmartDataED implements EmpiricalData, AtomicityConstants
         _empirical = (SmartData)serial().clone(data.smartData());
         _original = (SmartData)serial().clone(_empirical);
         _isNew = false;
+        data.smartData().smart___setIsNew(_isNew);
     }
 
     public SmartDataED(SmartData data)
@@ -77,11 +78,13 @@ public class SmartDataED implements EmpiricalData, AtomicityConstants
         _empirical = data;
         _original = data;
         _isNew = true;
+        data.smart___setIsNew(_isNew);
     }
 
     public void setNew()
     {
         _isNew = true;
+        _empirical.smart___setIsNew(_isNew);
     }
 
     public TruthData truth()

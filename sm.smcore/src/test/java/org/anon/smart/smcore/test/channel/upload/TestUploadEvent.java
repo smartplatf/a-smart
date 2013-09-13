@@ -41,6 +41,8 @@
 package org.anon.smart.smcore.test.channel.upload;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -50,6 +52,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONSerializer;
+
 
 import org.anon.smart.channels.data.ContentData;
 import org.anon.smart.channels.data.PData;
@@ -59,6 +68,7 @@ import org.anon.smart.channels.http.HTTPConfig;
 import org.anon.smart.channels.shell.SCShell;
 import org.anon.smart.smcore.test.CoreServerUtilities;
 import org.anon.smart.smcore.test.TestClient;
+import org.anon.smart.smcore.test.AssertJSONResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -81,32 +91,13 @@ public class TestUploadEvent {
 
 	String projectHome = System.getProperty("user.dir");
 	
-/*	private HTTPClientChannel postTo(SCShell shell, int port, String server,
-			String uri, String post, boolean wait) throws Exception {
-		Rectifier rr = new Rectifier();
-		rr.addStep(new TestDistillation());
-		HTTPConfig ccfg = new HTTPConfig(port, false);
-		ccfg.setClient();
-		ccfg.setServer(server);
-		ccfg.setRectifierInstinct(rr, new TestDataFactory());
-		HTTPClientChannel cchnl = (HTTPClientChannel) shell.addChannel(ccfg);
-		cchnl.connect();
-		ByteArrayInputStream istr = new ByteArrayInputStream(post.getBytes());
-		PData d = new TestPData(null, new ContentData(istr));
-		cchnl.post(uri, new PData[] { d });
-		if (wait) {
-			Thread.sleep(6000);
-			cchnl.disconnect();
-		}
 
-		return cchnl;
-	}
-*/
 	@Test
 	public void testUploadEvents() throws Exception {
 		
 		String testFile = "pom.xml";
-		
+		// to test Disk Based Store	
+		//System.setProperty("Smart.Development.Mode", "True");
 		this.getClass()
 				.getClassLoader()
 				.getResources(
@@ -119,53 +110,42 @@ public class TestUploadEvent {
 								+ "/../sm.kernel/src/main/resources/dbscripts/hadoop-0.20.2-cdh3u5/conf/core-site.xml");
 
 		int port = 9081;
-        int uploadPort = 9020;
+        	int uploadPort = 9020;
 
 		UploadServerUtilities utils = new UploadServerUtilities(port,uploadPort);
 		utils.runServer("org.anon.smart.smcore.test.channel.upload.RunSmartUploadServer");
 		Thread.sleep(3000);
-		 TestClient clnt = new TestClient(port, "localhost", "errortenant", "ErrorCases", "ErrorCases.soa");
-	     clnt.deployFromSampleJar();
-	     clnt.createTenant();
+		TestClient clnt = new TestClient(port, "localhost", "errortenant", "ErrorCases", "ErrorCases.soa");
+	    	clnt.deployFromSampleJar();
+	    	clnt.createTenant();
 
-/*		postTo(shell,
-				port,
-				"localhost",
-				"/SmartOwner/AdminSmartFlow/DeployEvent",
-				"{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'"
-
-						+ "/home/raooll/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'ErrorCases.soa'}",
-				true);
-		postTo(shell,
-				port,
-				"localhost",
-				"/SmartOwner/AdminSmartFlow/NewTenant",
-				"{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'errortenant','enableFlow':'ErrorCases','enableFeatures':['all']}",
-				false);
-
-		System.out
-				.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-		postTo(shell,
-				port,
-				"localhost",
-				"/errortenant/ErrorCases/CreatePrime",
-				"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'create':'ErrorObject', 'data':{'name':'ohGod','embed':{'_start':'04/04/2013 10:30'}}}",
-				true);
-
-		
-		Thread.sleep(100);
-*/		uploadFile(projectHome + "/"+ testFile);
+		String fileId = uploadFile(projectHome + "/"+ testFile);
 		Thread.sleep(3000);
-		String dFile = downloadFile("pom.xml");
+		assertNotNull(fileId);
+		String dFile = downloadFile(fileId);
 		Thread.sleep(3000);
 		assertTrue(validate(testFile, dFile));
+		
+		//Check for not existant file
+		assertTrue(checkForNoFile());
+		
+		//ListAll for SmartFileObject
+	    	AssertJSONResponse resp = clnt.post("ListAllEvent","{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'group':'SmartFileObject', 'size':1}");
+		assertTrue(resp != null);
+		List res = ((List)resp.getjson().get("responses"));
+		Map er = (Map)res.get(0);
+		List resultSet = (List)er.get("resultSet");
+		assertTrue(resultSet.size() == 1);
+		
+		//Check for imcomplete Upload
+		
 		
 		System.out.println("All test passed ");
 
 		utils.stopServer();
 	}
 
-    private void uploadFile(String file) {
+    private String uploadFile(String file) {
 		
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost("http://localhost:9020"
@@ -183,7 +163,9 @@ public class TestUploadEvent {
 
 		String response = null;
 		try {
+		    System.out.println("Sending file upload");
 			response = httpclient.execute(httppost, responseHandler);
+			
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -192,11 +174,12 @@ public class TestUploadEvent {
 			e.printStackTrace();
 		}
 		httpclient.getConnectionManager().shutdown();
+		return getFileNameFromResponse(response);
 	}
 
     private String downloadFile(String file) throws Exception{
 		HttpClient httpclient = new DefaultHttpClient();
-		String dwnFile =   file + ".1" ;
+		String dwnFile =   file;
 		 HttpGet httpget = new HttpGet("http://localhost:9020/errortenant/ErrorCases/DownloadEvent/" + file);
 		 HttpResponse response = httpclient.execute(httpget);
 		 System.out.println(response.getStatusLine());
@@ -248,4 +231,31 @@ public class TestUploadEvent {
 		dwnFile.deleteOnExit();
 		return true;
 	}
+	
+	private String getFileNameFromResponse(String resp){
+	
+	    JSONObject json = (JSONObject) JSONSerializer.toJSON( resp );
+	    JSONArray response = (JSONArray) json.get("responses");
+	    JSONObject j = (JSONObject)response.getJSONObject(0);
+	    if( j.containsKey("uploadMap")){ 
+	        String flnm = ((JSONObject)j.get("uploadMap")).getString("Value-0");
+	        return flnm;
+	    }
+	    else{
+	        return null;
+	    }
+	}
+	
+    private boolean checkForNoFile() throws Exception{
+        HttpClient httpclient = new DefaultHttpClient();
+		HttpGet httpget = new HttpGet("http://localhost:9020/errortenant/ErrorCases/DownloadEvent/nofile.name");
+		ResponseHandler<String> responseHandler = new BasicResponseHandler();
+		String response = httpclient.execute(httpget,responseHandler);
+		
+        if(response.contains("Cannot find object of type: SmartFileObject"))
+            return true;
+        else
+            return false;
+    }
+    
 }

@@ -41,7 +41,9 @@
 
 package org.anon.smart.smcore.inbuilt.events;
 
+import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 
 public class EnableFlow implements java.io.Serializable
 {
@@ -52,6 +54,22 @@ public class EnableFlow implements java.io.Serializable
 
     public EnableFlow()
     {
+    }
+
+    protected EnableFlow(String t, String ef, List<String> f, Map<String, String> lnks)
+    {
+        tenant = t;
+        enableFlow = ef;
+        enableFeatures = f;
+        if (lnks != null)
+        {
+            links = new ArrayList<LinkFor>();
+            for (String k : lnks.keySet())
+            {
+                LinkFor l = new LinkFor(k, lnks.get(k));
+                links.add(l);
+            }
+        }
     }
 
     public String getEnableFlow()

@@ -104,6 +104,17 @@ public class FlowEventListener implements DataListener, MessageSource
                 //TODO: log error
                 e1.printStackTrace();
             }
+            finally
+            {
+                try
+                {
+                    doneMessage(); //so we can continue
+                }
+                catch (Exception e2)
+                {
+                    e2.printStackTrace();
+                }
+            }
         }
     }
 

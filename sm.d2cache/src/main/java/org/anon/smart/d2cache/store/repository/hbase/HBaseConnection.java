@@ -61,6 +61,7 @@ import org.anon.smart.d2cache.CacheableObject;
 import org.anon.smart.d2cache.store.StoreConfig;
 import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.smart.d2cache.store.StoreConnection;
+import org.anon.smart.d2cache.ListParams;
 
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -172,7 +173,7 @@ public class HBaseConnection implements StoreConnection, Constants {
 			String tablename = getTableName(group);
 			// assumption is that the key passed here is the primary key
 			// retrieval by any other means is not supported currently>
-			Map<String, byte[]> obj = _crud.oneRecord(tablename, key.toString());
+			Map<String, byte[]> obj = _crud.oneRecord(tablename, key);
 			// this will have to be changed correctly. TODO: this has to be
 			// corrected
 
@@ -190,7 +191,7 @@ public class HBaseConnection implements StoreConnection, Constants {
 					ret = find(group, relatedObj.getRelatedKey());
 				}
 
-				//System.out.println("------>Created the Object:" + ret);
+				System.out.println("------>Created the Object:" + ret);
 				// Init transient here
 				ServiceLocator.assertion().assertTrue(
 						(ret instanceof CacheableObject),
@@ -230,52 +231,6 @@ public class HBaseConnection implements StoreConnection, Constants {
 		return null;
 	}
 
-	@Override
-	public Iterator<Object> listAll(String group, int size) throws CtxException {
-	    List<Object> resultSet = new ArrayList<Object>();
-        
-	    try {
-	        String tablename = getTableName(group);
-	        // assumption is that the key passed here is the primary key
-	        // retrieval by any other means is not supported currently>
-	        Scan s = new Scan();
-	        //add filters to s
-	        //s.setFilter(new FirstKeyOnlyFilter());
-	        //s.setFilter(new KeyOnlyFilter());
-	        String keyTypeCol = group+PART_SEPARATOR+SMART_KEY_NAME+FIELDTYPE;
-
-	        //Fetch all key name fieldtype along with rowKeys
-	        //TODO will not return if columnVal is null(for relatedObjects)
-	        s.addColumn(Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes(keyTypeCol));
-
-	        ResultScanner rs = _crud.listAll(tablename, size, s);
-	        Class keyFieldType = null;
-	        for (Result result = rs.next(); result != null; result = rs.next())
-	        {
-	            byte[] keyType = result.getValue(Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes(keyTypeCol));
-	            if(keyType != null)
-	            {
-	                keyFieldType =  Class.forName(new String(keyType));
-	            }
-	            else
-	            {
-	                keyFieldType = String.class;
-	            }
-	            Object keyObj = type().convertToPrimitive(keyFieldType, result.getRow());
-	            resultSet.add(keyObj);
-	        }
-	        return resultSet.iterator();
-			
-
-		} catch (Exception e) {
-			except().rt(
-					e,
-					new CtxException.Context("HBaseConnection.find",
-							"Exception"));
-		}
-		return null;
-	}
-
     @Override
     public boolean exists(String group, Object key) 
         throws CtxException
@@ -283,4 +238,66 @@ public class HBaseConnection implements StoreConnection, Constants {
         String tablename = getTableName(group);
         return _crud.exists(tablename, key.toString());
     }
+
+    @Override
+    public Iterator<Object> getListings(String group, String sortBy,
+            int listingsPerPage, int pageNum)
+        throws CtxException
+    {
+        try {
+            String tablename = getTableName(group);
+            Iterator<Object>  keyIter = _crud.slidingWindowForKeys(tablename, group, sortBy, listingsPerPage, pageNum);
+            return keyIter;
+            
+
+        } catch (Exception e) {
+            except().rt(
+                    e,
+                    new CtxException.Context("HBaseConnection.find",
+                            "Exception"));
+        }
+        return null;
+
+    }
+
+    @Override
+    public Iterator<Object> list(ListParams parms)
+        throws CtxException
+    {
+        List<Object> resultSet = new ArrayList<Object>();
+        try
+        {
+	        String tablename = getTableName(parms.getGroup());
+            System.out.println("Reading from : " + tablename);
+	        Scan s = new Scan();
+            KeyColumn key = KeyFactory.getKeyColumn(parms);
+            key.addToScan(s);
+            if ((parms.getStartTime() > 0) && (parms.getEndTime() > 0))
+                s.setTimeRange(parms.getStartTime(), parms.getEndTime());
+            else if (parms.getStartTime() > 0)
+                s.setTimeStamp(parms.getStartTime());
+
+            if (parms.getStartKey() != null)
+                s.setStartRow(BytesConverter.convertBytes(parms.getStartKey()));
+
+            if (parms.getEndKey() != null)
+                s.setStopRow(BytesConverter.convertBytes(parms.getEndKey()));
+
+	        ResultScanner rs = _crud.listAll(tablename, parms.getSize(), s);
+	        if(rs == null)
+	            return resultSet.iterator();
+	        for (Result result = rs.next(); result != null; result = rs.next())
+	        {
+                Object keyObj = key.read(result);
+	            resultSet.add(keyObj);
+	        }
+	        return resultSet.iterator();
+        }
+        catch (Exception e)
+        {
+			except().rt( e, new CtxException.Context("HBaseConnection.list", "Exception"));
+        }
+        return null;
+    }
+
 }

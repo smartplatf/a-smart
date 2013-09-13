@@ -64,6 +64,13 @@ public class UnAuthenticatedGuard extends BaseSGuard implements Constants
         _allowedEvents = value().listAsString(annot.parm());
     }
 
+    public UnAuthenticatedGuard(String type, String parms, Class cls)
+        throws CtxException
+    {
+        super(type, parms, cls);
+        _allowedEvents = value().listAsString(parms);
+    }
+
     UnAuthenticatedGuard()
     {
         super();
@@ -85,7 +92,7 @@ public class UnAuthenticatedGuard extends BaseSGuard implements Constants
             evt = (String)threads().contextLocal(CURRENT_EVENT);
         }
 
-        System.out.println("Got event as: " + evt + ":");
+        System.out.println("Got event as: " + evt + ":" + ctx + ":" );
 
         for (int i = 0; (evt != null) && (evt.length() > 0) && (i < _allowedEvents.length); i++)
         {
@@ -101,7 +108,10 @@ public class UnAuthenticatedGuard extends BaseSGuard implements Constants
         throws CtxException
     {
         SGuardParms parm = (SGuardParms)vars;
-        return new UnAuthenticatedGuard(parm.getAnnotate(), parm.getKlass());
+        if (parm.getAnnotate() != null)
+            return new UnAuthenticatedGuard(parm.getAnnotate(), parm.getKlass());
+        else
+            return new UnAuthenticatedGuard(parm.getType(), parm.getParms(), parm.getKlass());
     }
 }
 

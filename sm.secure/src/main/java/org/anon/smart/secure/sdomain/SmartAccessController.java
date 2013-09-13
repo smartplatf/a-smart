@@ -77,6 +77,7 @@ public class SmartAccessController
         {
             RequestPermission perm = new RequestPermission(access, accessed, parms);
             ProtectionDomain domain = accessed.getClass().getProtectionDomain();
+            System.out.println("Got domain as: " + domain);
             if (domain != null)
                 return domain.implies(perm);
             else

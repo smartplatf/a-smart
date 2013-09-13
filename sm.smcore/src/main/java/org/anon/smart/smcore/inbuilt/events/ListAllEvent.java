@@ -42,11 +42,43 @@
 package org.anon.smart.smcore.inbuilt.events;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
+import org.anon.utilities.exception.CtxException;
+
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 public class ListAllEvent implements Serializable {
 	private String group;
 	private int size = 20;
+    private int config = 0;
+    private String startTime;
+    private String endTime;
 	
 	public String getGroup() { return group; }
 	public int getSize() { return size; }
+    public boolean isConfig() { return (config == 1); }
+
+    private long convertTime(String time)
+        throws CtxException
+    {
+        if ((time == null) || (time.length() <= 0))
+            return -1;
+
+        Date dt = convert().stringToDate(time, null); //default format is MM/d/yyyy HH:mm
+        return dt.getTime();
+    }
+
+    public long getStartTime()
+        throws CtxException
+    {
+        return convertTime(startTime);
+    }
+
+    public long getEndTime()
+        throws CtxException
+    {
+        return convertTime(endTime);
+    }
 }

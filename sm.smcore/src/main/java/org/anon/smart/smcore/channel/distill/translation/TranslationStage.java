@@ -44,10 +44,12 @@ package org.anon.smart.smcore.channel.distill.translation;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collection;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import org.anon.smart.base.dspace.DSpaceObject;
 import org.anon.smart.base.flow.CrossLinkFlowDeployment;
@@ -65,6 +67,7 @@ import org.anon.smart.smcore.channel.server.EventPData;
 import org.anon.smart.smcore.channel.distill.alteration.AlteredData;
 import org.anon.smart.smcore.channel.internal.MessagePData;
 import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.data.CrossLinkSmartPrimeData;
 import org.anon.smart.smcore.data.SmartPrimeData;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
@@ -138,9 +141,11 @@ public class TranslationStage implements Distillation
         for (AlteredData.FlowEvent evt : evts)
         {
             Object resp = evt.event();
+            System.out.println("Converting: " + resp.getClass() + ":" + _type);
             convert().writeObject(resp, ostr, _type);
         }
         byte[] bytes = ostr.toByteArray();
+        System.out.println("Sending across: " + new String(bytes));
         try
         {
             ostr.close();
@@ -176,6 +181,42 @@ public class TranslationStage implements Distillation
     {
         return (prev.current() instanceof MapData);
     }
+
+    //For now have to do this. But this definitely has to change.
+    //The object travesal was introduced just to avoid these kind of bugs
+    //but looks like it is very difficult to get anyone to follow stds around here
+    //Vinay did a big mistake of not using the object 
+    //traversal, so for now putting in a quick fix. RS
+    private void addSuperFields(Object event, Class cls, Map addTo)
+        throws CtxException
+    {
+        try
+        {
+            Field[] flds = cls.getDeclaredFields();
+            for(Field f : flds)
+            {
+                f.setAccessible(true);
+                int mod = f.getModifiers();
+                if (Modifier.isTransient(mod) || Modifier.isStatic(mod))
+                    continue;
+                Object fldVal = f.get(event);
+                Class fType = f.getType();
+                if (fldVal != null)
+                    fType = fldVal.getClass();
+                if((fldVal != null) && (!(f.getName().startsWith("___smart"))))
+                {
+                    addToMap(f.getName(), fType, fldVal, addTo);
+                }
+            }
+
+            if (cls.getSuperclass() != null)
+                addSuperFields(event, cls.getSuperclass(), addTo);
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("Exception", e.getMessage()));
+        }
+    }
     
     private Map<String, Object> objectToMapForInternalMessage(Object event) 
     	throws CtxException
@@ -189,46 +230,62 @@ public class TranslationStage implements Distillation
         assertion().assertTrue(fds.size() > 0, "Cannot find deployment for: " + nm);
         CrossLinkFlowDeployment fd = fds.get(0);
 		
-		
 		String  flow = fd.deployedName(); 
+        System.out.println("Getting deployment for flow: " + flow);
 		for(Field f : flds)
 		{
 			f.setAccessible(true);
-			Class fType = f.getType();
-			Class dCls = null;
-			if(AnnotationUtils.className(fType) != null)
-				dCls = dshell.dataClass(flow, AnnotationUtils.className(fType));
+            int mod = f.getModifiers();
+            if (Modifier.isTransient(mod) || Modifier.isStatic(mod))
+                continue;
 			Object fldVal = reflect().getAnyFieldValue(event.getClass(), event, f.getName());
+			Class fType = f.getType();
+            if (fldVal != null)
+                fType = fldVal.getClass();
+			Class dCls = null;
+            String clsName = AnnotationUtils.crossClassName(fType);
+			if(clsName != null)
+				dCls = dshell.dataClass(flow, clsName);
 			
 			if(dCls != null) // FLD IS DATA CLASS
 			{
 				assertion().assertNotNull(fldVal, "Data field "+ f.getName() +" is NULL in internal event");
 				
-				String clsName = AnnotationUtils.className(fType);
-				assertion().assertTrue((fldVal instanceof DSpaceObject), "Fld value is not DSpaceObject"); 
+				//assertion().assertTrue((fldVal instanceof DSpaceObject), "Fld value is not DSpaceObject"); 
 				Map dataObj = new HashMap();
-				DSpaceObject dspaceObj = (DSpaceObject)fldVal;
+				CrossLinkSmartPrimeData dspaceObj = new CrossLinkSmartPrimeData(fldVal);
 	    		dataObj.put("___smart_action___", "lookup");
 	    		dataObj.put("___smart_value___", dspaceObj.smart___keys().get(1)); //TODO passing User key instead of smart_id
 	    		map.put(clsName, dataObj);
 			}
 			else if((fldVal != null) && (!(f.getName().startsWith("___smart"))))
 			{
-				if(type().checkPrimitive(fType))
-				{
-					map.put(f.getName(), fldVal);
-				}
-				else
-				{
-					map.put(f.getName(), convert().objectToMap(fldVal));
-				}
+                addToMap(f.getName(), fType, fldVal, map);
 			}
-				
-			
 		}
+
+        if (event.getClass().getSuperclass() != null)
+            addSuperFields(event, event.getClass().getSuperclass(), map);
 		
 		System.out.println("Converted for INTERNAL MESSAGE:"+map);
 		return map;
 	}
+
+    private void addToMap(String name, Class fType, Object fldVal, Map map)
+        throws CtxException
+    {
+        if(type().checkPrimitive(fType))
+        {
+            map.put(name, fldVal);
+        }
+        else if (fldVal instanceof Collection)
+        {
+            map.put(name, convert().listObjectsToMap((Collection)fldVal));
+        }
+        else
+        {
+            map.put(name, convert().objectToMap(fldVal));
+        }
+    }
 }
 

@@ -1,3 +1,8 @@
 name:       SearchEvent
 type:       Event
 flow:       AllFlows
+security:
+    - name:     authaccess
+      type:     unauthenticated
+      access:   execute
+      parm:     CreatePrime

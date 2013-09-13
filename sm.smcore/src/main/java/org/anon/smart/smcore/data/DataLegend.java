@@ -64,6 +64,7 @@ public class DataLegend implements java.io.Serializable
     public UUID id() { return _id; }
     public String group() { return _group; }
     public String ownedBy() { return _ownedBy; }
+    public void setOwnedBy(String owner) { _ownedBy = owner; }
     public String lastModifiedBy() { return _lastModifiedBy; }
 
     public void stampData()
@@ -71,5 +72,7 @@ public class DataLegend implements java.io.Serializable
         _lastModifiedOn = System.nanoTime();
         //TODO: pickup from thread for user
     }
+
+    public void setGroup(String grp) { _group = grp; }
 }
 

@@ -43,6 +43,6 @@ package org.anon.smart.secure.access;
 
 public enum Access
 {
-    none, defaccess, read, write, execute;
+    none, defaccess, read, write, create, execute;
 }
 

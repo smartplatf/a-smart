@@ -56,6 +56,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
@@ -90,10 +91,21 @@ public class HBaseCRUD implements Constants
             for (int i = 0; i < cf.length; i++) 
                 desc.addFamily(new HColumnDescriptor(cf[i]));
             _admin.createTable(desc);
+            createRowIDTableFor(tableName);
             System.out.println("Table Created:"+tableName);
         }
         
     }
+    private void createRowIDTableFor(String tableName) 
+        throws IOException
+    {
+        HTableDescriptor  desc = new HTableDescriptor(tableName+ROWID_SUFFIX);
+        HColumnDescriptor hc = new HColumnDescriptor(SYNTHETIC_COL_FAMILY);
+        desc.addFamily(hc);
+        _admin.createTable(desc);
+        
+    }
+
     void deleteTable(String tableName)
     	throws Exception
     {
@@ -106,31 +118,39 @@ public class HBaseCRUD implements Constants
     	
     }
 
-	Map<String, byte[]> oneRecord(String tableName, String rowKey) 
-        throws IOException
+	Map<String, byte[]> oneRecord(String tableName, Object rowKey) 
+        throws CtxException
     {
         //possibly we can do this using filter also?? need to check out
         //TODO: can filter by any key value
-		HTable table  = null;
-		Map<String, byte[]> ret = new HashMap<String, byte[]>();
-		try
-		{
-			if(tableExists(tableName))
-				table = new HTable(_config, tableName);
-			else
-				return ret;
-		}
-		catch(Exception ex)
-		{
-			return ret;
-		}
-        Get get = new Get(rowKey.getBytes());
-        Result rs = table.get(get);
-        
-        for(KeyValue kv : rs.raw())
+        HTable table  = null;
+        Map<String, byte[]> ret = new HashMap<String, byte[]>();
+        try
         {
-       	    //System.out.println(new String(kv.getQualifier())+"--->"+new String(kv.getValue()));
-            ret.put(new String(kv.getQualifier()), kv.getValue());
+            if(tableExists(tableName))
+                table = new HTable(_config, tableName);
+            else
+                return ret;
+        }
+        catch(Exception ex)
+        {
+            return ret;
+        }
+
+        try
+        {
+            Get get = new Get(BytesConverter.convertBytes(rowKey));
+            Result rs = table.get(get);
+            
+            for(KeyValue kv : rs.raw())
+            {
+                //System.out.println(new String(kv.getQualifier())+"--->"+new String(kv.getValue()));
+                ret.put(new String(kv.getQualifier()), kv.getValue());
+            }
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("Exception", e.getMessage()));
         }
 
         return ret;
@@ -162,21 +182,38 @@ public class HBaseCRUD implements Constants
 	        
 	}
 
-	ResultScanner listAll(String tableName, int size, Scan s)
-		throws IOException 
+	ResultScanner listAll(String tableName, long size, Scan s)
+		throws CtxException 
 	{
-		HTable table = new HTable(_config, tableName);
+	    try
+	    {
+            System.out.println("Searching in table: " + tableName);
+	        HTable table = new HTable(_config, tableName);
+            /*if (size > 0)
+                s.setMaxResultSize((long)size);*/
         
-        ResultScanner rs = table.getScanner(s);
-        return rs;
+	        ResultScanner rs = table.getScanner(s);
+	        return rs;
+	    }
+	    catch(TableNotFoundException ex)
+	    {
+	        //except().te(this, "Exception in Listing for group: Table Does NOT Exist:"+tableName);
+	        return null;
+	    }
+	    catch(Exception ex)
+	    {
+	        except().te(this, "Exception in Listing from table:"+tableName);
+	    }
+	    
+	    return null;
 	}
-	Put newRecord(String rowKey, String family, String qualifier, Object value)
+	Put newRecord(Object rowKey, String family, String qualifier, Object value)
         throws Exception
     {
         //mostly for lists we want to add .1, .2 etc in the qualifier
         //and for maps add .key and .value at the end
         //Maybe we can have same put object with multiple adds. Check. TODO
-	    Put put = new Put(Bytes.toBytes(rowKey));
+	    Put put = new Put(BytesConverter.convertBytes(rowKey));
         put.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(convert().objectToString(value)));
         
         return put;
@@ -193,8 +230,68 @@ public class HBaseCRUD implements Constants
     void putRecords(String tableName, List<Put> puts)
         throws Exception
     {
-    	HTable table = new HTable(_config, tableName);
+        HTable table = new HTable(_config, tableName);
         table.put(puts);
+        
+        /* adding ROWIDs */
+        insertRowIDs(tableName, puts);
+    }
+
+    /**
+     * insert rowIDs in a separate table for all those records created in data table
+     * and update the rowCount at the end
+     * @param tableName
+     * @param puts
+     * @throws Exception
+     */
+    private void insertRowIDs(String tableName, List<Put> puts)
+        throws Exception
+    {
+        String rowIDTable = tableName+ROWID_SUFFIX;
+        //TODO Delet this if ... rowID table will not be present for those tables created before this patch  
+        if(!tableExists(rowIDTable))
+            return;
+        HTable table = new HTable(_config, rowIDTable);
+        /* get rowCount */
+        Get g = new Get(Bytes.toBytes("Count"));
+        long val = 0;
+        Result r = table.get(g);
+        
+        if(r != null)
+        {
+            KeyValue kv  = r.getColumnLatest(Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes("value"));
+            if(kv != null)
+                val = Bytes.toLong(kv.getValue());
+        }
+        List<Put> rowIDPuts = new ArrayList<Put>(puts.size());
+        for(Put put : puts)
+        {
+            //If this record is for related object(for user keys) skip the rowID
+            if(isRelatedPut(put))
+                continue;
+            val++;
+            Put p = new Put(Bytes.toBytes(val));
+            p.add(Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes(ACTUAL_KEY),put.getRow());
+            rowIDPuts.add(p);
+            
+        }
+        table.put(rowIDPuts);
+        
+        /* now update rowCount */
+        table.incrementColumnValue(Bytes.toBytes("Count"), Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes("value"), rowIDPuts.size());
+        
+    }
+    private boolean isRelatedPut(Put put)
+    {
+        List<KeyValue> kvList = put.get(Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes(SMART_CLASS_NAME));
+        if((kvList != null) && (kvList.size() > 0))
+        {
+            KeyValue kv = kvList.get(0);
+            String clsName = new String(kv.getValue());
+            return clsName.equals(RelatedObject.class.getName());
+        }
+        
+        return false;
     }
 
     public boolean tableExists(String tableName) throws CtxException
@@ -203,16 +300,66 @@ public class HBaseCRUD implements Constants
 		try {
 			if(_admin.tableExists(tableName))
 					return true;
-		} catch (IOException e) {
+		                                                                } catch (IOException e) {
 			except().rt(e, "IOException while checking existance of table:"+tableName, null);
 		}
     	
 		return false;
-    	
-    	
-    	
-    	
     }
+
+    public Iterator slidingWindowForKeys(String tableName, String group, String sortBy,
+        int listingsPerPage, int pageNum)
+        throws CtxException
+    {
+        try
+        {
+            HTable table = new HTable(_config, tableName);
+            Slider slider = SliderManager.instance().getSlider(table, group, sortBy);
+            byte[] sr = getStartRow(tableName, listingsPerPage, pageNum);
+            Iterator keyIter = slider.getKeys(listingsPerPage, pageNum, sr);
+            return keyIter;
+        }
+        catch(TableNotFoundException ex)
+        {
+            //except().te(this, "Exception in Listing for group: Table Does NOT Exist:"+tableName);
+            return null;
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+            except().te(this, "Exception in Listing from table:"+tableName);
+        }
+        
+        return null;
+    }
+
+    private byte[] getStartRow(String tableName, int listingsPerPage,
+            int pageNum)
+        throws Exception
+    {
+        /*try
+        {
+        long index = (listingsPerPage * (pageNum-1))  + 1;
+        Get g = new Get(Bytes.toBytes(index));
+        HTable table = new HTable(_config, tableName+ROWID_SUFFIX);
+        Result r = table.get(g);
+        if(r != null)
+        {
+            KeyValue kv = r.getColumnLatest(Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes("actualKey"));
+            if(kv != null)
+            {
+                return kv.getValue();
+            }
+        }
+        }
+        catch(Exception ex)
+        {
+            return null;
+        }*/
+        return null;
+    }
+
+   
 
 }
 

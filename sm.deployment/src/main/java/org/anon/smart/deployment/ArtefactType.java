@@ -97,6 +97,8 @@ public class ArtefactType
     {
         try
         {
+            assertion().assertNotNull(cls, "Cannot find artefacttype for null cls ");
+            assertion().assertNotNull(_recognizer, "Cannot find artefacttype for null recognizer " + cls);
             Class<? extends Annotation> recog = (Class<? extends Annotation>)cls.getClassLoader().loadClass(_recognizer.getName());
             Annotation annot = cls.getAnnotation(recog);
             assertion().assertNotNull(annot, "The class does not have the recognizer annotation");

@@ -50,6 +50,8 @@ import java.lang.reflect.Method;
 
 import org.anon.smart.deployment.ArtefactType;
 import org.anon.smart.smcore.annot.MethodAnnotate;
+import org.anon.smart.smcore.annot.ServiceAnnotate;
+import org.anon.smart.smcore.annot.ServicesAnnotate;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
 
@@ -91,6 +93,7 @@ public class GraphCreator
                 Class cls = transitions.get(i);
                 Method[] methods = cls.getDeclaredMethods();
                 addMethods(key, keyextra, cls, methods, ret);
+                addServices(key, keyextra, cls, ret, shell);
             }
 
             //now add dependencies
@@ -138,12 +141,39 @@ public class GraphCreator
         {
             List<String> children = pmap.get(parent);
             GraphNode pnode = nmap.get(parent);
+            assertion().assertNotNull(pnode, "An error in transition soa file. Please ensure " + parent + " is present. ");
             for (String child : children)
             {
                 GraphNode relateto = nmap.get(child);
-                graph.addDependency(pnode, relateto);
+                if ((relateto != null) && (pnode != null))
+                    graph.addDependency(pnode, relateto);
             }
         }
+    }
+
+    private GraphNode createNode(String key, String keyextra, Class cls, Method mthd, ServiceAnnotate annot)
+        throws CtxException
+    {
+        if (annot != null)
+        {
+            String foreach = annot.foreach();
+            String[] per = value().listAsString(foreach);
+            boolean isfor = false;
+            for (int i = 0; (!isfor) && (i < per.length); i++)
+            {
+            	if (key.equals(per[i]) || ((keyextra != null) && (keyextra.equals(per[i]))) || 
+            			((per[i].startsWith(ANY)) && (per[i].endsWith(key.substring(key.indexOf('|')+1, key.length())))))
+                    isfor = true;
+            }
+
+            if (isfor)
+            {
+                TransitionNodeDetails det = new TransitionNodeDetails(cls, mthd, annot);
+                return new GraphNode(det.name(), cls, mthd, det);
+            }
+        }
+
+        return null;
     }
 
     private GraphNode createNode(String key, String keyextra, Class cls, Method mthd)
@@ -172,6 +202,27 @@ public class GraphCreator
         return null;
     }
 
+    private void addServices(String key, String keyextra, Class cls, Map<String, Graph> into, CrossLinkDeploymentShell shell)
+        throws CtxException
+    {
+        ServicesAnnotate sannot = (ServicesAnnotate)reflect().getAnyAnnotation(cls, ServicesAnnotate.class.getName());
+        if (sannot == null)
+            return;
+
+        ServiceAnnotate[] sannots = sannot.callservices();
+        for (int i = 0; i < sannots.length; i++)
+        {
+            Object[] det = shell.getServiceFor(sannots[i].service());
+            assertion().assertNotNull(det, "Cannot find service for: " + sannots[i].service());
+            Class svccls = (Class)det[0];
+            Method mthd = (Method)det[1];
+            GraphNode nde = createNode(key, keyextra, svccls, mthd, sannots[i]);
+            if (nde == null)
+                continue;
+            addNode(nde, into);
+        }
+    }
+
     private void addMethods(String key, String keyextra, Class cls, Method[] methods, Map<String, Graph> into)
         throws CtxException
     {
@@ -180,7 +231,8 @@ public class GraphCreator
             GraphNode nde = createNode(key, keyextra, cls, methods[i]);
             if (nde == null)
                 continue;
-            TransitionNodeDetails det = (TransitionNodeDetails)nde.details();
+            addNode(nde, into);
+            /*TransitionNodeDetails det = (TransitionNodeDetails)nde.details();
             String from = det.from();
             String[] farray = value().listAsString(from);
             for (int f = 0; f < farray.length; f++)
@@ -191,7 +243,24 @@ public class GraphCreator
 
                 graph.addGraphNode(nde);
                 into.put(farray[f], graph);
-            }
+            }*/
+        }
+    }
+
+    private void addNode(GraphNode nde, Map<String, Graph> into)
+        throws CtxException
+    {
+        TransitionNodeDetails det = (TransitionNodeDetails)nde.details();
+        String from = det.from();
+        String[] farray = value().listAsString(from);
+        for (int f = 0; f < farray.length; f++)
+        {
+            Graph graph = into.get(farray[f]);
+            if (graph == null)
+                graph = new Graph();
+
+            graph.addGraphNode(nde);
+            into.put(farray[f], graph);
         }
     }
 }

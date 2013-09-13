@@ -42,6 +42,8 @@
 package org.anon.smart.secure.inbuilt.data;
 
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.anon.smart.secure.access.Access;
@@ -50,8 +52,23 @@ import org.anon.utilities.exception.CtxException;
 
 public class SmartRole implements java.io.Serializable
 {
+    private class PermittedAccess implements java.io.Serializable
+    {
+        String permitted;
+        String access;
+
+        PermittedAccess(String p, Access a)
+        {
+            permitted = p;
+            access = a.name();
+        }
+
+        public String toString() { return permitted + ":" + access; }
+    }
+
     private String _roleName;
-    private Map<String, Access> _permitted;
+    private transient Map<String, Access> _permitted;
+    private List<PermittedAccess> _accesspermitted;
     private boolean _allowAll;
     private Access _accessForAll;
     private boolean _smartAdmin;
@@ -60,6 +77,7 @@ public class SmartRole implements java.io.Serializable
     {
         _roleName = name;
         _permitted = new ConcurrentHashMap<String, Access>();
+        _accesspermitted = new ArrayList<PermittedAccess>();
         _allowAll = false;
         _smartAdmin = false;
     }
@@ -72,6 +90,7 @@ public class SmartRole implements java.io.Serializable
 
     public void allowAccess(String deployedURI, Access access)
     {
+        _accesspermitted.add(new PermittedAccess(deployedURI, access));
         _permitted.put(deployedURI, access);
     }
 
@@ -81,9 +100,23 @@ public class SmartRole implements java.io.Serializable
         _accessForAll = access;
     }
 
+    private void initializePermitted()
+    {
+        System.out.println("Permitted is: " + _accesspermitted + ":" + _allowAll + ":" + _accessForAll);
+        if (_permitted == null)
+            _permitted = new ConcurrentHashMap<String, Access>();
+        for (int i = 0; (_accesspermitted != null) && (i < _accesspermitted.size()); i++)
+        {
+            PermittedAccess a = _accesspermitted.get(i);
+            if (!_permitted.containsKey(a.permitted))
+                _permitted.put(a.permitted, Access.valueOf(a.access));
+        }
+    }
+
     public Access allowedAccess(String uri)
         throws CtxException
     {
+        initializePermitted();
         Access ret = _permitted.get(uri);
         if ((ret == null) && (_allowAll))
             ret = _accessForAll;
@@ -95,5 +128,10 @@ public class SmartRole implements java.io.Serializable
     public boolean allAllowed() { return _allowAll; }
     public Access defaultAccess() { return _accessForAll; }
     public boolean isSmartAdmin() { return _smartAdmin; }
+
+    public String toString()
+    {
+        return _roleName + ":" + _accesspermitted + ":" + _allowAll + ":" + _accessForAll;
+    }
 }
 

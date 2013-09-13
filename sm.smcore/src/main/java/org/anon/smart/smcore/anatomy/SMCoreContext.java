@@ -123,5 +123,10 @@ public class SMCoreContext implements SmartModuleContext
     {
         return (SMCoreContext)anatomy().context(SMCoreContext.class);
     }
+
+    public String[] getEnableFlows()
+    {
+        return new String[] { "AdminSmartFlow", "AllFlows" };
+    }
 }
 

@@ -1,0 +1,12 @@
+name:       TransitionServices
+type:       Transition
+flow:       AllFlows
+foreach:    FlowAdmin|Any
+services:
+    - name:     changeState
+      method:   changeState
+    - name:     sendEmailService
+      method:   sendEmailService
+    - name:     sendWithAttachment
+      method:   sendWithAttachment
+

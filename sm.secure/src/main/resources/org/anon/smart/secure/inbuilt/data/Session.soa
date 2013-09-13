@@ -1,6 +1,7 @@
 name:   Session
 type:   PrimeData
 flow:   Security
+store:  memory
 attributes:
     - attribute:    _sessionId
       type:         key

@@ -44,6 +44,7 @@ package org.anon.smart.kernel;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 import org.anon.smart.kernel.config.SmartConfig;
+import org.anon.smart.deployment.MacroDeployer;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -52,20 +53,25 @@ public class SmartStarter implements Runnable
     private SmartConfig _config;
     private boolean _master;
     private SmartModuleConfig _moduleConfig;
+    private String[] _startOrder;
 
-    public SmartStarter(SmartConfig cfg, boolean master)
+    public SmartStarter(SmartConfig cfg, boolean master, String[] start)
         throws CtxException
     {
         _config = cfg;
         _master = master;
         _moduleConfig = new SmartModuleConfig(cfg, master);
+        _startOrder = start;
     }
 
     public void run()
     {
         try
         {
-            anatomy().startup(_moduleConfig);
+            anatomy().startup(_moduleConfig, _startOrder);
+            //trying this, why is the other one having problems..? no idea??
+            MacroDeployer.setConfigDir(_moduleConfig.configDir());
+            MacroDeployer.deployPersistedJars();
         }
         catch (Exception e)
         {

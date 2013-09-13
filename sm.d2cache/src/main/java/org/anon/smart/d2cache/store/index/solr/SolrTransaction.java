@@ -117,5 +117,10 @@ public class SolrTransaction extends AbstractStoreTransaction
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    public boolean shouldStore(String storeIn)
+    {
+        return ((storeIn == null) || (storeIn.length() <= 0) || (storeIn.indexOf("index") >= 0));
+    }
 }
 

@@ -45,15 +45,19 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.anon.smart.base.tenant.shell.RuntimeShell;
+import org.anon.smart.secure.inbuilt.data.Session;
 import org.anon.smart.secure.inbuilt.data.SmartUser;
 import org.anon.smart.secure.inbuilt.data.SmartRole;
 import org.anon.smart.secure.inbuilt.events.CreateUser;
 import org.anon.smart.secure.inbuilt.events.AddIdentity;
 import org.anon.smart.secure.inbuilt.events.AddRolesToUser;
+import org.anon.smart.secure.inbuilt.events.ChangePassword;
 import org.anon.smart.secure.inbuilt.data.iden.Identity;
 import org.anon.smart.secure.inbuilt.data.iden.SCredential;
 import org.anon.smart.secure.inbuilt.data.iden.IdentityType;
 import org.anon.smart.secure.inbuilt.responses.SecurityResponse;
+import org.anon.smart.secure.inbuilt.data.iden.Password;
+import org.anon.smart.secure.sdomain.SmartSecureData;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -72,6 +76,37 @@ public class ManageUsers
     {
     }
 
+    public void changePassword(SmartUser user, ChangePassword pwd)
+        throws CtxException
+    {
+        Object obj = pwd;
+        SmartSecureData data = (SmartSecureData)obj;
+        Session sess = data.smart___session();
+        assertion().assertNotNull(sess, "Cannot change password without logging into the user first.");
+        String usr = sess.getUserId();
+        assertion().assertTrue((usr.equals(user.getID())), "Cannot change password for a different user. " + sess.getUserId() + ":" + user.getID());
+        RuntimeShell rshell = RuntimeShell.currentRuntimeShell();
+        String group = className(Identity.class);
+        String flow = flowFor(Identity.class);
+        Object iden = rshell.lookupFor(flow, group, pwd.getIdentity());
+
+        assertion().assertNotNull(iden, "Cannot find identity for which password is changed.");
+        Identity identity = (Identity)iden;
+        assertion().assertTrue((identity.getCredential() instanceof Password), "Cannot change password for identities other than the ones in SMART.");
+        Password currpwd = (Password)identity.getCredential();
+        Password confirm = new Password(pwd.getOldCredential());
+        assertion().assertTrue(currpwd.equals(confirm), "The old password provided is not correct.");
+        currpwd.change(pwd.getCredential());
+        SecurityResponse resp = new SecurityResponse("Changed the password for: " + pwd.getIdentity());
+    }
+
+    public void createUserService(String userid, String name, List<String> roles)
+        throws CtxException
+    {
+        CreateUser cuser = new CreateUser(userid, name, roles);
+        createNewUser(cuser);
+    }
+
     public void createNewUser(CreateUser user)
         throws CtxException
     {
@@ -85,6 +120,7 @@ public class ManageUsers
         RuntimeShell rshell = RuntimeShell.currentRuntimeShell();
         String group = className(SmartUser.class);
         String flow = flowFor(SmartUser.class);
+        System.out.println("Searching for: " + flow + ":" + group + ":" + user.getID());
         Object suser = rshell.lookupFor(flow, group, user.getID());
         if (suser != null)
         {
@@ -186,6 +222,18 @@ public class ManageUsers
         resp = new SecurityResponse("Added roles: " + roles + " to " + usr.getID());
     }
 
+    public void addRolesToUserService(String userid, List<String> roles)
+        throws CtxException
+    {
+        RuntimeShell rshell = RuntimeShell.currentRuntimeShell();
+        String group = className(SmartUser.class);
+        String flow = flowFor(SmartUser.class);
+        SmartUser suser = (SmartUser)rshell.lookupFor(flow, group, userid);
+        assertion().assertNotNull(suser, "Cannot find user for: " + userid);
+        AddRolesToUser add = new AddRolesToUser(roles);
+        addRolesToUser(suser, add);
+    }
+
     public Identity addIdentity(SmartUser user, AddIdentity identity)
         throws CtxException
     {
@@ -214,6 +262,22 @@ public class ManageUsers
             resp = new SecurityResponse("Could not create a credential for type: " + identity.getType());
         }
         return null;
+    }
+
+    public Identity addIdentityService(SmartUser usr, String userid, String identity, String cred, String type)
+        throws CtxException
+    {
+        SmartUser suser = usr;
+        if ((suser == null) && (userid != null))
+        {
+            RuntimeShell rshell = RuntimeShell.currentRuntimeShell();
+            String group = className(SmartUser.class);
+            String flow = flowFor(SmartUser.class);
+            suser = (SmartUser)rshell.lookupFor(flow, group, userid);
+        }
+        assertion().assertNotNull(suser, "Cannot find user for: " + userid);
+        AddIdentity ident = new AddIdentity(identity, cred, type);
+        return addIdentity(suser, ident);
     }
 }
 

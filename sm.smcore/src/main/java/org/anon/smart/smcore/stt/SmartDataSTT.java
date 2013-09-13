@@ -49,7 +49,6 @@ import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
-import org.anon.smart.base.monitor.MonitorableObject;
 import org.anon.smart.base.stt.annot.MethodExit;
 import org.anon.smart.base.dspace.DSpaceObject;
 import org.anon.smart.base.annot.KeyAnnotate;
@@ -67,11 +66,12 @@ import org.anon.utilities.exception.CtxException;
 
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
-public class SmartDataSTT implements SmartData, DSpaceObject, MonitorableObject
+public class SmartDataSTT implements SmartData, DSpaceObject
 {
     private FiniteState ___smart_currentState___;
     private DataLegend ___smart_legend___;
     private String ___smart_name___;
+    private transient boolean ___smart_isNew___;
 
     public SmartDataSTT()
     {
@@ -81,7 +81,8 @@ public class SmartDataSTT implements SmartData, DSpaceObject, MonitorableObject
     private void smartdatastt___init()
         throws CtxException
     {
-        ___smart_legend___ = new DataLegend();
+        if (___smart_legend___ == null)
+            ___smart_legend___ = new DataLegend();
         ___smart_name___ = objectName(this);
 	    startFSM();
         TransitionContext ctx = (TransitionContext)threads().threadContext();
@@ -118,6 +119,7 @@ public class SmartDataSTT implements SmartData, DSpaceObject, MonitorableObject
 
     public String smart___group()
     {
+        System.out.println("Getting group as: " + ___smart_legend___.group());
         return ___smart_legend___.group();
     }
 
@@ -199,16 +201,38 @@ public class SmartDataSTT implements SmartData, DSpaceObject, MonitorableObject
 
 	@Override
 	public void smart___initOnLoad() throws CtxException {
+        String statename = ___smart_currentState___.stateName();
 		startFSM();
+        smart___transition(statename); //set it back to the stored state
 		if(this instanceof SmartPrimeData)
 			((SmartPrimeData)this).initPrimeObject();
 		
 	}
 
-	@Override
-	public void cleanup() throws CtxException {
-		// TODO Auto-generated method stub
-		
-	}
+    public void smart___setGroup(String grp)
+    {
+        if (___smart_legend___ == null)
+            ___smart_legend___ = new DataLegend();
+        System.out.println("Setting group as: " + grp);
+        ___smart_legend___.setGroup(grp);
+    }
+
+    public void smart___setOwner(String owner)
+    {
+        if (___smart_legend___ == null)
+            ___smart_legend___ = new DataLegend();
+        System.out.println("Setting owner as: " + owner);
+        ___smart_legend___.setOwnedBy(owner);
+    }
+
+    public boolean smart___isNew()
+    {
+        return ___smart_isNew___;
+    }
+
+    public void smart___setIsNew(boolean n)
+    {
+        ___smart_isNew___ = n;
+    }
 }
 

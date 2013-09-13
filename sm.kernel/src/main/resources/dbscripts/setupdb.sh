@@ -81,6 +81,8 @@ echo "[setting up namenode...]"
 hadoop-0.20.2-cdh3u5/bin/hadoop namenode -format
 
 echo "[setting up solr...]"
-
+cd ../
+ln -s  hadoop/solr-datastore solr-datastore
+cd hadoop
 ./startupdb.sh
 

@@ -84,6 +84,9 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 	private String _name;
 	private boolean _platformOwner;
 	private List<FeatureName> _enabledFeatureList;
+    private List<String> _domain;
+    private String _clientOf;
+    private String _controlsAdmin;
 	
 
 	private transient SmartLoader _loader;
@@ -91,11 +94,13 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 	private transient CrossLinkRuntimeShell _runtimeShell;
 	private transient DeploymentShell _deploymentShell;
 	private transient TenantAdmin _admin;
+    private transient boolean _isNew = false;
 
 	public SmartTenant(String name) throws CtxException {
 		_name = name;
 		_enabledFeatureList = new ArrayList<FeatureName>();
 		initTenant();
+        _isNew = true;
 	}
 
 	private void initTenant() throws CtxException {
@@ -127,6 +132,28 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 	public void setAdmin(TenantAdmin admin) {
 		_admin = admin;
 	}
+
+    public void setDomain(String domain)
+        throws CtxException
+    {
+        String[] d = value().listAsString(domain);
+        _domain = new ArrayList<String>();
+        for (int i = 0; i < d.length; i++)
+            _domain.add(d[i]);
+    }
+
+    public String[] getDomain()
+    {
+        if (_domain != null)
+            return _domain.toArray(new String[0]);
+        else
+            return null;
+    }
+
+    public void setClientOf(String clnt)
+    {
+        _clientOf = clnt;
+    }
 
 	private void createShells() throws CtxException {
 		_data = new HashMap<String, CrossLinkDataShell>();
@@ -228,6 +255,12 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 		return TENANTGROUP;
 	}
 
+    public boolean smart___isNew()
+        throws CtxException
+    {
+        return _isNew;
+    }
+
 	@Override
 	public void smart___initOnLoad() throws CtxException {
 		System.out.println("Initializing Tenant after loading from store.."+_name+":Features::"+_enabledFeatureList);
@@ -290,6 +323,16 @@ public class SmartTenant implements RelatedObject, TenantConstants,
         }
 	    return enabledFlows;
 	}
+
+    public boolean controlsAdmin()
+    {
+        return ((_controlsAdmin != null) && (_controlsAdmin.equals("YES")));
+    }
+
+    public void setControlsAdmin(String val)
+    {
+        _controlsAdmin = val;
+    }
 	
 	private class FeatureName{
 		private String _name;

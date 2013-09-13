@@ -108,20 +108,6 @@ public class TestUpdateEvent {
             clnt.deployFromSampleJar();
             clnt.createTenant();
 
-            /*
-	        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", 
-	        		"{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, " +
-	        		"'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'RegistrationFlow.soa'}");
-	        System.out.println("Zzzzzzzz  after deploy------------------------");
-	        Thread.sleep(10000); //response shd have come within 3s
-            */
-
-	        /*postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'newtenant','enableFlow':'RegistrationFlow','enableFeatures':['all']}");
-	        System.out.println("Zzzzzzzz 10 Sec after Tenant Creation-----------------------");
-	        Thread.sleep(30000);*/
-
-	        /*AssertJSONResponse resp = clnt.post("RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'vjaasti@gmail.com', 'phone':'+919972532247', 'profile':{'name':'profileName','workRecord':'bt'}}");
-            assertTrue(resp != null);*/
 	        
             AssertJSONResponse resp = clnt.post("CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'create':'Registration', 'data':{'email':'vjaasti@gmail.com', 'phone':'+919972532247', 'tags':['user','admin'],'profile':{'name':'profileName','workRecord':'bt'}}}");
             assertTrue(resp != null);
@@ -152,7 +138,7 @@ public class TestUpdateEvent {
 	    }
 	    
 	   //@Test
-	    public void testDirtyFieldTraversal() throws CtxException
+	    public void testDirtyFieldTraversal() throws Exception
 	    {
 //	    	Registration o1 = new Registration("vinay");
 //	    	Registration o2 = new Registration("jaasti", "32247");

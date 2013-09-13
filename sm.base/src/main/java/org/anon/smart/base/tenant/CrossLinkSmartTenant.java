@@ -41,6 +41,8 @@
 
 package org.anon.smart.base.tenant;
 
+import java.util.Set;
+
 import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
 
 import org.anon.utilities.loader.RelatedUtils;
@@ -103,6 +105,19 @@ public class CrossLinkSmartTenant extends CrossLinker
     {
         Boolean b = (Boolean)linkMethod("isPlatformOwner");
         return ((b != null) && b.booleanValue());
+    }
+
+    public boolean controlsAdmin()
+        throws CtxException
+    {
+        Boolean b = (Boolean)linkMethod("controlsAdmin");
+        return ((b != null) && b.booleanValue());
+    }
+
+	public Set<String> listEnableFlows()
+	    throws CtxException
+	{
+        return (Set<String>)linkMethod("listEnableFlows");
     }
 }
 

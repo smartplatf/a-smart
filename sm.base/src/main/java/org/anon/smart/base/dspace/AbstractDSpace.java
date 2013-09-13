@@ -60,16 +60,18 @@ public abstract class AbstractDSpace implements TransactDSpace
 	private D2Cache _fileCache;
     private String _name;
     private DataFilter[] _dataFilters;
+    private String _fileType;
 
-    protected AbstractDSpace(String name)
+    protected AbstractDSpace(String name, String filetype)
         throws CtxException
     {
-        this(name, null);
+        this(name, null, filetype);
     }
 
-    protected AbstractDSpace(String name, DataFilter[] filters)
+    protected AbstractDSpace(String name, DataFilter[] filters, String filetype)
         throws CtxException
     {
+        _fileType = filetype;
         _cache = D2CacheScheme.getCache(getCacheScheme(), name, getFlags());
         _fileCache = D2CacheScheme.getCache(getFileCacheScheme(), name, getFlags());
         _dataFilters = filters;
@@ -83,6 +85,8 @@ public abstract class AbstractDSpace implements TransactDSpace
         int flags = D2CacheScheme.REPLICATION_CACHE | D2CacheScheme.LAYEREDREAD_CACHE |  D2CacheScheme.BROWSABLE_CACHE;
         if (anatomy().jvmEnv().isDistributed())
             flags = flags | D2CacheScheme.DISTRIBUTED_CACHE;
+        if ((_fileType != null) && _fileType.equals("disk"))
+            flags = flags | D2CacheScheme.DISK_FILESTORE;
         return flags;
     }
 

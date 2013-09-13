@@ -50,6 +50,12 @@ public class DeployEvent implements java.io.Serializable
     {
     }
 
+    protected DeployEvent(String j, String f)
+    {
+        deployJar = j;
+        flowsoa = f;
+    }
+
     public String getJar() { return deployJar; }
     public String getFlowSoa() { return flowsoa; }
 }

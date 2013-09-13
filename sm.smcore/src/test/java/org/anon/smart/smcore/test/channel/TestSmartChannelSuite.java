@@ -54,7 +54,8 @@ import static org.junit.Assert.*;
     TestSmartChannel.class,
     TestCRUDEvents.class,
     TestMultipleJar.class,
-    TestDefaultConfig.class
+    TestDefaultConfig.class,
+    TestServices.class
 })
 public class TestSmartChannelSuite
 {

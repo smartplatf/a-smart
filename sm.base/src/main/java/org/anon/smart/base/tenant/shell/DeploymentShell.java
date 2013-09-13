@@ -44,6 +44,7 @@ package org.anon.smart.base.tenant.shell;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -185,6 +186,34 @@ public class DeploymentShell implements SmartShell, FlowConstants
         }
 
         return cls;
+    }
+
+    public Object[] getServiceFor(String service)
+        throws CtxException
+    {
+        String[] parts = service.split("\\.");
+        assertion().assertNotNull(parts, "Cannot find service for: " + service);
+        assertion().assertTrue((parts.length == 3), "The format for service has to be in the form flow.transitioname.servicemethod");
+        String dep = parts[0]; String data = parts[1];
+        ArtefactType atype = ArtefactType.artefactTypeFor(TRANSITION);
+        String srch = atype.createKey(data, ".*", ".*");
+        List<Class> lcls = _licensed.assistant().clazzezFor(dep, srch, atype, _loader);
+        assertion().assertNotNull(lcls, "Cannot find the transition for " + service);
+        assertion().assertTrue((lcls.size() > 0), "Cannot find the transition for " + service);
+        Class cls = lcls.get(0);
+        Method[] mthd = reflect().getAnnotatedMethods(cls, "org.anon.smart.smcore.annot.MethodAnnotate");
+        System.out.println("Got class: " + cls + ":" + mthd.length);
+        for (int i = 0; i < mthd.length; i++)
+        {
+            if (mthd[i].getName().equals(parts[2]))
+            {
+                Object[] ret = new Object[] { cls, mthd[i] };
+                return ret;
+            }
+        }
+
+        assertion().assertTrue(false, "Cannot find the service: " + service);
+        return null;
     }
 
     public Class primeClass(String dep, String name)

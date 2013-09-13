@@ -50,7 +50,7 @@ import org.anon.smart.smcore.data.ConfigData;
 import org.anon.smart.smcore.data.ConfigDataED;
 import org.anon.smart.smcore.data.FileItemEd;
 import org.anon.smart.smcore.data.FileItem;
-import org.anon.smart.smcore.data.SmartFileObject;
+import org.anon.smart.smcore.inbuilt.data.SmartFileObject;
 import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.events.SmartEventResponse;
 import org.anon.smart.smcore.events.SmartERTxnObject;
@@ -92,6 +92,7 @@ public class TAtomicity extends Atomicity implements AtomicityConstants
             String toState = _context.toState();
             SmartDataED data = (SmartDataED)dataFor(SMARTDATA, _context.primeData().smart___myTruth());
             data.empirical().smart___transition(toState);
+            System.out.println("Transitioned the state to: " + toState + ":" + data.empirical().utilities___currentState());
         }
     }
 
@@ -99,14 +100,16 @@ public class TAtomicity extends Atomicity implements AtomicityConstants
         throws CtxException
     {
         if (outcome)
-	{
-	    /** Metrics **/	
-	    _context.eventSuccess();
-	    /** Metrics **/	
+        {
+            /** Metrics **/	
+            _context.eventSuccess();
+            /** Metrics **/	
             _context.transaction().commit();
-	}
+        }
         else
+        {
             _context.transaction().rollback();
+        }
     }
 
     @Override
@@ -163,7 +166,7 @@ public class TAtomicity extends Atomicity implements AtomicityConstants
     
     public void includeUpload(SmartFileObject data, FlowAdmin flw)
 			throws CtxException {
-		FileItem i = new FileItem(data._fileSrc, flw.myFlow());
+		FileItem i = new FileItem(data._fileSrc, flw.myFlow(),data._fileName);
 		FileItemEd ed = new FileItemEd(i);
 		includeEmpiricalData(ed);
 	}

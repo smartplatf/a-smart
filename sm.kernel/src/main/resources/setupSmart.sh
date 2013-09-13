@@ -49,6 +49,8 @@ fi
 
 echo "[Copying required files.]"
 cp startSmart.sh $1
+cp runsmart.sh $1
+cp smart $1
 
 echo "[Changing to directory]"
 scriptsdir=`pwd`
@@ -66,7 +68,7 @@ for i in $(cat $scriptsdir/smartDirs.txt); do
     if_error "cannot create directory $i"
 done;
 
-echo "[Retrieving dependant jars. This may take sometime plase wait.]"
+echo "[Retrieving dependant jars. This may take sometime plase wait. *******************************************]"
 wget_url http://repo1.maven.org/maven2/log4j/log4j/1.2.16/log4j-1.2.16.jar lib/log4j/log4j/1.2.16/log4j-1.2.16.jar
 wget_url http://repo1.maven.org/maven2/jcs/jcs/1.3/jcs-1.3.jar lib/jcs/jcs/1.3/jcs-1.3.jar
 wget_url http://repo1.maven.org/maven2/org/yaml/snakeyaml/1.5/snakeyaml-1.5.jar lib/org/yaml/snakeyaml/1.5/snakeyaml-1.5.jar
@@ -78,6 +80,7 @@ wget_url http://repo1.maven.org/maven2/org/ow2/asm/asm-analysis/4.1/asm-analysis
 wget_url http://repo1.maven.org/maven2/org/springframework/spring-core/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar lib/org/springframework/spring-core/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar
 wget_url http://repo1.maven.org/maven2/org/springframework/spring-asm/3.0.5.RELEASE/spring-asm-3.0.5.RELEASE.jar lib/org/springframework/spring-asm/3.0.5.RELEASE/spring-asm-3.0.5.RELEASE.jar
 wget_url http://repo1.maven.org/maven2/commons-logging/commons-logging/1.1/commons-logging-1.1.jar lib/commons-logging/commons-logging/1.1/commons-logging-1.1.jar
+wget_url http://repo1.maven.org/maven2/commons-codec/commons-codec/1.4/commons-codec-1.4.jar lib/commons-codec/commons-codec/1.4/commons-codec-1.4.jar
 wget_url http://repo1.maven.org/maven2/net/sf/json-lib/json-lib/2.4/json-lib-2.4-jdk15.jar lib/net/sf/json-lib/json-lib/2.4/json-lib-2.4.jar lib/
 wget_url http://repo1.maven.org/maven2/commons-lang/commons-lang/2.5/commons-lang-2.5.jar lib/commons-lang/commons-lang/2.5/commons-lang-2.5.jar
 wget_url http://repo1.maven.org/maven2/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar lib/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar
@@ -86,7 +89,7 @@ wget_url http://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.8.0
 wget_url http://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk16/1.46/bcprov-jdk16-1.46.jar lib/org/bouncycastle/bcprov-jdk16/1.46/bcprov-jdk16-1.46.jar
 wget_url http://repo1.maven.org/maven2/com/google/guava/guava/14.0.1/guava-14.0.1.jar lib/com/google/guava/guava/14.0.1/guava-14.0.1.jar
 wget_url http://repo1.maven.org/maven2/concurrent/concurrent/1.0/concurrent-1.0.jar lib/concurrent/concurrent/1.0/concurrent-1.0.jar
-wget_url http://repo1.maven.org/maven2/org/jboss/netty/netty/3.2.5.Final/netty-3.2.5.Final.jar lib/org/jboss/netty/netty/3.2.5.Final/netty-3.2.5.Final.jar
+wget_url http://repo1.maven.org/maven2/io/netty/netty/3.6.5.Final/netty-3.6.5.Final.jar lib/io/netty/netty/3.6.5.Final/netty-3.6.5.Final.jar
 
 #wget_url http://repo1.maven.org/maven2/org/apache/commons/commons-javaflow/1.0-SNAPSHOT/commons-javaflow-1.0-SNAPSHOT.jar lib/org/apache/commons/commons-javaflow/1.0-SNAPSHOT/commons-javaflow-1.0-SNAPSHOT.jar
 wget_url http://repo1.maven.org/maven2/org/springframework/spring-core/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar lib/org/springframework/spring-core/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar
@@ -124,31 +127,58 @@ wget_url http://repo1.maven.org/maven2/org/apache/httpcomponents/httpmime/4.1.3/
 wget_url http://repo1.maven.org/maven2/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar lib/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar
 wget_url http://repo1.maven.org/maven2/velocity/velocity/1.5/velocity-1.5.jar lib/velocity/velocity/1.5/velocity-1.5.jar
 wget_url http://repo1.maven.org/maven2/logkit/logkit/1.0.1/logkit-1.0.1.jar lib/logkit/logkit/1.0.1/logkit-1.0.1.jar
+wget_url http://repo1.maven.org/maven2/javax/mail/mail/1.4/mail-1.4.jar lib/javax/mail/mail/1.4/mail-1.4.jar
 
 
 
 
-echo "[Copying smart jars]"
-#wget_url http://192.168.1.100:8888/archiva/repository/releases/org/anon/utilities/utilities/1.0-SNAPSHOT/utilities-1.0-20130403.053956-1.jar lib/org/anon/utilities/utilities/1.0-SNAPSHOT/utilities-1.0-SNAPSHOT.jar
-#wget_url http://192.168.1.100:8888/archiva/repository/releases/org/anon/smart/sm.atomicity/1.0-SNAPSHOT/sm.atomicity-1.0-20130403.054231-1.jar lib/org/anon/smart/sm.atomicity/1.0-SNAPSHOT/sm.atomicity-1.0-SNAPSHOT.jar
-#wget_url http://192.168.1.100:8888/archiva/repository/releases/org/anon/smart/sm.base/1.0-SNAPSHOT/sm.base-1.0-20130403.054230-1.jar lib/org/anon/smart/sm.base/1.0-SNAPSHOT/sm.base-1.0-SNAPSHOT.jar
-#wget_url http://192.168.1.100:8888/archiva/repository/releases/org/anon/smart/sm.channels/1.0-SNAPSHOT/sm.channels-1.0-20130403.054243-1.jar lib/org/anon/smart/sm.channels/1.0-SNAPSHOT/sm.channels-1.0-SNAPSHOT.jar
-#wget_url http://192.168.1.100:8888/archiva/repository/releases/org/anon/smart/sm.d2cache/1.0-SNAPSHOT/sm.d2cache-1.0-20130403.054214-2.jar lib/org/anon/smart/sm.d2cache/1.0-SNAPSHOT/sm.d2cache-1.0-SNAPSHOT.jar
-#wget_url http://192.168.1.100:8888/archiva/repository/releases/org/anon/smart/sm.deployment/1.0-SNAPSHOT/sm.deployment-1.0-20130403.054211-2.jar lib/org/anon/smart/sm.deployment/1.0-SNAPSHOT/sm.deployment-1.0-SNAPSHOT.jar
-#wget_url http://192.168.1.100:8888/archiva/repository/releases/org/anon/smart/sm.kernel/1.0-SNAPSHOT/sm.kernel-1.0-20130403.054330-1.jar lib/org/anon/smart/sm.kernel/1.0-SNAPSHOT/sm.kernel-1.0-SNAPSHOT.jar
-#wget_url http://192.168.1.100:8888/archiva/repository/releases/org/anon/smart/sm.smcore/1.0-SNAPSHOT/sm.smcore-1.0-20130403.054316-1.jar lib/org/anon/smart/sm.smcore/1.0-SNAPSHOT/sm.smcore-1.0-SNAPSHOT.jar
+echo "[Copying smart jars **************************************************************]"
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.atomicity/1.1-SNAPSHOT/sm.atomicity-1.1-20130908.154459-1.jar?raw=true lib/org/anon/smart/sm.atomicity/1.1-SNAPSHOT/sm.atomicity-1.1-SNAPSHOT.jar    
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.base/1.1-SNAPSHOT/sm.base-1.1-20130908.154458-1.jar?raw=true lib/org/anon/smart/sm.base/1.1-SNAPSHOT/sm.base-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.channels/1.1-SNAPSHOT/sm.channels-1.1-20130908.154505-1.jar?raw=true lib/org/anon/smart/sm.channels/1.1-SNAPSHOT/sm.channels-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.codegen/1.1-SNAPSHOT/sm.codegen-1.1-20130908.154506-1.jar?raw=true lib/org/anon/smart/sm.codegen/1.1-SNAPSHOT/sm.codegen-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.d2cache/1.1-SNAPSHOT/sm.d2cache-1.1-20130908.154442-1.jar?raw=true lib/org/anon/smart/sm.d2cache/1.1-SNAPSHOT/sm.d2cache-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.deployment/1.1-SNAPSHOT/sm.deployment-1.1-20130908.154437-1.jar?raw=true lib/org/anon/smart/sm.deployment/1.1-SNAPSHOT/sm.deployment-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.generator/1.1-SNAPSHOT/sm.generator-1.1-20130908.154506-1.jar?raw=true lib/org/anon/smart/sm.generator/1.1-SNAPSHOT/sm.generator-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.kernel/1.1-SNAPSHOT/sm.kernel-1.1-20130908.155034-1.jar?raw=true lib/org/anon/smart/sm.kernel/1.1-SNAPSHOT/sm.kernel-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.monitor/1.1-SNAPSHOT/sm.monitor-1.1-20130908.155017-1.jar?raw=true lib/org/anon/smart/sm.monitor/1.1-SNAPSHOT/sm.monitor-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.secure/1.1-SNAPSHOT/sm.secure-1.1-20130908.155016-1.jar?raw=true lib/org/anon/smart/sm.secure/1.1-SNAPSHOT/sm.secure-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.smcore/1.1-SNAPSHOT/sm.smcore-1.1-20130908.154954-1.jar?raw=true lib/org/anon/smart/sm.smcore/1.1-SNAPSHOT/sm.smcore-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.template/1.1-SNAPSHOT/sm.template-1.1-20130908.154505-1.jar?raw=true lib/org/anon/smart/sm.template/1.1-SNAPSHOT/sm.template-1.1-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/utilities/utilities/1.1-SNAPSHOT/utilities-1.1-20130908.154355-1.jar?raw=true lib/org/anon/utilities/utilities/1.1-SNAPSHOT/utilities-1.1-SNAPSHOT.jar
+
+echo "[Copying FX flow jars **************************************************************]"
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/fixchg/fx.catalogue/1.0-SNAPSHOT/fx.catalogue-1.0-20130908.155156-1.jar?raw=true lib/org/anon/fixchg/fx.catalogue/1.0-SNAPSHOT/fx.catalogue-1.0-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/fixchg/fx.contact/1.0-SNAPSHOT/fx.contact-1.0-20130908.155157-1.jar?raw=true lib/org/anon/fixchg/fx.contact/1.0-SNAPSHOT/fx.contact-1.0-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/fixchg/fx.registration/1.0-SNAPSHOT/fx.registration-1.0-20130908.155155-1.jar?raw=true lib/org/anon/fixchg/fx.registration/1.0-SNAPSHOT/fx.registration-1.0-SNAPSHOT.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/fixchg/fx.subscribe/1.0-SNAPSHOT/fx.subscribe-1.0-20130908.155159-1.jar?raw=true lib/org/anon/fixchg/fx.subscribe/1.0-SNAPSHOT/fx.subscribe-1.0-SNAPSHOT.jar
+
 
 echo "Setting up db.."
 cd -
 cd dbscripts
 ./setupdb.sh $1/hadoop $2 $3
 
-echo "[Starting smart]"
 cd $1
+
+echo "[Setting up soflink to lib for secure server path dependency ********]"
+ln -s lib/org org
+
+mkdir config
+
+echo "[Setting up environment ********]"
 echo "export SMART_PATH=$1" > setupEnv.sh
-echo "export SMART_VERSION=1.0-SNAPSHOT" >> setupEnv.sh
+echo "export SMART_LIB_PATH=$1/lib" >> setupEnv.sh
+echo "export SMART_VERSION=1.1-SNAPSHOT" >> setupEnv.sh
 echo "export JAVA_HOME=$3" >> setupEnv.sh
 chmod +x setupEnv.sh
+echo "[Setting up environment completed with creating setupEnv ********]"
 
-./startSmart.sh Server true &
+# Comment the following 2 lines to start in non secure mode
+echo "[Starting smart in securemode ******************]"
+nohup ./startSmart.sh SecureServer true &
+
+# Uncomment the following 2 lines to start in non secure mode
+#echo "[Starting smart *******************]"
+#nohup ./startSmart.sh SecureServer true &
 

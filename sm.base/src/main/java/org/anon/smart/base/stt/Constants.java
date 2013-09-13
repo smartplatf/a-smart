@@ -65,5 +65,6 @@ public interface Constants
     public static final String TYPE_CONFIG = "type";
     public static final String ATTRIBUTE_CONFIG = "attributes";
     public static final String ACTION_CONFIG = "actions";
+    public static final String SERVICE_CONFIG = "services";
 }
 

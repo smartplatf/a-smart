@@ -52,12 +52,16 @@ import org.apache.jcs.JCS;
 import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreConfig;
+import org.anon.smart.d2cache.ListParams;
 
+import static org.anon.utilities.objservices.ObjectServiceLocator.convert;
 import static org.anon.utilities.services.ServiceLocator.*;
 import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
 import org.anon.utilities.exception.CtxException;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.sleepycat.je.util.DbSpace;
 
 public class JCSConnection implements StoreConnection
@@ -155,25 +159,29 @@ public class JCSConnection implements StoreConnection
 	}
 
 	@Override
-	public Iterator<Object> listAll(String group, int size) throws CtxException {
-		assertion().assertNotNull(_cache, "JCS region is Null");
-        System.out.println("Listing:"+group+":::"+size);
-        List<Object> ret = new ArrayList<Object>();
-        try
-        {
-            if (group != null)
-            {
-            	Set<Object> keySet = _cache.getGroupKeys(group);
-            	return keySet.iterator();
-            }
-            
-            
-        }
-        catch (Exception e)
-        {
-            except().rt(e, new CtxException.Context("JCSConnection.find", "Exception"));
-        }
+	public Iterator<Object> list(ListParams parms) throws CtxException {
 
+        boolean noPers = convert().stringToBoolean(System.getProperty("Smart.Development.Mode", "false"));
+        if(noPers)
+        {
+            String group = parms.getGroup();
+            long size = parms.getSize();
+            assertion().assertNotNull(_cache, "JCS region is Null");
+                System.out.println("Listing:"+group+":::"+size);
+                List<Object> ret = new ArrayList<Object>();
+                try
+                {
+                    if (group != null)
+                    {
+                         Set<Object> keySet = _cache.getGroupKeys(group);
+                         return keySet.iterator();
+                    }
+                }
+                catch (Exception e)
+                {
+                     except().rt(e, new CtxException.Context("JCSConnection.find", "Exception"));
+                }
+        }
         return null;
 	}
 
@@ -197,5 +205,46 @@ public class JCSConnection implements StoreConnection
         }
 
         return (obj != null) ? true:false;
+    }
+
+    @Override
+    public Iterator<Object> getListings(String group, String sortBy,
+        int listingsPerPage, int pageNum) 
+        throws CtxException
+    {
+        boolean noPers = convert().stringToBoolean(System.getProperty("Smart.Development.Mode", "false"));
+        if(noPers)
+        {
+            assertion().assertNotNull(_cache, "JCS region is Null");
+            List<Object> ret = new ArrayList<Object>();
+            try
+            {
+                if (group != null)
+                {
+                    Set<Object> keySet = _cache.getGroupKeys(group);
+                    int sInd = (pageNum -1)*listingsPerPage;
+                    int eInd = sInd+(listingsPerPage - 1);
+                    if(sInd >= keySet.size())
+                    {
+                        return null;
+                    }
+                    if((eInd+1) > keySet.size())
+                    {
+                        eInd = keySet.size() -1;
+                    }
+                    List<Object> keyList = new ArrayList<Object>(keySet);
+                    //System.out.println("Returning from :"+sInd+ " to :"+eInd +" from cache out of :"+keySet.size());
+                    return keyList.subList(sInd, eInd+1).iterator();
+                
+                }
+            
+            
+            }
+            catch (Exception e)
+            {
+                except().rt(e, new CtxException.Context("JCSConnection.find", "Exception"));
+            }
+        }
+        return null;
     }
 }

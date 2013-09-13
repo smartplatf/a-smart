@@ -108,7 +108,7 @@ public class TestCRUDEvents
         resp = clnt.post("ExceptionEvent", "{'ErrorObject':{'___smart_action___':'lookup', '___smart_value___':'ohGod'}, 'test':'ErrorObject1'}");
         assertTrue(resp != null);
 
-        resp = clnt.post("CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'create':'AdditionalError', 'data':{'name':'addedsome'}}");
+        resp = clnt.post("CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'create':'AdditionalError', 'data':{'name':'addedsome','lstfld':['test1', 'test2', 'test3'], 'subfld':[{'_test1':'smethg1', '_test2':'smethg2'}, {'_test1':'nxt1','_test2':'nxt2'}]}}");
         assertTrue(resp != null);
 
         //for throwexception
@@ -118,20 +118,6 @@ public class TestCRUDEvents
         resp = clnt.post("ExceptionEvent", "{'ErrorObject':{'___smart_action___':'lookup', '___smart_value___':'throwexception'}, 'test':'ErrorObject2'}");
         assertTrue(resp != null);
 
-        /*
-        String home = System.getenv("HOME");
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'ErrorCases.soa'}", true);
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'errortenant','enableFlow':'ErrorCases','enableFeatures':['all']}", false);
-        Thread.sleep(6000);
-
-        postTo(shell, port, "localhost", "/errortenant/ErrorCases/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'create':'ErrorObject', 'data':{'name':'ohGod','embed':{'_start':'04/04/2013 10:30'}}}", true);
-        //check error
-        postTo(shell, port, "localhost", "/errortenant/ErrorCases/ExceptionEvent", "{'ErrorObject':{'___smart_action___':'lookup', '___smart_value___':'ohGod'}, 'test':'ErrorObject1'}", true);
-        postTo(shell, port, "localhost", "/errortenant/ErrorCases/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'create':'AdditionalError', 'data':{'name':'addedsome'}}", true);
-        //for throwexception
-        postTo(shell, port, "localhost", "/errortenant/ErrorCases/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ErrorCases'}, 'create':'ErrorObject', 'data':{'name':'throwexception','embed':{'_start':'04/04/2013 10:00'}}}", true);
-        postTo(shell, port, "localhost", "/errortenant/ErrorCases/ExceptionEvent", "{'ErrorObject':{'___smart_action___':'lookup', '___smart_value___':'throwexception'}, 'test':'ErrorObject2'}", true);
-        */
         utils.stopServer();
     }
 }

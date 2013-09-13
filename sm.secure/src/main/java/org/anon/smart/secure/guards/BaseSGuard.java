@@ -82,6 +82,15 @@ public abstract class BaseSGuard implements SGuard
         _guardParm = annot.parm();
     }
 
+    protected BaseSGuard(String type, String parms, Class cls)
+        throws CtxException
+    {
+        _guardName = "temporary";
+        _guardForClass = cls;
+        _type = SGuardType.valueOf(type);
+        _guardParm = parms;
+    }
+
     protected BaseSGuard(SGuardType type, Class cls)
         throws CtxException
     {
@@ -108,6 +117,12 @@ public abstract class BaseSGuard implements SGuard
 
     protected abstract Access permitted(Accessed accessed, Visitor visitor, String parms)
         throws CtxException;
+
+    Access crossguardpermitted(Accessed accessed, Visitor visitor, String parms)
+        throws CtxException
+    {
+        return permitted(accessed, visitor, parms);
+    }
 
     public Access authorize(AccessRequest request)
         throws CtxException

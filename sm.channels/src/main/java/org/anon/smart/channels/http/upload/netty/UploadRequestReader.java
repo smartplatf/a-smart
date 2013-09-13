@@ -71,12 +71,20 @@ public class UploadRequestReader extends NettyRequestReader {
 
 	public InputStream contentStream(Object msg) throws CtxException {
 		UploadRequest r = (UploadRequest) msg;
+        String grp = r.getCustomGroup();
+        String append = "";
+        if ((grp != null) && (grp.length() > 0))
+        {
+            append = ", 'customGroup':'" + grp + "'";
+            append += ", 'data':";
+            append += r.postDataString();
+        }
 		String temp = "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'"
 				+ r.tenant()
 				+ "'}, "
 				+ "'files':"
 				+ r.toString()
-				+ " ,'uploadUri':'" + r.getRequest().getUri() + "'}";
+				+ " ,'uploadUri':'" + r.getRequest().getUri() + "'" + append + "}";
 
 		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(temp,
 				CharsetUtil.UTF_8);

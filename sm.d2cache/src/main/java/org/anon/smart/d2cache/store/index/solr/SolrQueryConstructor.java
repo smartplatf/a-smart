@@ -83,7 +83,9 @@ public class SolrQueryConstructor implements Constants{
 			condition.append(attribute);
 		else
 			condition.append(group+PART_SEPARATOR+attribute);
-		String fldSuffix = getFieldSuffix(attribute, resultType);
+
+        String[] path = attribute.split("\\.");
+		String fldSuffix = getFieldSuffix(path, resultType);
 		if(fldSuffix != null)
 			condition.append(fldSuffix);
 		
@@ -92,13 +94,22 @@ public class SolrQueryConstructor implements Constants{
 		return condition.toString();
 	}
 
-	private static String getFieldSuffix(String attribute, Class resultType) {
+	private static String getFieldSuffix(String[] attribute, Class resultType) {
 		
 		Field[] flds = resultType.getDeclaredFields();
 		for(int i = 0 ; i<flds.length;i++)
 		{
-			if(flds[i].getName().equals(attribute))
+			if(flds[i].getName().equals(attribute[0]))
 			{
+                if (attribute.length > 1)
+                {
+                    //need to go next level and search
+                    String[] nxtsrch = new String[attribute.length - 1];
+                    for (int j = 1; j < attribute.length; j++)
+                        nxtsrch[j - 1] = attribute[j];
+
+                    return getFieldSuffix(nxtsrch, flds[i].getType());
+                }
 				return SolrRecord.SUFFIXES.get(flds[i].getType());
 			}
 		}

@@ -43,7 +43,7 @@ package org.anon.smart.smcore.channel.server;
 
 import java.util.UUID;
 
-import org.anon.smart.base.tenant.SmartTenant;
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.flow.FlowDeployment;
 import org.anon.smart.smcore.channel.internal.MessagePData;
 import org.anon.smart.smcore.events.CrossLinkSmartEvent;
@@ -65,7 +65,7 @@ import org.anon.utilities.exception.CtxException;
 public class EventRData extends RData
 {
     private Object _event;
-    private SmartTenant _tenant;
+    private CrossLinkSmartTenant _tenant;
     private FlowDeployment _deployment;
     private String _origin;
     private String _flow;
@@ -73,7 +73,7 @@ public class EventRData extends RData
     private UUID _eventID;
     private Rectifier _myRectifier;
 
-    public EventRData(Rectifier rectifier, PData data, Object event, SmartTenant tenant, FlowDeployment dep)
+    public EventRData(Rectifier rectifier, PData data, Object event, CrossLinkSmartTenant tenant, FlowDeployment dep)
         throws CtxException
     {
         super(data);

@@ -56,6 +56,7 @@ public class DownloadRequest {
 	public DownloadRequest(HttpRequest gr) {
 		_hR = gr;
 		params = _hR.getUri().split("/");
+        System.out.println("DownloadRequest is: " + params.length + ":" + _hR.getUri());
 	}
 
 	public HttpRequest getRequest() {
@@ -70,11 +71,11 @@ public class DownloadRequest {
 		return params[4];
 	}
 	
-	public String tenant(){
+	public String flow(){
 		return params[2];
 	}
 	
-	public String flow(){
+	public String tenant(){
 		return params[1];
 	}
 }

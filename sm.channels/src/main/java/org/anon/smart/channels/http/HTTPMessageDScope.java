@@ -65,6 +65,7 @@ public abstract class HTTPMessageDScope implements DScope
     protected String _path;
     protected PData _pdata;
     protected String _origin;
+    protected String _referer;
     protected boolean _keepAlive;
     protected Responder _responder;
     protected AtomicCounter _dataCount;
@@ -102,6 +103,8 @@ public abstract class HTTPMessageDScope implements DScope
     {
         if (key.equalsIgnoreCase("ORIGIN"))
             _origin = value;
+        else if (key.equalsIgnoreCase("REFERER"))
+            _referer = value;
     }
 
     protected abstract void handlePath(String path)
@@ -153,8 +156,9 @@ public abstract class HTTPMessageDScope implements DScope
     public void transmit(PData[] resp)
         throws CtxException
     {
-        Object send = _reader.transmitObject(resp);
-        _route.send(send);
+        Object send = _reader.transmitObject(resp,_route);
+	if(send != null )
+	   _route.send(send);
     }
 
     public void close()
@@ -166,6 +170,11 @@ public abstract class HTTPMessageDScope implements DScope
     public String origin()
     {
         return _origin;
+    }
+
+    public String referer()
+    {
+        return _referer;
     }
 }
 

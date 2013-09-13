@@ -114,6 +114,12 @@ public class CrossLinkDeploymentShell extends CrossLinker
         return (List<Class>)linkMethod("transitionsFor", dep, prime, event, extra);
     }
 
+    public Class eventClass(String dep, String type)
+        throws CtxException
+    {
+        return (Class)linkMethod("eventClass", dep, type);
+    }
+
     public Class primeClass(String dep, String type)
         throws CtxException
     {
@@ -151,6 +157,12 @@ public class CrossLinkDeploymentShell extends CrossLinker
         }
 
         return ret;
+    }
+
+    public Object[] getServiceFor(String service)
+        throws CtxException
+    {
+        return (Object[])linkMethod("getServiceFor", service);
     }
 }
 

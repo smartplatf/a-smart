@@ -47,5 +47,6 @@ public interface SpaceModel
     public void setAperture(int aper);
     public int aperture();
     public boolean browsable();
+    public String getFileStore();
 }
 

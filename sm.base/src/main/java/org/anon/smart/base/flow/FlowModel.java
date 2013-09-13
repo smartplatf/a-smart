@@ -45,10 +45,15 @@ import org.anon.smart.base.tenant.shell.StandardSpaceModel;
 
 public class FlowModel extends StandardSpaceModel implements java.io.Serializable
 {
-    public FlowModel(String name)
+    private String fileStore;
+    public FlowModel(String name, String file)
     {
         super(name, false);
+        fileStore = file;
     }
+
+    @Override
+    public String getFileStore() { return fileStore; }
 
 }
 

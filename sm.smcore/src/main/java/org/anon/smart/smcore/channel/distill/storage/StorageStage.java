@@ -90,6 +90,7 @@ public class StorageStage implements Distillation
         {
             Object event = evt.event();
             EventRData rdata = new EventRData(_myRectifier, pdata, event, searched.tenant(), searched.flowDeployment());
+            System.out.println("Flow is: " + evt.flow() + ":" + evt.getClass().getClassLoader() + ":" + evt.flow().getClass().getClassLoader());
             CrossLinkSmartFlow clsf = new CrossLinkSmartFlow(evt.flow());
             if(pdata instanceof MessagePData)
             	clsf.postInternal(rdata);

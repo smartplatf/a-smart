@@ -55,5 +55,10 @@ public interface Constants
     public static final String FIELDTYPE = "__FIELDTYPE__";
     public static final String SIZE = "__SIZE__";
     public static final String SMART_KEY_NAME = "___smart_legend___"+PART_SEPARATOR+"_id";
+    public static final String ROWID_SUFFIX = "_ROWID";
+    public static final String ACTUAL_KEY = "actualKey";
+    public static final String SMART_CLASS_NAME = "__smart__class__name__";
+    public static final String RELATED_OBJECT = "RelatedObject";
+    public static final String RELATED_COLUMN = "_relatedKey";
 }
 

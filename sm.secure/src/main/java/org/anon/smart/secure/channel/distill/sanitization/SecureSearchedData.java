@@ -42,6 +42,7 @@
 package org.anon.smart.secure.channel.distill.sanitization;
 
 import org.anon.smart.base.tenant.SmartTenant;
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.channels.distill.Isotope;
 import org.anon.smart.smcore.channel.distill.ChannelConstants;
 import org.anon.smart.smcore.channel.distill.sanitization.SearchedData;
@@ -77,13 +78,13 @@ public class SecureSearchedData extends SearchedData implements ChannelConstants
             searchedMap().put(SESSION_FLD, _session);
     }
 
-    public void setupSearchContext(String evtName)
+    public void setupSearchContext(String evtName, String flow)
         throws CtxException
     {
-        SmartTenant tenant = tenant();
+        CrossLinkSmartTenant tenant = tenant();
         ClassLoader ldr = tenant.getRelatedLoader();
         CrossLinkAny any = new CrossLinkAny(SecureSanitizeContext.class.getName(), ldr);
-        any.create(evtName);
+        any.create(evtName, flow);
     }
 }
 

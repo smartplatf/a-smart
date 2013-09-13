@@ -51,4 +51,5 @@ public interface FileStore {
 
 	public InputStream getFileAsStream(String fileName, String group,
 			ClassLoader cl) throws CtxException;
+	public String getBaseDir() throws CtxException;
 }

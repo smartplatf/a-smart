@@ -121,6 +121,9 @@ public class SMCoreModule extends AModule implements FlowConstants
             RuntimeShell rshell = (RuntimeShell)powner.runtimeShell();
             rshell.commitToSpace(flow, new DSpaceObject[] { (DSpaceObject)admin });
         }
+
+        //MacroDeployer.setConfigDir(cfg.configDir());
+        //MacroDeployer.deployPersistedJars();
     }
 
     public void stop()

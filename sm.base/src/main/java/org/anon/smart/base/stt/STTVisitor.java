@@ -69,6 +69,8 @@ public class STTVisitor
         _custom = _descriptor.custom();
         _attributes = _descriptor.attributes();
         _actions = _descriptor.actions();
+        List<BaseTL> services = _descriptor.services();
+        _actions.addAll(services);
     }
 
     public void visit(ClazzContext ctx)

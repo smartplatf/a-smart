@@ -83,5 +83,10 @@ public class TestContext implements SmartModuleContext
     {
         return new DefaultAuthor();
     }
+
+    public String[] getEnableFlows()
+    {
+        return null;
+    }
 }
 

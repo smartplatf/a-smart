@@ -1,0 +1,11 @@
+name:   EmailConfig
+type:   Config
+flow:   AllFlows
+security:
+    - name:     roleaccess
+      type:     smartrole
+      access:   read
+    - name:     flowaccess
+      type:     flow
+      access:   read
+

@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.anon.smart.base.stt.tl.BaseTL;
+import org.anon.smart.base.stt.tl.TemplateReader;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -66,6 +67,14 @@ public class StereoTypes
                     types.add(stypes[j]);
             }
         }
+        //checking
+        String[] extras = TemplateReader.getExtraTypes();
+        for (int i = 0; (extras != null) && (i < extras.length); i++)
+        {
+            if (!types.contains(extras[i]))
+                types.add(extras[i]);
+        }
+
         _types = types;
         _descriptors = new ArrayList<STTDescriptor>();
         addSTTDescriptors(types, ldr);

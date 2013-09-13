@@ -50,13 +50,26 @@ public class SGuardParms implements RepeaterVariants
     private GuardAnnotate _annotate;
     private Class _klass;
 
+    private String _parms;
+    private String _type;
+
     public SGuardParms(GuardAnnotate annot, Class cls)
     {
         _annotate = annot;
         _klass = cls;
     }
 
+    public SGuardParms(String type, String parms, Class cls)
+    {
+        _type = type;
+        _parms = parms;
+        _klass = cls;
+    }
+
     public GuardAnnotate getAnnotate() { return _annotate; }
     public Class getKlass() { return _klass; }
+
+    public String getParms() { return _parms; }
+    public String getType() { return _type; }
 }
 

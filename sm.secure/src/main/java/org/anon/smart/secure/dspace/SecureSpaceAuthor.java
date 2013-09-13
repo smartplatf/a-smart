@@ -56,20 +56,20 @@ public class SecureSpaceAuthor implements DSpaceAuthor
     {
     }
 
-    public DSpace newSpaceFor(String name)
+    public DSpace newSpaceFor(String name, String fileType)
         throws CtxException
     {
         SecureDataFilter filter = new SecureDataFilter();
-        DSpace space = new TransactDSpaceImpl(name, new DataFilter[] { filter });
+        DSpace space = new TransactDSpaceImpl(name, new DataFilter[] { filter }, fileType);
         filter.setupSpace(space);
         return space;
     }
 
-    public DSpace browsableSpaceFor(String name)
+    public DSpace browsableSpaceFor(String name, String fileType)
         throws CtxException
     {
         SecureDataFilter filter = new SecureDataFilter();
-        DSpace space = new BrowsableTransactDSpace(name, new DataFilter[] { filter });
+        DSpace space = new BrowsableTransactDSpace(name, new DataFilter[] { filter }, fileType);
         filter.setupSpace(space);
         return space;
     }

@@ -62,6 +62,7 @@ import org.anon.smart.d2cache.QueryObject;
 import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.smart.d2cache.store.StoreConnection;
 import org.anon.smart.d2cache.store.StoreConfig;
+import org.anon.smart.d2cache.ListParams;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
@@ -233,7 +234,11 @@ public class SolrConnection implements StoreConnection, Constants
 			perf().checkpointHere("SolrSearch");
 			for(SolrDocument doc : docList)
 			{
-				resultSet.add(doc.getFieldValue(ID_COLUMN));
+			    if(doc.getFieldValue(ID_COLUMN) != null)
+			    {
+			        UUID id = UUID.fromString((String)doc.getFieldValue(ID_COLUMN));
+			        resultSet.add(id);
+			    }
 			}
 			perf().dumpHere(_logger);
 			
@@ -244,11 +249,12 @@ public class SolrConnection implements StoreConnection, Constants
 		return resultSet;
 	}
 
-	@Override
-	public Iterator<Object> listAll(String group, int size) throws CtxException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Iterator<Object> list(ListParams parms)
+        throws CtxException
+    {
+        //NO IMPLEMENTATION
+        return null;
+    }
 	
 	public static SolrConnection getConnection()
 	{
@@ -265,6 +271,14 @@ public class SolrConnection implements StoreConnection, Constants
     {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public Iterator<Object> getListings(String group, String sortBy,
+            int listingsPerPage, int pageNum)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
 

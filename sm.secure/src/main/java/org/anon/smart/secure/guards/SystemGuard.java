@@ -57,6 +57,7 @@ import org.anon.utilities.exception.CtxException;
 public class SystemGuard extends BaseSGuard implements Constants
 {
     private String[] _allowedObjects;
+    private String[] _allowedServices;
 
     public SystemGuard(GuardAnnotate annot, Class cls)
         throws CtxException
@@ -75,6 +76,14 @@ public class SystemGuard extends BaseSGuard implements Constants
         cnt++;
         _allowedObjects[cnt] = "org.anon.smart.secure.inbuilt.data.iden.Identity";
         cnt++;
+
+        _allowedServices = new String[3];
+        cnt = 0;
+        _allowedServices[cnt] = "enableFlowService";
+        cnt++;
+        _allowedServices[cnt] = "newTenantService";
+        cnt++;
+        _allowedServices[cnt] = "deployJarService";
     }
 
     public SystemGuard(Class cls)
@@ -95,11 +104,20 @@ public class SystemGuard extends BaseSGuard implements Constants
     {
         Class cls = accessed.getAccessedClass();
         String system = (String)threads().contextLocal(SYSTEM_RUNTIME);
+        System.out.println("Got system runtime as: " + system);
         if ((system != null) && (system.equals(STARTUP_DEFAULTS)))
         {
             for (int i = 0; i < _allowedObjects.length; i++)
             {
                 if (_allowedObjects[i].equals(cls.getName()))
+                    return Access.execute;
+            }
+        }
+        else if (system != null)
+        {
+            for (int i = 0; i < _allowedServices.length; i++)
+            {
+                if (system.equals(_allowedServices[i]))
                     return Access.execute;
             }
         }

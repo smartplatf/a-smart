@@ -44,6 +44,7 @@ package org.anon.smart.secure.session;
 import java.util.UUID;
 
 import org.anon.smart.base.tenant.SmartTenant;
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.shell.RuntimeShell;
 import org.anon.smart.smcore.transition.TransitionContext;
 import org.anon.smart.secure.inbuilt.data.Session;
@@ -91,7 +92,7 @@ public class SessionDirector
         threads().addToContextLocals(SESSION_STORE_NAME, session);
     }
 
-    public static Object crosslinkSessionIn(String sessId, SmartTenant tenant)
+    public static Object crosslinkSessionIn(String sessId, CrossLinkSmartTenant tenant)
         throws CtxException
     {
         CrossLinkAny cany = new CrossLinkAny(SessionDirector.class.getName(), tenant.getRelatedLoader());

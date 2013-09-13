@@ -47,6 +47,7 @@ import org.anon.smart.d2cache.Reader;
 import org.anon.smart.d2cache.DataFilter;
 import org.anon.smart.d2cache.store.Store;
 import org.anon.smart.d2cache.store.StoreConfig;
+import org.anon.smart.d2cache.ListParams;
 import org.anon.utilities.exception.CtxException;
 import static org.anon.utilities.services.ServiceLocator.*;
 
@@ -88,12 +89,17 @@ public class DefaultReader implements Reader {
 	}
 
 	@Override
-	public List<Object> search(String group, Object query) throws CtxException {
+	public List<Object> search(String group, Object query, long size) 
+        throws CtxException 
+    {
 		except().te(null, "Search is NOT suppoerted in Mem Only cache schema");
 		return null;
 	}
 	
-	public List<Object> listAll(String group, int size) throws CtxException {
+    @Override
+	public List<Object> list(ListParams parms) 
+        throws CtxException 
+    {
 		return null;
 	}
 
@@ -104,6 +110,14 @@ public class DefaultReader implements Reader {
         ret = _store.getConnection().exists(group, key);
         
         return ret;
+    }
+
+    @Override
+    public List<Object> getListings(String group, String sortBy,
+            int listingsPerPage, int pageNum)
+        throws CtxException
+    {
+        return null;
     }
 
 }

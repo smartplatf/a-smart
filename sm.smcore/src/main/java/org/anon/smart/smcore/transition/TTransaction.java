@@ -47,9 +47,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.anon.smart.atomicity.EmpiricalData;
-import org.anon.smart.base.monitor.MetricCounter;
-import org.anon.smart.base.monitor.MonitorConstants;
-import org.anon.smart.base.monitor.MonitorableObject;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.TenantConstants;
 import org.anon.smart.base.tenant.shell.RuntimeShell;
@@ -58,12 +55,12 @@ import org.anon.smart.d2cache.D2CacheTransaction;
 import org.anon.smart.base.dspace.DSpaceService;
 import org.anon.smart.smcore.data.FileItem;
 import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.data.SmartPrimeData;
 import org.anon.smart.smcore.data.SmartDataED;
 import org.anon.smart.smcore.data.SmartDataTruth;
 import org.anon.smart.smcore.data.ConfigData;
-import org.anon.smart.smcore.monitor.MetricsManager;
 import org.anon.smart.smcore.data.datalinks.LinkedData;
-import org.anon.smart.smcore.monitor.MonitorAction;
+import org.anon.smart.smcore.transition.plugin.PluginManager;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -85,22 +82,34 @@ public class TTransaction
         throws CtxException
     {
         String flow = flowFor(object.getClass());
+        if ((object.smart___group() != null) && (object.smart___group().length() > 0))
+            flow = object.smart___group();
+        System.out.println("Adding: " + object + ":" + flow + ":" + object.smart___group());
         if (!_transactions.containsKey(flow))
         {
         	createTransaction(flow);
         }
+
+        return _transactions.get(flow);
+    }
+
+    public D2CacheTransaction getMonitorTransaction()
+        throws CtxException
+    {
         if(!_transactions.containsKey(TenantConstants.MONITOR_SPACE))
         {
         	createTransaction(TenantConstants.MONITOR_SPACE);
         }
 
-        return _transactions.get(flow);
+        return _transactions.get(TenantConstants.MONITOR_SPACE);
     }
     
     public D2CacheTransaction startTransaction(FileItem object)
-			throws CtxException {
+			throws CtxException 
+    {
 
-		if (!_transactions.containsKey(object.getFlowName() + "-files")) {
+		if (!_transactions.containsKey(object.getFlowName() + "-files")) 
+        {
 			CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
 			RuntimeShell rshell = (RuntimeShell) tenant.runtimeShell();
 			TransactDSpace space = rshell.getSpaceFor(object.getFlowName());
@@ -147,6 +156,9 @@ public class TTransaction
         throws CtxException
     {
         String flow = flowFor(object.getClass());
+        if ((object.smart___group() != null) && (object.smart___group().length() > 0))
+            flow = object.smart___group();
+        System.out.println("Adding: " + object + ":" + flow + ":" + object.smart___group());
         D2CacheTransaction txn = _transactions.get(flow);
         assertion().assertNotNull(txn, "No transaction has been started for: " + flow);
         DSpaceService.addObject(txn, object);
@@ -169,45 +181,47 @@ public class TTransaction
     }
     
     public void addToTransaction(FileItem object) throws CtxException {
+		CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
 		D2CacheTransaction txn = _transactions.get(object.getFlowName()
 				+ "-files");
 		assertion().assertNotNull(txn,
 				"No transaction has been started for FILE space");
-		DSpaceService.addFSObject(txn, object.getSrcFile(),
+		String destFl = tenant.getName() + "/" + object.getFlowName() + "/" + object.getDestFileName();
+		DSpaceService.addFSObject(txn, object.getSrcFile(),destFl,
 				object.getFlowName());
 	}
     
     public void addToTransaction(SmartDataED object)
             throws CtxException
     {
-    		String flow = null;
-            flow = flowFor(object.empirical().getClass());
-            D2CacheTransaction txn = _transactions.get(flow);
-            assertion().assertNotNull(txn, "No transaction has been started for: " + flow);
-            DSpaceService.addObject(txn, ((SmartDataTruth)object.truth()).smartData(), object.empirical(), object.original());
-            
-            /** Metrics **/
-            if(object.empirical() instanceof MonitorableObject)
+        String flow = null;
+        flow = flowFor(object.empirical().getClass());
+        if ((object.empirical().smart___group() != null) && (object.empirical().smart___group().length() > 0))
+            flow = object.empirical().smart___group();
+        System.out.println("Adding: " + object.empirical() + ":" + flow + ":" + object.empirical().smart___group());
+        D2CacheTransaction txn = _transactions.get(flow);
+        assertion().assertNotNull(txn, "No transaction has been started for: " + flow);
+        DSpaceService.addObject(txn, ((SmartDataTruth)object.truth()).smartData(), object.empirical(), object.original());
+
+        //hooks for plugins
+        SmartData modified = object.empirical();
+        if (modified.smart___isNew())
+        {
+            if (modified instanceof SmartPrimeData)
+                PluginManager.primeObjectCreated((SmartPrimeData)modified);
+            else
+                PluginManager.objectCreated(modified);
+        }
+        else
+        {
+            PluginManager.objectModified(modified);
+            SmartData truth = ((SmartDataTruth)object.truth()).smartData();
+            if ((truth != null) && 
+                    !truth.utilities___currentState().stateName().equals(modified.utilities___currentState().stateName()))
             {
-            	txn = _transactions.get(TenantConstants.MONITOR_SPACE);
-            	SmartData parentObj = object.empirical();
-            	/*int action = MonitorConstants.OBJECTACCESSACTION;
-            	SmartData truth = ((SmartDataTruth)object.truth()).smartData();
-            	if((truth == null) || (truth.equals(object.empirical()))) 
-            		action = action | MonitorConstants.OBJECTCREATEACTION;*/
-            	
-            	MonitorAction action = MonitorAction.OBJECTACCESS;
-            	MetricsManager.handleMetricsfor(txn, parentObj, action);
-            	
-            	SmartData truth = ((SmartDataTruth)object.truth()).smartData();
-            	if((truth == null) || (truth.equals(object.empirical())))
-            	{
-            		action = MonitorAction.OBJECTCREATION;
-            		MetricsManager.handleMetricsfor(txn, parentObj, action);
-            	}
-            	
+                PluginManager.stateTransitioned(modified, truth.utilities___currentState().stateName(), modified.utilities___currentState().stateName());
             }
-            /** Metrics **/
+        }
     }
 
     public void commit()

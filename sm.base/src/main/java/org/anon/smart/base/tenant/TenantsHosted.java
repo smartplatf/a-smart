@@ -64,7 +64,7 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
         throws CtxException
     {
         super();
-        _tenantSpace = (TransactDSpace)spaceFor(TENANTSPACENAME, true);
+        _tenantSpace = (TransactDSpace)spaceFor(TENANTSPACENAME, true, null);
     }
 
     private static void setSingleInstance(Object obj)
@@ -144,7 +144,11 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
         throws CtxException
     {
         CrossLinkTenantsHosted th = new CrossLinkTenantsHosted(tenantsSpace());
-        return new CrossLinkSmartTenant(th.getTenant(name));
+        Object ten = th.getTenant(name);
+        if (ten != null)
+            return new CrossLinkSmartTenant(ten);
+
+        return null;
     }
 
     public static CrossLinkSmartTenant crosslinkedPlatformOwner()

@@ -109,7 +109,7 @@ public class TestD2Cache {
 		QueryObject qo = new QueryObject();
 		qo.addCondition("_string", "SimpleTestObject");
 		qo.setResultType(SimpleTestObject.class);
-		List<Object> resultSet = reader.search("SimpleTestObject", qo);
+		List<Object> resultSet = reader.search("SimpleTestObject", qo, -1);
 		assertTrue(resultSet.size()>0);
 		for(Object o : resultSet)
 		{
@@ -120,7 +120,7 @@ public class TestD2Cache {
 	}
 	
 	//@Test
-	public void testMemIndexCacheWithComplexObject() throws CtxException {
+	public void testMemIndexCacheWithComplexObject() throws Exception {
 		int flags = D2CacheScheme.BROWSABLE_CACHE;
 		String name = "TestCache";
 		D2CacheConfig config = new BasicD2CacheConfig();
@@ -143,7 +143,7 @@ public class TestD2Cache {
 		QueryObject qo = new QueryObject();
 		qo.addCondition("id", "compObject");
 		qo.setResultType(ComplexTestObject.class);
-		List<Object> resultSet = reader.search("ComplexTestObject", qo);
+		List<Object> resultSet = reader.search("ComplexTestObject", qo, -1);
 		assertTrue(resultSet.size()>0);
 		for(Object o : resultSet)
 		{
@@ -177,7 +177,7 @@ public class TestD2Cache {
 	}
 	
 	//@Test
-	public void testMemStoreIndexCacheWithComplexObject() throws CtxException {
+	public void testMemStoreIndexCacheWithComplexObject() throws Exception {
 		int flags = D2CacheScheme.BROWSABLE_CACHE;
 		String name = "TestCache";
 		D2CacheConfig config = new BasicD2CacheConfig();

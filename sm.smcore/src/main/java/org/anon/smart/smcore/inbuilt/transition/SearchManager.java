@@ -44,13 +44,17 @@ package org.anon.smart.smcore.inbuilt.transition;
 import static org.anon.utilities.services.ServiceLocator.assertion;
 
 import java.util.List;
+import java.util.ArrayList;
 
+import org.anon.smart.d2cache.ListParams;
 import org.anon.smart.base.flow.FlowConstants;
+import org.anon.smart.base.tenant.TenantConstants;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
 import org.anon.smart.base.tenant.shell.RuntimeShell;
 import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.inbuilt.events.CheckExistence;
+import org.anon.smart.smcore.inbuilt.events.GetListings;
 import org.anon.smart.smcore.inbuilt.events.ListAllEvent;
 import org.anon.smart.smcore.inbuilt.events.LookupEvent;
 import org.anon.smart.smcore.inbuilt.events.SearchEvent;
@@ -76,18 +80,24 @@ public class SearchManager {
 		Object o = searchEvent;
         	SmartEvent sevt = (SmartEvent)o;
         	String flow = sevt.smart___flowname();
-		Class clz = dShell.deployment(flow, searchEvent.getGroup(), FlowConstants.PRIMEDATA);
-		if(clz != null)System.out.println("SearchManager:result type is "+clz.getName() );
-		List<Object> searchResult = shell.searchFor(dShell.deploymentFor(flow).deployedName(),
-											clz, searchEvent.getQueryMap());
+		Class clz = dShell.dataClass(flow, searchEvent.getGroup());
+        System.out.println("Retrieved: " + searchEvent.getGroup() + ":" + flow + ":" + clz);
+        assertion().assertNotNull(clz, "Cannot find deployment for: " + searchEvent.getGroup() + ":" + flow);
+        List<Object> searchResult = new ArrayList<Object>();
+		if(clz != null)
+        {
+            System.out.println("SearchManager:result type is "+clz.getName() );
+            searchResult = shell.searchFor(dShell.deploymentFor(flow).deployedName(),
+											clz, searchEvent.getQueryMap(), searchEvent.getSize());
 		
 		
-		if(searchResult != null)
-		{
-			System.out.println("ResultSet size:"+searchResult.size());
-			for(Object res : searchResult)
-				System.out.println("------------Search Result:"+res);
-		}
+            if(searchResult != null)
+            {
+                System.out.println("ResultSet size:"+searchResult.size());
+                for(Object res : searchResult)
+                    System.out.println("------------Search Result:"+res);
+            }
+        }
 		
 		SearchResponse resp = new SearchResponse(searchResult);
 	}
@@ -147,13 +157,48 @@ public class SearchManager {
 		Object o = listEvent;
         SmartEvent sevt = (SmartEvent)o;
         String flow = sevt.smart___flowname();
-		List res = shell.listAll(dShell.deploymentFor(flow).deployedName(),
-				listEvent.getGroup(), listEvent.getSize());
+        String space = dShell.deploymentFor(flow).deployedName();
+        String datatype = null;
+        if (listEvent.isConfig())
+            space = TenantConstants.CONFIG_SPACE;
+
+        long start = listEvent.getStartTime();
+        List res = new ArrayList();
+        if (start <= 0)
+        {
+            res = shell.listAll(space, listEvent.getGroup(), listEvent.getSize(), datatype);
+        }
+        else
+        {
+            ListParams parms = new ListParams(listEvent.getGroup(), datatype, listEvent.getSize(), start, listEvent.getEndTime());
+            res = shell.listAll(space, parms);
+        }
+
 		System.out.println("List All Event returned "+res.size()+" results");
 		System.out.println("----------------Lookup Result:"+res);
 
 		ListAllResponse resp = new ListAllResponse(res);
+	}
+	
+	public void getListings(GetListings event)
+	    throws CtxException
+	{
+	    assertion().assertNotNull(event, "SearchManager: GetListings event is NULL");
+	    assertion().assertNotNull(event.getGroup(), "SearchManager:GetListings: Group is Not specified");
+	    
+	    CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+        RuntimeShell shell = (RuntimeShell)(tenant.runtimeShell());
+        assertion().assertNotNull(shell, "SearchManager: Runtime Shell is NULL");
+        CrossLinkDeploymentShell dShell = new CrossLinkDeploymentShell(tenant.deploymentShell());
+        Object o = event;
+        SmartEvent sevt = (SmartEvent)o;
+        String flow = sevt.smart___flowname();
+        List res = shell.getListings(dShell.deploymentFor(flow).deployedName(),
+                event.getGroup(), event.getSortBy(), event.getListingsPerPage(), event.getPageNum());
+        System.out.println("List All Event returned "+res.size()+" results");
+        System.out.println("----------------Lookup Result:"+res);
 
-		
+        ListAllResponse resp = new ListAllResponse(res);
+
 	}
 }

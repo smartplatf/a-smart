@@ -83,7 +83,7 @@ public class FileStoreSegment implements CSegment {
 	@Override
 	public void setupSegment(String name, StoreConfig cfg) 
 			throws CtxException {
-		
+
 		if(cfg instanceof DiskFSConfig){
 			_store = new DiskStore(new DiskFileStoreConnection());
 		}else{

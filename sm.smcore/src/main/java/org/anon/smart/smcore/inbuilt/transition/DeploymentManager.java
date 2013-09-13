@@ -44,16 +44,21 @@ package org.anon.smart.smcore.inbuilt.transition;
 import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
+import org.anon.smart.base.tenant.shell.CrossLinkRuntimeShell;
 import org.anon.smart.base.tenant.TenantAdmin;
+import org.anon.smart.base.tenant.TenantsHosted;
 import org.anon.smart.base.flow.FlowDeploymentSuite;
 import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 import org.anon.smart.base.flow.FlowConstants;
 import org.anon.smart.deployment.MacroDeployer;
 import org.anon.smart.smcore.inbuilt.events.DeployEvent;
+import org.anon.smart.smcore.inbuilt.events.InternalDeployEvent;
 import org.anon.smart.smcore.inbuilt.events.ListDeployments;
+import org.anon.smart.smcore.inbuilt.responses.ListEnabledFlowsResponse;
 import org.anon.smart.smcore.inbuilt.responses.SuccessCreated;
 import org.anon.smart.smcore.inbuilt.responses.DeploymentList;
 
@@ -71,6 +76,7 @@ public class DeploymentManager implements FlowConstants
     public void deployJar(TenantAdmin owner, DeployEvent deploy)
         throws CtxException
     {
+        System.out.println("Deploying... " + deploy.getJar() + ":" + deploy.getFlowSoa());
         assertion().assertTrue(owner.isPlatformOwner(), "Cannot deploy on a tenant that is not the owner of the platform");
         assertion().assertNotNull(deploy.getJar(), "Cannot deploy a null jar.");
         File f = new File(deploy.getJar());
@@ -90,12 +96,21 @@ public class DeploymentManager implements FlowConstants
         CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
         if ((!tenant.isPlatformOwner()) || (lst.getFlow() != null))
         {
-            assertion().assertNotNull(lst.getFlow(), "Need to provide a flow for which to list deployments.");
-            assertion().assertNotNull(lst.getDType(), "Need to provide the deployment type to list. ");
+            if (lst.getFlow() == null)
+            {
+                Collection<String> flows = tenant.listEnableFlows();
+                ListEnabledFlowsResponse resp = new ListEnabledFlowsResponse(flows);
+                return null;
+            }
+            else
+            {
+                //assertion().assertNotNull(lst.getFlow(), "Need to provide a flow for which to list deployments.");
+                assertion().assertNotNull(lst.getDType(), "Need to provide the deployment type to list. ");
 
-            CrossLinkDeploymentShell dshell = tenant.deploymentShell();
-            CrossLinkFlowDeployment dep = dshell.deploymentFor(lst.getFlow());
-            deps = dep.getDeploymentFor(lst.getDType());
+                CrossLinkDeploymentShell dshell = tenant.deploymentShell();
+                CrossLinkFlowDeployment dep = dshell.deploymentFor(lst.getFlow());
+                deps = dep.getDeploymentFor(lst.getDType());
+            }
         }
         else
         {
@@ -103,6 +118,20 @@ public class DeploymentManager implements FlowConstants
         }
 
         return new DeploymentList(lst.getDType(), deps);
+    }
+
+    public void deployJarService(String jarPath, String flowsoa)
+        throws CtxException
+    {
+        System.out.println(">>>>>> Called deployJarService: " + jarPath + ":" + flowsoa);
+        CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+        assertion().assertTrue(tenant.controlsAdmin(), "Cannot create a tenant without having admin permissions");
+        CrossLinkSmartTenant ptenant = TenantsHosted.crosslinkedPlatformOwner();
+        DefaultObjectsManager.setupInternalServiceContext("deployJarService", ptenant.getRelatedLoader());
+        CrossLinkRuntimeShell shell = new CrossLinkRuntimeShell(ptenant.runtimeShell());
+        Object tentxn = shell.lookupFor("AdminSmartFlow", "TenantAdmin", ptenant.getName());
+        InternalDeployEvent evt = new InternalDeployEvent(jarPath, flowsoa, tentxn);
+        SuccessCreated created = new SuccessCreated("Posted a deploy message. Please check after sometime.");
     }
 }
 

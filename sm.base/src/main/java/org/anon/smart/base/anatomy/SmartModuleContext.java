@@ -54,5 +54,7 @@ public interface SmartModuleContext extends ModuleContext
     public DSpaceAuthor spaceAuthor()
         throws CtxException;
 
+    public String[] getEnableFlows();
+
 }
 

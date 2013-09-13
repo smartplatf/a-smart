@@ -63,6 +63,10 @@ public class HTTPDataInstinct extends RectifierInstinct
     protected Distillate createStart(Route chnl, Object msg, MessageReader rdr)
         throws CtxException
     {
+        HTTPMessageReader hrdr = (HTTPMessageReader)rdr;
+        if (hrdr.isOptionsRequest(msg))
+            return null; //send out a default response
+
         HTTPMessageDScope dscope = _factory.createDScope(chnl, msg, rdr);
         if ((dscope.getURI() == null) || (dscope.getURI().length() <= 0) || (dscope.getURI().equals("/")))
             return null; //just a default response is requested

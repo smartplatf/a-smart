@@ -50,6 +50,8 @@ public class StoreItem
     private Object[] _keys;
     private Object _truth;
     private Object _modified;
+    private boolean _isNew;
+    private String _storeIn;
     
 
 	private Object _original;
@@ -71,6 +73,16 @@ public class StoreItem
     public Object[] keys()
     {
         return _keys;
+    }
+
+    public void setNew(boolean n)
+    {
+        _isNew = n;
+    }
+
+    public boolean isNew()
+    {
+        return _isNew;
     }
 
     public Object getTruth()
@@ -107,5 +119,11 @@ public class StoreItem
 		
 		return changed;
 	}
+
+    public String getStoreIn() { return _storeIn; }
+    public void setStoreIn(String store)
+    {
+        _storeIn = store;
+    }
 }
 

@@ -40,8 +40,9 @@
  * */
 package org.anon.smart.smcore.inbuilt.transition;
 
-import static org.anon.utilities.objservices.ObjectServiceLocator.threads;
-import static org.anon.utilities.services.ServiceLocator.except;
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
+import static org.anon.utilities.services.ServiceLocator.*;
+import static org.anon.utilities.services.ServiceLocator.assertion;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,6 +51,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.lang.reflect.Constructor;
 
 import org.anon.smart.d2cache.Reader;
 import org.anon.smart.base.dspace.TransactDSpace;
@@ -59,7 +61,8 @@ import org.anon.smart.base.tenant.shell.RuntimeShell;
 import org.anon.smart.d2cache.D2Cache;
 import org.anon.smart.d2cache.FileStoreCache;
 import org.anon.smart.d2cache.store.fileStore.FileStoreReader;
-import org.anon.smart.smcore.data.SmartFileObject;
+import org.anon.smart.smcore.inbuilt.data.SmartFileObject;
+import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.inbuilt.events.DownloadEvent;
 import org.anon.smart.smcore.inbuilt.events.UploadEvent;
 import org.anon.smart.smcore.inbuilt.responses.DownloadResponse;
@@ -67,11 +70,34 @@ import org.anon.smart.smcore.inbuilt.responses.UploadResponse;
 import org.anon.smart.smcore.transition.TransitionContext;
 import org.anon.utilities.exception.CtxException;
 
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
+import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
+import org.anon.smart.base.flow.CrossLinkFlowDeployment;
+
 /**
  * @author raooll
  * 
  */
 public class UploadManager {
+
+	private static HashMap<String,String> cType = new HashMap<String, String> ();
+
+	static {
+		cType.put(".gz","application/gzip");
+		cType.put(".jar","application/java-archive");
+		cType.put(".pdf","application/pdf");
+		cType.put(".zip","application/zip");
+		cType.put(".gif","image/gif");
+		cType.put(".jpeg","image/jpeg");
+		cType.put(".bmp","image/bmp");
+		cType.put(".jpg","image/jpeg");
+		cType.put(".jpe","image/jpeg");
+		cType.put(".png","image/png");
+		cType.put(".svg","image/svg+xml");
+		cType.put(".tiff","image/tiff");
+		cType.put(".xml","application/xml");
+	
+	}
 	
 	private String getMd5Sum(File fl) throws CtxException {
 		String md5 = "";
@@ -88,6 +114,17 @@ public class UploadManager {
 		return md5;
 	}
 	 
+	private String getFileExtension(String flName){
+		
+		if(flName== null)
+		return null;
+		
+		if(flName.lastIndexOf('.') == -1)
+		    	return "";
+					
+		return flName.substring(flName.lastIndexOf("."), flName.length());
+	}
+
 	
 	private String getFileType(String flName){
 		
@@ -95,42 +132,89 @@ public class UploadManager {
 		return null;
 		
 		if(flName.lastIndexOf('.') == -1)
-			return null;
+		    	return "application/octet-stream";
 					
 		String type = flName.substring(flName.lastIndexOf("."), flName.length());
-		return type;
+		
+		if(cType.get(type) != null)
+			return cType.get(type);
+		else
+		    	return "application/octet-stream";
 	}
+
+
 	public void handleUploads(UploadEvent u, FlowAdmin adm) throws CtxException {
 
+		TransitionContext ctx = (TransitionContext) threads().threadContext();
+		CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+		RuntimeShell rshell = (RuntimeShell) tenant.runtimeShell();
+		TransactDSpace space = rshell.getSpaceFor(adm.myFlow());
+		D2Cache fsCache = space.fsCacheImpl();
+		Reader readr = fsCache.myReader();
+		String baseDir = ((FileStoreReader) readr).getBaseDir();
+		
 		Map<String, String> files = u.getFiles();
 
-		HashMap<UUID, Object> umap = new HashMap<UUID, Object>();
+		HashMap<String,String> umap = new HashMap<String, String>();
 
 		for (String f : files.keySet()) {
 
 			File file = new File(f.toString());
 			SmartFileObject fo = new SmartFileObject();
-
-			String[] fs = f.split("/");
+			
+			String[] fs = f.split(File.separator);
+			String filenm = fs[fs.length -1];
+			String fileExtension = getFileExtension(filenm);			
 
 			fo._dateOfUpload = new Date();
 			fo._fieldName = files.get(f);
-			fo._fileName = fs[fs.length - 1];
 			fo._uploadId = UUID.randomUUID();
+			fo._fileName = fo._uploadId.toString() + fileExtension;
 			fo._fileSrc = f.toString();
 			fo._itemId = UUID.randomUUID();
 			fo._group = adm.myFlow();
 			fo._size = file.length();
-			fo._fileType = getFileType(fo._fileName);
+			fo._fileType = getFileType(filenm);
 
 			fo._md5sum = getMd5Sum(file);
 			fo._fileLocation = u.getUploadUri();
+			fo._canonicalLocation = baseDir + File.separator +  tenant.getName() + File.separator + adm.myFlow() + File.separator + fo._fileName;
+
+            Object foo = fo;
+            SmartData data = (SmartData)foo;
+            data.smart___setGroup(adm.myFlow());
+
+
+            if (u.getCustomGroup() != null)
+            {
+                String grp = u.getCustomGroup();
+                String flow = adm.myFlow();
+                CrossLinkDeploymentShell shell = tenant.deploymentShell();
+                CrossLinkFlowDeployment dep = shell.deploymentFor(flow);
+                assertion().assertNotNull(dep, "Cannot find the deployment for " + flow);
+                String clsname = dep.classFor(grp);
+                assertion().assertNotNull(clsname, "Cannot find the deployment class for: " + grp + " in " + flow);
+                Class cls = shell.primeClass(flow, grp); 
+                assertion().assertNotNull(cls, "Cannot find the class for: " + grp + ":" + clsname);
+                
+		try
+                {
+                    Constructor cons = cls.getDeclaredConstructor(String.class, String.class, String.class, Map.class);
+                    assertion().assertNotNull(cons, "The object should have a constructor <init>(fileName, filesrc)");
+                    Object obj = cons.newInstance(fo._fileName, fo._fileSrc, fo._canonicalLocation, u.getPostData());
+                    SmartData d = (SmartData)obj;
+                    System.out.println("Object created in state: " + d.utilities___currentState());
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    except().te("Cannot create an object of type: " + grp + ":" + e.getMessage());
+                }
+            }
 			
-			TransitionContext ctx = (TransitionContext) threads()
-					.threadContext();
 			if (ctx != null) {
 				ctx.atomicity().includeUpload(fo, adm);
-				umap.put(fo._uploadId, fo._fieldName);
+				umap.put(fo._fieldName,fo._fileName);
 			}
 		}
 
@@ -148,8 +232,10 @@ public class UploadManager {
 		D2Cache fsCache = space.fsCacheImpl();
 
 		Reader readr = fsCache.myReader();
-
-		DownloadResponse r = new DownloadResponse(readr, fOb._size,u.getFileName(),fOb._group,fOb._fileType);
+		FileStoreReader fr = (FileStoreReader) readr;
+		String flName = tenant.getName() + File.separator + fOb._group + File.separator + fOb._fileName;
+		assertion().assertNotNull( fr.getFileAsStream(flName,fOb._group , null),"File does not exist on server");
+		DownloadResponse r = new DownloadResponse(readr, fOb._size,flName,fOb._group,fOb._fileType);
 
 
 	}

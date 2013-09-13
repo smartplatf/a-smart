@@ -99,6 +99,8 @@ public class ConfigManager
         CrossLinkDeploymentShell dshell = tenant.deploymentShell();
         assertion().assertNotNull(dshell, "Cannot find the deploymentshell for the tenant: " + tenant.getName());
         Class<? extends ConfigData> confcls = (Class<? extends ConfigData>)dshell.configClass(flow, evt.getName());
+        if (confcls == null)
+            confcls = (Class<? extends ConfigData>)dshell.configClass("AllFlows", evt.getName()); //check in allflows
         assertion().assertNotNull(confcls, "Cannot find config for: " + evt.getName() + ":" + flow);
         Object[] keys = getConfigKeys(evt, flow, dshell);
         for (int i = 0; (keys != null) && (i < keys.length); i++)

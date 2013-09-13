@@ -44,6 +44,7 @@ package org.anon.smart.secure.guards;
 public interface Constants
 {
     public static final String CURRENT_EVENT = "currentEvent";
+    public static final String CURRENT_FLOW = "currentFlow";
     public static final String SYSTEM_RUNTIME = "systemContext";
     public static final String STARTUP_DEFAULTS = "startup";
 }

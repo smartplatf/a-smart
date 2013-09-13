@@ -73,6 +73,7 @@ public class TestUser
         resp = clnt.post("AddIdentity", "{'SmartUser':{'___smart_action___':'lookup','___smart_value___':'rsankarx'},'identity':'rsankarz','credentialKey':'rsankarz','type':'custom'}");
         assertTrue(resp != null);
 
+
         resp = clnt.post("Authenticate", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'Security'},'identity':'rsankarz', 'password':'rsankarz', 'type':'custom'}");
         assertTrue(resp != null);
 
@@ -83,6 +84,18 @@ public class TestUser
         resp = clnt.post("AddIdentity", "{'SmartUser':{'___smart_action___':'lookup','___smart_value___':'vjaasti'},'identity':'vjaastiy','credentialKey':'vjaasti','type':'custom'}");
         assertTrue(resp != null);
 
+        resp = clnt.post("ChangePassword", "{'SmartUser':{'___smart_action___':'lookup','___smart_value___':'vjaasti'}, 'identity':'vjaasti','credential':'vjaasti123'}");
+       assertTrue(resp != null);
+        resp = clnt.post("ChangePassword", "{'SmartUser':{'___smart_action___':'lookup','___smart_value___':'rsankarx'}, 'identity':'rsankarz','credential':'rsankar123','oldcredential':'rsankarz'}");
+        assertTrue(resp != null);
+        resp = clnt.post("Authenticate", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'Security'},'identity':'rsankarz', 'password':'rsankar123', 'type':'custom'}");
+        assertTrue(resp != null);
+
+        resp = clnt.logout();
+
+        //shd be an error, not authenticated?
+        resp = clnt.post("AddIdentity", "{'SmartUser':{'___smart_action___':'lookup','___smart_value___':'vjaasti'},'identity':'vjaastiy','credentialKey':'vjaasti','type':'custom'}");
+        assertTrue(resp != null);
 
         sserver.stopServer();
     }

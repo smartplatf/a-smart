@@ -120,30 +120,10 @@ public class TestConfig
 
         resp = clnt.post("ConfigParmEvent", "{'DataObject':{'___smart_action___':'lookup', '___smart_value___':'ohGod'}, 'send':'something'}");
         assertTrue(resp != null);
+
+        resp = clnt.post("ListAllEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ConfigCases'}, 'group':'ConfigObject', 'size':3, 'config':1}");
+        assertTrue(resp != null);
         
-
-        /*
-        AssertJSONResponse resp = clnt.postTo(port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'ConfigCases.soa'}", true);
-        assertTrue(resp != null);
-        resp.assertStringStartsWith("success", "Done");
-
-        resp = clnt.postTo(port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'configtenant','enableFlow':'ConfigCases','enableFeatures':['all']}", true);
-        assertTrue(resp != null);
-        resp.assertStringStartsWith("success", "Done");
-
-        resp = clnt.postTo(port, "localhost", "/configtenant/ConfigCases/ConfigFlow", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ConfigCases'}, 'configName':'ConfigObject', 'configValues':{'oneConfig':1,'twoConfig':2,'oneString':'configstr'}}", true);
-        assertTrue(resp != null);
-
-        resp = clnt.postTo(port, "localhost", "/configtenant/ConfigCases/ConfigFlow", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ConfigCases'}, 'configName':'ConfigObject', 'configFor':'DataObject', 'configValues':{'oneConfig':1,'twoConfig':2,'oneString':'configstr'}}", true);
-        assertTrue(resp != null);
-
-        resp = clnt.postTo(port, "localhost", "/configtenant/ConfigCases/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ConfigCases'}, 'create':'DataObject', 'data':{'dataKey':'ohGod'}}", true);
-        assertTrue(resp != null);
-
-        resp = clnt.postTo(port, "localhost", "/configtenant/ConfigCases/ConfigParmEvent", "{'DataObject':{'___smart_action___':'lookup', '___smart_value___':'ohGod'}, 'send':'something'}", true);
-        assertTrue(resp != null);
-        */
-
         utils.stopServer();
     }
 }

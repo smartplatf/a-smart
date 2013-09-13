@@ -66,6 +66,7 @@ public class SmartActiveModules
     private List<URL> _urls;
     private String _classloader;
     private String[] _loadModules;
+    private String[] _startModules;
 
     public SmartActiveModules(SmartConfig config)
         throws CtxException
@@ -81,6 +82,7 @@ public class SmartActiveModules
         List<ModuleConfig> modules = config.getModules();
         int currload = Integer.MAX_VALUE;
         _loadModules = new String[modules.size()];
+        _startModules = new String[modules.size()];
         for (ModuleConfig module : modules)
         {
             boolean enable = ((module.getEnableFlag() == null) || (module.getEnableFlag().length() <= 0));
@@ -98,7 +100,7 @@ public class SmartActiveModules
 
                 assertion().assertTrue((module.getLoadOrder() < _loadModules.length), "Not a valid load order for module");
 
-                if (module.getLoadOrder() < currload)
+                if ((module.getLoadOrder() < currload) && (module.getClassLoader() != null))
                 {
                     _classloader = module.getClassLoader();
                     currload = module.getLoadOrder();
@@ -106,15 +108,21 @@ public class SmartActiveModules
 
                 //loadorder should be 0 index number
                 _loadModules[module.getLoadOrder()] = module.getModule();
+                _startModules[module.getStartOrder()] = module.getModule();
             }
         }
         List<String> comps = new ArrayList<String>();
+        List<String> start = new ArrayList<String>();
         for (int i = 0; i < _loadModules.length; i++)
         {
             if ((_loadModules[i] != null) && (_loadModules[i].length() > 0))
                 comps.add(_loadModules[i]);
+
+            if ((_startModules[i] != null) && (_startModules[i].length() > 0))
+                start.add(_startModules[i]);
         }
         _loadModules = comps.toArray(new String[0]);
+        _startModules = start.toArray(new String[0]);
 
         assertion().assertNotNull(_classloader, "Cannot find a valid classloader to use in the modules.");
     }
@@ -133,6 +141,7 @@ public class SmartActiveModules
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             except().rt(e, new CtxException.Context("Error creating URL: " + mod, "Exception"));
         }
         return null;
@@ -149,9 +158,15 @@ public class SmartActiveModules
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             except().rt(e, new CtxException.Context("Error creating URL: " + depjar, "Exception"));
         }
         return null;
+    }
+
+    public String[] startOrder()
+    {
+        return _startModules;
     }
 
     public ClassLoader activeLoader()
@@ -166,6 +181,7 @@ public class SmartActiveModules
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             except().rt(e, new CtxException.Context("Error creating classloader: " + _classloader, "Exception"));
         }
 

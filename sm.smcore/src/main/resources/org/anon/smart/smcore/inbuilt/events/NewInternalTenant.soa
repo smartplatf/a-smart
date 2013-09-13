@@ -1,0 +1,3 @@
+name:       NewInternalTenant
+type:       Message
+flow:       AdminSmartFlow

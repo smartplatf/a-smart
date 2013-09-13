@@ -1,0 +1,11 @@
+name:       MonitorManager
+type:       Transition
+flow:       Monitor
+foreach:        FlowAdmin|ReadMonitorData
+actions:
+    - name:     getMonitorData
+      method:   getMonitorData
+      foreach:  FlowAdmin|ReadMonitorData
+      from:     active
+      to:       active
+

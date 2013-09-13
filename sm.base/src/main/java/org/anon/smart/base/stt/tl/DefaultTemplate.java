@@ -69,7 +69,9 @@ public class DefaultTemplate implements SearchTemplate
             Object dep = cl.invoke("getDeploying");
             if (cls.indexOf("testapp") >= 0)
                 System.out.println("The deployment got is: " + dep + ":" + cls + ":" + ldr);
-            boolean ret = ((dep != null) && (dep.getClass().getName().equals(FlowDeployment.class.getName())));
+            //I know maybe we shd just do it as an instanceof FlowDeployment? But it may not work because of classloaders
+            boolean ret = ((dep != null) && ((dep.getClass().getName().equals(FlowDeployment.class.getName())) ||
+                                            (dep.getClass().getName().equals("org.anon.smart.secure.flow.SecureFlowDeployment"))));
             //do not create a template for any of the smart or utility classes.
             //smart classes that need soa, needs to have an explicit soa declared
             ret = ret && (!cls.startsWith("org.anon.smart"));
@@ -103,6 +105,7 @@ public class DefaultTemplate implements SearchTemplate
             ret = (BaseTL)clbtl.invoke("defaultFor", new Class[] { String.class, String.class, String.class, String[].class }, 
                     new Object[] { clsname, dtype, name, parms });
         }
+
 
         return new BaseTL[] { ret };
     }

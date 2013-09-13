@@ -17,4 +17,8 @@ security:
     - name:     roleaccess
       type:     smartrole
       access:   execute
+    - name:     flowaccess
+      type:     flow
+      access:   create
+
 

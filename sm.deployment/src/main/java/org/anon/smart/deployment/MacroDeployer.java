@@ -41,10 +41,16 @@
 
 package org.anon.smart.deployment;
 
+import java.io.File;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.InputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.BufferedReader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -57,17 +63,102 @@ public class MacroDeployer
     private static Map<String, Class<? extends Deployment>> REGISTERED = new ConcurrentHashMap<String, Class<? extends Deployment>>();
     private static Map<String, Class<? extends DeploymentSuite>> REGISTEREDSUITE = new ConcurrentHashMap<String, Class<? extends DeploymentSuite>>();
 
+    private static String CONFIG_DIR;
+
     public MacroDeployer()
     {
     }
 
+    public static void setConfigDir(String dir)
+    {
+        CONFIG_DIR = dir;
+    }
+
     public static void registerDeploymentClazz(String type, Class<? extends Deployment> cls, Class<? extends DeploymentSuite> suite)
     {
-        REGISTERED.put(type, cls);
-        REGISTEREDSUITE.put(type, suite);
+        if (!REGISTERED.containsKey(type))
+        {
+            REGISTERED.put(type, cls);
+            REGISTEREDSUITE.put(type, suite);
+        }
+    }
+
+    private static String persistName()
+    {
+        return CONFIG_DIR + "/deployed";
+    }
+
+    private static void persistDeploy(String type, String flowsoa, String[] jarfiles)
+        throws CtxException
+    {
+        try
+        {
+            if ((CONFIG_DIR != null) && (jarfiles != null)) //do no store the standard deployments, they will get deployed
+            {
+                FileWriter write = new FileWriter(persistName(), true);
+                PrintWriter writer = new PrintWriter(write, true);
+                String swrite = type + "|" + flowsoa + "|";
+                for (int i = 0; i < jarfiles.length; i++)
+                    swrite += jarfiles[i] + "|";
+                writer.println(swrite);
+                writer.close();
+                write.close();
+            }
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("Cannot store deployment", e.getMessage()));
+        }
+    }
+
+    public static void deployPersistedJars()
+        throws CtxException
+    {
+        try
+        {
+            if (CONFIG_DIR != null)
+            {
+                File f = new File(persistName());
+                if (f.exists())
+                {
+                    FileReader rdr = new FileReader(persistName());
+                    BufferedReader brdr = new BufferedReader(rdr);
+                    String line = "";
+                    while ((line = brdr.readLine()) != null)
+                    {
+                        String[] dep = line.split("\\|");
+                        assertion().assertTrue((dep.length >= 3), "The format is not correct");
+                        String type = dep[0];
+                        String soa = dep[1];
+                        List<String> jars = new ArrayList<String>();
+                        for (int i = 2; i < dep.length; i++)
+                        {
+                            if (dep[i].trim().length() > 0)
+                                jars.add(dep[i].trim());
+                        }
+
+                        assertion().assertTrue((jars.size() >= 1), "The format is not correct");
+                        System.out.println("Deploying: " + type + ":" + soa + ":" + jars);
+                        deployFile(type, soa, jars.toArray(new String[0]), false);
+                    }
+                    brdr.close();
+                    rdr.close();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("cannot re-deploy.", e.getMessage()));
+        }
     }
 
     public static Map<String, String[]> deployFile(String type, String flowsoa, String[] jarfiles)
+        throws CtxException
+    {
+        return deployFile(type, flowsoa, jarfiles, true);
+    }
+
+    public static Map<String, String[]> deployFile(String type, String flowsoa, String[] jarfiles, boolean persist)
         throws CtxException
     {
         Map<String, String[]> ret = new HashMap<String, String[]>();
@@ -114,6 +205,8 @@ public class MacroDeployer
             fnames[j] = features[j].getName();
 
         ret.put(dep.deployedName(), fnames);
+        if (persist)
+            persistDeploy(type, flowsoa, jarfiles);
         return ret;
     }
 }

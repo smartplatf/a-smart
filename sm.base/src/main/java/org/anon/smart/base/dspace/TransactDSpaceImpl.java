@@ -48,16 +48,16 @@ import org.anon.utilities.exception.CtxException;
 
 public class TransactDSpaceImpl extends AbstractDSpace
 {
-    public TransactDSpaceImpl(String name)
+    public TransactDSpaceImpl(String name, String filetype)
         throws CtxException
     {
-        super(name);
+        super(name, filetype);
     }
 
-     public TransactDSpaceImpl(String name, DataFilter[] filters)
+     public TransactDSpaceImpl(String name, DataFilter[] filters, String filetype)
         throws CtxException
     {
-        super(name, filters);
+        super(name, filters, filetype);
     }
 
 
@@ -66,7 +66,7 @@ public class TransactDSpaceImpl extends AbstractDSpace
 	    return D2CacheScheme.scheme.memstoreind;
     }
     
-        protected D2CacheScheme.scheme getFileCacheScheme()
+    protected D2CacheScheme.scheme getFileCacheScheme()
     {
         return D2CacheScheme.scheme.filestore;
     }

@@ -92,5 +92,10 @@ public class SecureContext implements SmartModuleContext
     {
         return (SecureContext)anatomy().context(SecureContext.class);
     }
+
+    public String[] getEnableFlows()
+    {
+        return new String[] { "Security" };
+    }
 }
 

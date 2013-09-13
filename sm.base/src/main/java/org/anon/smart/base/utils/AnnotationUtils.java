@@ -86,6 +86,27 @@ public class AnnotationUtils
         return className(data.getClass());
     }
 
+    public static String crossClassName(Class cls)
+        throws CtxException
+    {
+        String ret = null;
+        Annotation annot = reflect().getAnyAnnotation(cls, BaseAnnotate.class.getName());
+        if (annot != null)
+        {
+            try
+            {
+                Class acls = annot.annotationType();
+                ret = (String)acls.getDeclaredMethod("name").invoke(annot);
+            }
+            catch (Exception e)
+            {
+                except().rt(e, new CtxException.Context("Exception", e.getMessage()));
+            }
+        }
+
+        return ret;
+    }
+
     public static String className(Class cls)
         throws CtxException
     {
@@ -124,12 +145,10 @@ public class AnnotationUtils
     {
         assertion().assertNotNull(cls, "Cannot find the config of a null class");
         SmartDataAnnotate annot = (SmartDataAnnotate)reflect().getAnnotation(cls, SmartDataAnnotate.class);
-        System.out.println("Annot is: " + annot);
         if (annot != null)
             return annot.config();
 
         PrimeDataAnnotate pannot = (PrimeDataAnnotate)reflect().getAnnotation(cls, PrimeDataAnnotate.class);
-        System.out.println("Annot is: " + pannot);
         if (pannot != null)
             return pannot.config();
 
@@ -141,14 +160,27 @@ public class AnnotationUtils
     {
         assertion().assertNotNull(cls, "Cannot find the commit of a null class");
         SmartDataAnnotate annot = (SmartDataAnnotate)reflect().getAnnotation(cls, SmartDataAnnotate.class);
-        System.out.println("Annot is: " + annot);
         if (annot != null)
             return annot.commit();
 
         PrimeDataAnnotate pannot = (PrimeDataAnnotate)reflect().getAnnotation(cls, PrimeDataAnnotate.class);
-        System.out.println("Annot is: " + pannot);
         if (pannot != null)
             return pannot.commit();
+
+        return null;
+    }
+
+    public static String storeInFor(Class cls)
+        throws CtxException
+    {
+        assertion().assertNotNull(cls, "Cannot find the commit of a null class");
+        SmartDataAnnotate annot = (SmartDataAnnotate)reflect().getAnnotation(cls, SmartDataAnnotate.class);
+        if (annot != null)
+            return annot.store();
+
+        PrimeDataAnnotate pannot = (PrimeDataAnnotate)reflect().getAnnotation(cls, PrimeDataAnnotate.class);
+        if (pannot != null)
+            return pannot.store();
 
         return null;
     }

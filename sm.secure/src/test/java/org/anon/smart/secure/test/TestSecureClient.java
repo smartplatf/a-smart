@@ -146,5 +146,13 @@ public class TestSecureClient extends TestClient
         _adminSessionId = v;
         return resp;
     }
+
+    public AssertJSONResponse logout()
+        throws Exception
+    {
+        AssertJSONResponse resp = post("Logout", "{'Session':{'___smart_action___':'lookup', '___smart_value___':'" + _sessionId + "','___key_type___':'java.util.UUID'}}");
+        assertTrue(resp != null);
+        return resp;
+    }
 }
 

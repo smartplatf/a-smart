@@ -90,54 +90,24 @@ public class D2CacheTransactionImpl implements D2CacheTransaction {
         _filters = filters;
     }
 
-    private boolean isFilter(Object obj)
+    private boolean isFilter(Object obj, boolean n)
         throws CtxException
     {
         boolean ret = true;
+        DataFilter.dataaction action = DataFilter.dataaction.write;
+        if (n) action = DataFilter.dataaction.create;
         for (int i = 0; (ret) && (_filters != null) && (i < _filters.length); i++)
-            ret = _filters[i].filterObject(obj, DataFilter.dataaction.write, true);
+            ret = _filters[i].filterObject(obj, action, true);
 
         return ret;
     }
 
 	@Override
 	public void add(StoreItem item) throws CtxException {
-		List<StoreRecord> recList = new ArrayList<StoreRecord>();
-
-        //if the filter says I cannot do anything with this data, then return.
-        if ((item.getTruth() != null) && !isFilter(item.getTruth()))
-            return;
-		
-		/*
-		 * Now do the DirtyFieldTraversal here and store the modified truth object against set of keys
-		 */
-		item.mergeChanges();
-		Object[] keyList = item.keys();
-		for (StoreTransaction txn : _storeTransactions) {
-			recList.add(txn.addRecord(item.group(), keyList[0], item.getModified(), item.getTruth()));
-		}
-		
-		for (int i =1 ; i < keyList.length; i++) {
-			for (StoreTransaction txn : _storeTransactions) {
-				StoreRecord rec = txn.addRecord(item.group(), keyList[i], item.getModified(), item.getTruth(), keyList[0]);
-				if((rec != null) && (rec.getCurrent() instanceof RelatedObject))
-				{
-					CacheObjectTraversal trav = new CacheObjectTraversal(rec);
-					ObjectTraversal ot = new ObjectTraversal(trav, rec.getCurrent(), false, null);
-					ot.traverse();
-					
-				}
-				else if(rec != null)
-				{
-					recList.add(rec);
-				}
-			}
-		}
-		
-		System.out.println("--->D2CacheTransactionImpl:"+item.getTruth()+"::"+item.getModified()+"::"+item.getOriginal());
-		
+        List<StoreRecord> recList = new ArrayList<StoreRecord>();
 		CacheObjectTraversal cot = new CacheObjectTraversal(recList);
 		ObjectTraversal ot = null;
+        boolean traverse = true;
 		if((item.getTruth() == null) || item.getTruth().equals(item.getModified()))
 		{
 			//Truth is null..new Object
@@ -147,8 +117,54 @@ public class D2CacheTransactionImpl implements D2CacheTransaction {
 		{
 			//ot  = new DirtyFieldTraversal(cot, item.getModified(), item.getOriginal(), false);
 			ot  = new DirtyFieldTraversal(cot, item.getModified(), item.getTruth(), item.getOriginal(), false);
+            cot.setUpdate();
+            traverse = ((DirtyFieldTraversal)ot).hasChanged();
+            System.out.println("Should traverse is: " + traverse);
 		}
-		ot.traverse();
+
+        if (traverse)
+        {
+            
+            //if the filter says I cannot do anything with this data, then return.
+            if ((item.getTruth() != null) && !isFilter(item.getTruth(), item.isNew()))
+                return;
+            
+            /*
+             * Now do the DirtyFieldTraversal here and store the modified truth object against set of keys
+             */
+            item.mergeChanges();
+            Object[] keyList = item.keys();
+            for (StoreTransaction txn : _storeTransactions) {
+                if (txn.shouldStore(item.getStoreIn()))
+                    recList.add(txn.addRecord(item.group(), keyList[0], item.getModified(), item.getTruth()));
+            }
+            
+            for (int i =1 ; i < keyList.length; i++) {
+                for (StoreTransaction txn : _storeTransactions) {
+                    if (txn.shouldStore(item.getStoreIn()))
+                    {
+                        StoreRecord rec = txn.addRecord(item.group(), keyList[i], item.getModified(), item.getTruth(), keyList[0]);
+                        if((rec != null) && (rec.getCurrent() instanceof RelatedObject))
+                        {
+                            CacheObjectTraversal trav = new CacheObjectTraversal(rec);
+                            ObjectTraversal ot1 = new ObjectTraversal(trav, rec.getCurrent(), false, null);
+                            ot1.traverse();
+                            
+                        }
+                        else if(rec != null)
+                        {
+                            recList.add(rec);
+                        }
+                    }
+                }
+            }
+            
+            System.out.println("--->D2CacheTransactionImpl:"+item.getTruth()+"::"+item.getModified()+"::"+item.getOriginal());
+            cot.setStoreRecords(recList);
+        }
+
+        if (traverse)
+            ot.traverse();
 	}
 
 	@Override

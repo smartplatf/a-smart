@@ -113,7 +113,8 @@ public class TestClient
         throws Exception
     {
         String home = System.getenv("HOME");
-        String jar = home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar";
+        String version = System.getProperty("smart.version");
+        String jar = home + "/.m2/repository/org/anon/sampleapp/sampleapp/" + version + "/sampleapp-" + version + ".jar";
         return deployJar(port, jar, soa);
     }
 

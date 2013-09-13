@@ -60,7 +60,7 @@ import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import org.anon.utilities.crosslink.CrossLinkAny;
 import org.anon.utilities.exception.CtxException;
 
-public class TransitionService implements Constants, DefaultObjectsManager.TenantDefaultCreator
+public class TransitionService implements Constants, DefaultObjectsManager.TenantDefaultCreator, DefaultObjectsManager.InternalServices
 {
     private TransitionService()
     {
@@ -102,7 +102,24 @@ public class TransitionService implements Constants, DefaultObjectsManager.Tenan
         throws CtxException
     {
         DefaultObjectsManager.addCreator(new TransitionService());
+        DefaultObjectsManager.addInternalServices(new TransitionService());
     }
+
+    public static void setupServiceContext(String svc)
+        throws CtxException
+    {
+        threads().addToContextLocals(SYSTEM_RUNTIME, svc);
+    }
+
+    public void setupContext(String svc, ClassLoader ldr)
+        throws CtxException
+    {
+        System.out.println("Setting up internal context for: " + svc);
+        CrossLinkAny any = new CrossLinkAny(this.getClass().getName(), ldr);
+        any.invoke("setupServiceContext", svc);
+        setupServiceContext(svc);
+    }
+
 
     public static void setupDefaultRolesAndUsers(SmartTenant powner)
         throws CtxException

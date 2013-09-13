@@ -70,7 +70,7 @@ import org.jboss.netty.util.CharsetUtil;
 /**
  * @author raooll
  * 
- */
+*/
 public class DownloadRequestReader extends NettyRequestReader {
 
 	public DownloadRequestReader() {
@@ -79,7 +79,7 @@ public class DownloadRequestReader extends NettyRequestReader {
 
 	public InputStream contentStream(Object msg) throws CtxException {
 		DownloadRequest r = (DownloadRequest) msg;
-		String temp = "{'SmartFileObject':{'___smart_action___':'lookup', '___smart_value___':'"+ r.toString()+"'}, "
+		String temp = "{'SmartFileObject':{'___smart_action___':'lookup', '___smart_value___':'"+ r.toString()+"' , '___smart_flow___':'" + r.flow() + "'}, "
 				+ "'fileName':'"
 				+ r.toString()
 				+ "'}";
@@ -114,15 +114,29 @@ public class DownloadRequestReader extends NettyRequestReader {
 		return path;
 	}
 	
-	public void transmitfile(UploadPData pd, Route _route) throws CtxException {
-		HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
-		response.setHeader(CONTENT_LENGTH, pd.size());
-		response.setHeader(CONTENT_TYPE, "application/octet");
+	public Object transmitObject(PData[] pd, Route _route) throws CtxException {
+	
+		System.out.println("---------------- serving download content -------------- ");	
 		
-		_route.send(response);
+		if(pd[0] instanceof UploadPData){
+		     for (PData p : pd){
+		        UploadPData up = (UploadPData) p;
+		        HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
+		        response.setHeader(CONTENT_LENGTH, up.size());
+		        response.setHeader(CONTENT_TYPE, up.fileType());
 		
-		ChunkedStream flStrm = new ChunkedStream(pd.cdata().data());
-		_route.send(flStrm);
+		        _route.send(response);
+		
+		        ChunkedStream flStrm = new ChunkedStream(up.cdata().data());
+		        _route.send(flStrm);
+		    }
+		}
+		else{
+			return	super.transmitObject(pd,_route);		
+		}
+		
+		
+		return null;
 	}
 
 }

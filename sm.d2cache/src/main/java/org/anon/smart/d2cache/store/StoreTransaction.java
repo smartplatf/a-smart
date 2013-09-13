@@ -61,5 +61,6 @@ public interface StoreTransaction
     public void rollback()
         throws CtxException;
     public boolean waitToComplete();
+    public boolean shouldStore(String storeIn);
 }
 

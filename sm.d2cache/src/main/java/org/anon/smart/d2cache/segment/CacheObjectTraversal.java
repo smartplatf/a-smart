@@ -56,16 +56,23 @@ public class CacheObjectTraversal implements TVisitor {
 
 	  private Map<String, List<Object>> _traversed;
 	  private List<StoreRecord> _recList;
+      private boolean _update;
 	  
 	  public CacheObjectTraversal (List<StoreRecord> recList){
 		  _traversed = new HashMap<String, List<Object>>();
 		  _recList = recList;
+          _update = false;
 	  }
 	public CacheObjectTraversal(StoreRecord rec) {
 		_traversed = new HashMap<String, List<Object>>();
 		_recList = new ArrayList<StoreRecord>();
 		_recList.add(rec);
+          _update = false;
 	}
+
+    public void setUpdate() { _update = true; }
+    public void setStoreRecords(List<StoreRecord> recList) { _recList = recList; }
+
 	@Override
 	public Object visit(DataContext ctx)
 	        throws CtxException
@@ -97,7 +104,7 @@ public class CacheObjectTraversal implements TVisitor {
 	            ret = ctx.traversingObject();
 	        }
 	        for(StoreRecord rec : _recList) {
-	        	rec.append(ctx);
+	        	rec.append(ctx, _update);
 	        }
 	        
 	        return ret;

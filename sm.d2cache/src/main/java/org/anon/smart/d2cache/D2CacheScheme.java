@@ -52,6 +52,7 @@ public class D2CacheScheme {
 	public static final int REPLICATION_CACHE = 0x02;
 	public static final int DISTRIBUTED_CACHE = 0x04;
 	public static final int LAYEREDREAD_CACHE = 0x08;
+    public static final int DISK_FILESTORE = 0x10;
 
 	private D2CacheScheme() {
 	}

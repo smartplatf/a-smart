@@ -57,11 +57,10 @@ import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.data.SmartDataED;
 import org.anon.smart.smcore.data.SmartPrimeData;
 import org.anon.smart.smcore.channel.server.CrossLinkEventRData;
-import org.anon.smart.smcore.monitor.MetricsManager;
-import org.anon.smart.smcore.monitor.MonitorAction;
 import org.anon.smart.smcore.transition.graph.TransitionGraphExecutor;
 import org.anon.smart.smcore.transition.parms.TransitionProbeParms;
 import org.anon.smart.smcore.transition.atomicity.TAtomicity;
+import org.anon.smart.smcore.transition.plugin.PluginManager;
 
 import org.anon.utilities.cthreads.CThreadContext;
 import org.anon.utilities.exception.CtxException;
@@ -110,16 +109,11 @@ public class TransitionContext extends AbstractGraphContext implements CThreadCo
     	_source.doneMessage();
     }
     
-    /** Metrics 
-     * @throws CtxException **/
-    public void eventSuccess() throws CtxException
+    public void eventSuccess() 
+        throws CtxException
     {
-    	MonitorAction action = MonitorAction.EVENTEXECUTED;
-        MetricsManager.handleMetricsfor(transaction().getTransaction(TenantConstants.MONITOR_SPACE),
-        		_event, action);
-    	
+        PluginManager.eventProcessed(_event);
     }
-    /** Metrics **/
     
     protected ExecuteGraph executorFor(GraphRuntimeNode rtnde, ProbeParms parms)
         throws CtxException

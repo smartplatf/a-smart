@@ -1,7 +1,7 @@
-name:       ManagerUsers
+name:       ManageUsers
 type:       Transition
 flow:       Security
-foreach:        FlowAdmin|CreateUser,SmartUser|AddIdentity,SmartUser|AddRolesToUser
+foreach:        FlowAdmin|CreateUser,SmartUser|AddIdentity,SmartUser|AddRolesToUser,SmartUser|ChangePassword
 actions:
     - name:     createNewUser
       method:   createNewUser
@@ -18,4 +18,15 @@ actions:
       foreach:  SmartUser|AddRolesToUser
       from:     active
       to:       active
-
+    - name:     changePassword
+      method:   changePassword
+      foreach:  SmartUser|ChangePassword
+      from:     active
+      to:       active
+services:
+    - name:     createUserService
+      method:   createUserService
+    - name:     addIdentityService
+      method:   addIdentityService
+    - name:     addRolesToUserService
+      method:   addRolesToUserService

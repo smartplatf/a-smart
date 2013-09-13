@@ -57,11 +57,23 @@ public class DefaultObjectsManager
             throws CtxException;
     }
 
+    public static interface InternalServices
+    {
+        public void setupContext(String svc, ClassLoader ldr)
+            throws CtxException;
+    }
+
     private static List<TenantDefaultCreator> CREATORS = new ArrayList<TenantDefaultCreator>();
+    private static List<InternalServices> SERVICES = new ArrayList<InternalServices>();
 
     public static void addCreator(TenantDefaultCreator creator)
     {
         CREATORS.add(creator);
+    }
+
+    public static void addInternalServices(InternalServices svc)
+    {
+        SERVICES.add(svc);
     }
 
     public static void createDefaultObjects(TenantAdmin admin, SmartTenant tenant, ClassLoader ldr) 
@@ -69,6 +81,13 @@ public class DefaultObjectsManager
     { 
         for (TenantDefaultCreator creator : CREATORS)
             creator.addTenantObjects(admin, tenant, ldr);
+    }
+
+    public static void setupInternalServiceContext(String s, ClassLoader ldr)
+        throws CtxException
+    {
+        for (InternalServices svc : SERVICES)
+            svc.setupContext(s, ldr);
     }
 
     private DefaultObjectsManager()

@@ -1,0 +1,64 @@
+---------------------------------------------------
+Installation of SMART
+---------------------------------------------------
+Step 1)
+Prepare to install SMART
+1) edit /etc/hosts. Add to this the ip address of your machine and map it to the name hadoop. 
+    For eg., 
+    192.168.1.4    hadoop
+    127.0.0.1 localhost
+    127.0.0.1 platform-dev-debian
+2) create a user for SMART using the command
+    useradd -m -d /home/smartuser smartuser
+    passwd smartuser - enter the password to setup the password.
+3) login as smartuser
+
+Step 2)
+Install SMART
+1) mkdir smartinstall; mkdir scripts
+2) Download setupsmart.tar from https://github.com/Rajeshinf/p-smart/blob/master/sm.kernel/src/main/resources/setupsmart.tar
+3) cd scripts; tar xvf ../setupsmart.tar
+4) ./setupSmart.sh /home/smartuser/smartinstall/ <jdk home directory with a / at the end> <eth0/eth1 or whichever you wish to use>
+
+This will download all the required jars and install SMART and start the SMART server. See FAQ for debugging problems.
+
+---------------------------------------------------
+To setup SMART to run as a service:
+----------------------------------------------------
+Ensure you have setup SMART and it is running using the manual commands before doing this.
+
+Step 1) 
+Setup SMART's user to login without a password using a key. 
+1) ssh-keygen -t rsa
+2) cd .ssh 
+3) cat id_rsa.pub >> authorized_keys
+
+Step 2) 
+Copy the files required and create the appropriate links, so that we can setup a service.
+
+1) ln -s <SMART install path>/runsmart.sh /usr/bin/runsmart.sh
+2) cp <SMART install path>/smart /etc/init.d/smart
+3) vi /etc/init.d/smart
+4) edit the USER variable - set it as the user used to run SMART
+4) edit the SMART_INSTALL path -  set it to the installation path of SMART
+5) update-rc.d smart defaults 91 -- run this if you want SMART to start up during reboot. You can restart the server to check this.
+6) To remove SMART from reboot run update-rc.d -f smart remove
+
+FAQ:
+1) How do I manually startup smart server?
+To do this, you have to first make sure hadoop and hbase are running. To run hadoop and hbase:
+cd smart_install_path/hadoop
+./startupdb.sh
+Access http://<IP Address>:60010 on a browser to ensure hadoop is running.
+cd smart_install_path
+./startSmart.sh SecureServer true
+
+2) I have done all the steps in the installation, my server is not running.
+There can be various reasons for this. The most common reason is that the hadoop database server has not yet come up when SMART server was run. 
+To ensure hadoop is running, try to access http://<IP Adress>:60010, if this page comes up, then hadoop is running. Restart the smart server as above.
+
+3) SMART installation stopped in the middle of a download, how can I recover. 
+Note down the file which did not download. Remove the partially downloaded file from the directory indicated in the output. Rerun the installation.
+SMART scripts are written to ignore downloaded files and hence will continue from where it left off.
+
+

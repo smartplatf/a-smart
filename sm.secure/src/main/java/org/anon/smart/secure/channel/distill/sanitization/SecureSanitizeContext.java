@@ -50,12 +50,15 @@ import org.anon.utilities.exception.CtxException;
 public class SecureSanitizeContext implements Constants
 {
     private String _eventName;
+    private String _flowName;
 
-    public SecureSanitizeContext(String eventname)
+    public SecureSanitizeContext(String eventname, String flowname)
         throws CtxException
     {
         _eventName = eventname;
+        _flowName = flowname;
         threads().addToContextLocals(CURRENT_EVENT, _eventName);
+        threads().addToContextLocals(CURRENT_FLOW, _flowName);
     }
 }
 

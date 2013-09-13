@@ -4,8 +4,11 @@ primeData:
     - org.anon.smart.base.tenant.TenantAdmin
 events:
     - org.anon.smart.smcore.inbuilt.events.NewTenant
+    - org.anon.smart.smcore.inbuilt.events.NewInternalTenant
     - org.anon.smart.smcore.inbuilt.events.EnableFlow
+    - org.anon.smart.smcore.inbuilt.events.InternalEnableFlow
     - org.anon.smart.smcore.inbuilt.events.DeployEvent
+    - org.anon.smart.smcore.inbuilt.events.InternalDeployEvent
     - org.anon.smart.smcore.inbuilt.events.ListDeployments
     - org.anon.smart.smcore.inbuilt.events.DefinePrime
     - org.anon.smart.smcore.inbuilt.events.ListEnabledFlows
@@ -24,8 +27,11 @@ features:
       artefacts:
         - org.anon.smart.base.tenant.TenantAdmin
         - org.anon.smart.smcore.inbuilt.events.NewTenant
+        - org.anon.smart.smcore.inbuilt.events.NewInternalTenant
         - org.anon.smart.smcore.inbuilt.events.EnableFlow
+        - org.anon.smart.smcore.inbuilt.events.InternalEnableFlow
         - org.anon.smart.smcore.inbuilt.events.DeployEvent
+        - org.anon.smart.smcore.inbuilt.events.InternalDeployEvent
         - org.anon.smart.smcore.inbuilt.events.ListDeployments
         - org.anon.smart.smcore.inbuilt.events.DefinePrime
         - org.anon.smart.smcore.inbuilt.events.ListEnabledFlows

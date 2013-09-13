@@ -81,6 +81,7 @@ public class NettyInstinctHandler extends SimpleChannelUpstreamHandler
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
         throws Exception
     {
+        System.out.println(e.getMessage());
         NettyRoute route = new NettyRoute(e.getChannel(), _channelID);
         boolean transmitdefault = _instinct.whenMessage(route, e.getMessage(), _reader);
         if (transmitdefault)

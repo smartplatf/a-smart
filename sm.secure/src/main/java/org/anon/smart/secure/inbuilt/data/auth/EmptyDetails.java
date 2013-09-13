@@ -41,7 +41,7 @@
 
 package org.anon.smart.secure.inbuilt.data.auth;
 
-public class EmptyDetails implements AuthDetails
+public class EmptyDetails implements AuthDetails, java.io.Serializable
 {
     private boolean _verified;
     private String _smartUser;

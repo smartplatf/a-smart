@@ -52,6 +52,16 @@ public class LinkFor implements java.io.Serializable
     {
     }
 
+    LinkFor(String f, String a)
+    {
+        String[] s = f.split("\\.");
+        flow = s[0];
+        name = s[1];
+        s = a.split("\\.");
+        object = s[0];
+        attribute = s[1];
+    }
+
     public String getFlow() { return flow; }
     public String getObject() { return object; }
     public String getAttribute() { return attribute; }

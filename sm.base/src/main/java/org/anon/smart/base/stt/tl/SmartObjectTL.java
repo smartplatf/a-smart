@@ -54,6 +54,7 @@ public class SmartObjectTL extends BaseTL
 {
     private String merge;
     private String commit;
+    private String store;
     private String config;
     private SpaceTL space;
     private KeyTL key;

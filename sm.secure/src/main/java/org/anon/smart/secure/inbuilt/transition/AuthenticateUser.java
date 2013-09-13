@@ -47,7 +47,9 @@ import org.anon.smart.secure.inbuilt.data.iden.SCredential;
 import org.anon.smart.secure.inbuilt.data.auth.AuthDetails;
 import org.anon.smart.secure.inbuilt.data.auth.SAuthenticator;
 import org.anon.smart.secure.inbuilt.events.Authenticate;
+import org.anon.smart.secure.inbuilt.events.Logout;
 import org.anon.smart.secure.inbuilt.responses.SessionDetails;
+import org.anon.smart.secure.inbuilt.responses.SecurityResponse;
 import org.anon.smart.secure.session.SessionDirector;
 
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -72,6 +74,13 @@ public class AuthenticateUser
         assertion().assertTrue(det.isVerified(), "Invalid credentials for: " + authen.getIdentity());
         Session sess = SessionDirector.createSession(det);
         SessionDetails details = new SessionDetails(sess.getSessionId());
+    }
+
+    public void logoutUser(Logout event)
+        throws CtxException
+    {
+        //This does nothing but change the state of the session.
+        SecurityResponse resp = new SecurityResponse("Logged out successfully");
     }
 }
 

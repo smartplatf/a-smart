@@ -63,7 +63,7 @@ public class JCSRecord extends AbstractStoreRecord
         _keys.add(getRowId());
 	}
 
-    public void append(DataContext ctx)
+    public void append(DataContext ctx, boolean update)
         throws CtxException
     {
         if (ctx.field() != null)

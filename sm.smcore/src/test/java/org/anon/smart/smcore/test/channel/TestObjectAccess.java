@@ -106,15 +106,6 @@ public class TestObjectAccess
         clnt.deployFromSampleJar();
         clnt.createTenant();
 
-        /*postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", 
-        		"{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, " +
-        		"'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'RegistrationFlow.soa'}");
-        System.out.println("Zzzzzzzz 1 Min after deploy------------------------");
-        Thread.sleep(10000); //response shd have come within 3s
-       // postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'newtenant','enableFlow':'RegistrationFlow','enableFeatures':['all']}");
-        //System.out.println("Zzzzzzzz 1 Min after Tenant Creation-----------------------");
-        Thread.sleep(10000);*/
-        
         for (int i = 0; i < 1; i++)
         {
             clnt.post("RegisterEvent", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'email':'vjaasti" + i + "@gmail.com',  'password':[\"91\", \"92\"], 'salary':'20000'}");

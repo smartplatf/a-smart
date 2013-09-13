@@ -47,7 +47,7 @@ import org.anon.utilities.exception.CtxException;
 
 public interface MessageReader
 {
-    public Object transmitObject(PData[] data)
+    public Object transmitObject(PData[] data, Route r)
         throws CtxException;
     public Object transmitDefault()
         throws CtxException;

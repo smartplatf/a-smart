@@ -77,18 +77,26 @@ public class DiskStore extends AbstractStore implements FileStore {
 	@Override
 	public InputStream getFileAsStream(String fileName, String group, ClassLoader cl)
 			throws CtxException {
-		
+		System.out.println(" using disk Store");	
 		try{
 		String baseDir = ((DiskFileStoreConnection) _connection).getDiskConf()
 				.baseDirectory();
-		File reqFile = new File(baseDir + "/" + group + "/" + fileName);
+		File reqFile = new File(baseDir + "/" + fileName);
 		if (reqFile.exists()){
 			return new FileInputStream(reqFile);
 		}
+		else{
+			return null;
+		}
 		}
 		catch(Exception e){
-			except().rt(e, new CtxException.Context("DiskStore.getFileAsStream", "Exception"));
+			except().rt(e, new CtxException.Context("DiskStore.getFileAsStream", "Exception"));	
 		}
 		return null;
+	}
+
+	public String getBaseDir(){
+		return ((DiskFileStoreConnection) _connection).getDiskConf()
+				.baseDirectory();
 	}
 }

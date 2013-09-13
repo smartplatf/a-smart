@@ -49,13 +49,14 @@ import org.anon.smart.secure.access.Access;
 import org.anon.smart.secure.inbuilt.data.SmartUser;
 import org.anon.smart.secure.inbuilt.data.Session;
 import org.anon.smart.secure.sdomain.SmartSecureData;
+import org.anon.smart.base.dspace.FSMDataFilter;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 import org.anon.utilities.exception.CtxException;
 
-public class SecureDataFilter implements DataFilter
+public class SecureDataFilter extends FSMDataFilter
 {
     public static final String SETTING_VISITOR = "visitorAccess";
     public static final String YES = "yes";
@@ -75,7 +76,10 @@ public class SecureDataFilter implements DataFilter
     public boolean filterObject(Object obj, DataFilter.dataaction action, boolean except)
         throws CtxException
     {
-        boolean ret = true;
+        //if not accessible because of state, then just return false.
+        boolean ret = super.filterObject(obj, action, except);
+        if (!ret)
+            return ret;
         System.out.println("Checking for access of: " + obj + ":" + action);
         //allow reading of session objects if the sessionid is present.
         if (obj instanceof Session)
@@ -91,6 +95,8 @@ public class SecureDataFilter implements DataFilter
             SmartSecureData data = (SmartSecureData)obj;
             if (action.equals(DataFilter.dataaction.read))
                 access = Access.read;
+            else if (action.equals(DataFilter.dataaction.create))
+                access = Access.create;
             else
                 access = Access.write;
 

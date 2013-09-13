@@ -55,6 +55,7 @@ import org.anon.smart.base.flow.FlowModel;
 import org.anon.smart.base.flow.FlowAdmin;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.TenantConstants;
+import org.anon.smart.d2cache.ListParams;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
@@ -118,18 +119,32 @@ public class RuntimeShell implements SmartShell, TenantConstants
         return lookupFor(CONFIG_SPACE, group, key);
     }
 
-    public List<Object> searchFor(String spacemodel, Class clz, Map<String, String> query)
+    public Object lookupMonitorFor(String group, Object key)
+        throws CtxException
+    {
+        return lookupFor(MONITOR_SPACE, group, key);
+    }
+
+    public List<Object> searchFor(String spacemodel, Class clz, Map<String, String> query, long size)
         throws CtxException
     {
         DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
-        return shell.search(spacemodel, clz, query);
+        return shell.search(spacemodel, clz, query, size);
     }
     
-    public List<Object> listAll(String spacemodel, String group, int size)
+    public List<Object> listAll(String spacemodel, String group, int size, String datatype)
     	throws CtxException
     {
     	DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
-        return shell.listAll(spacemodel, group, size);
+        ListParams parms = new ListParams(group, datatype, size);
+        return shell.listAll(spacemodel, parms);
+    }
+
+    public List<Object> listAll(String spacemodel, ListParams parms)
+    	throws CtxException
+    {
+    	DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
+        return shell.listAll(spacemodel, parms);
     }
 
     public TransactDSpace getSpaceFor(String spacemodel)
@@ -247,6 +262,14 @@ public class RuntimeShell implements SmartShell, TenantConstants
     {
         CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
         return (RuntimeShell)tenant.runtimeShell();
+    }
+
+    public List getListings(String spacemodel, String group, String sortBy,
+            int listingsPerPage, int pageNum)
+        throws CtxException
+    {
+        DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
+        return shell.getListings(spacemodel, group, sortBy, listingsPerPage, pageNum);
     }
 }
 

@@ -49,13 +49,16 @@ import org.anon.smart.channels.shell.SCShell;
 import org.anon.smart.smcore.anatomy.SMCoreConfig;
 import org.anon.smart.kernel.config.SmartConfig;
 import org.anon.smart.kernel.config.ChannelConfig;
+import org.anon.smart.monitor.anatomy.MonitorStartConfig;
 import org.anon.smart.smcore.channel.server.EventServerConfig;
 import org.anon.smart.smcore.channel.server.UploadServerConfig;
 import org.anon.smart.secure.channel.server.SecureEventServerConfig;
+import org.anon.smart.secure.channel.server.SecureUploadServerConfig;
+import org.anon.smart.secure.anatomy.SecureConfig;
 
 import org.anon.utilities.exception.CtxException;
 
-public class SmartModuleConfig implements SMCoreConfig
+public class SmartModuleConfig implements SMCoreConfig, SecureConfig, MonitorStartConfig
 {
     private ExternalConfig[] _channels;
     private String _configDir;
@@ -93,6 +96,8 @@ public class SmartModuleConfig implements SMCoreConfig
         	ccfg = new UploadServerConfig(port, https);
         else if (type.equals("secureevent"))
             ccfg = new SecureEventServerConfig(port, https);
+        else if (type.equals("secureupload"))
+            ccfg = new SecureUploadServerConfig(port, https);
         return ccfg;
     }
 

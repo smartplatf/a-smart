@@ -45,7 +45,7 @@ import org.anon.utilities.exception.CtxException;
 
 public interface DataFilter
 {
-    public enum dataaction { read, write }
+    public enum dataaction { read, write, create }
     //can be used to provide security. If a user
     //does not have access, then this can return false
     //this assumes the filter throws the exception if required.

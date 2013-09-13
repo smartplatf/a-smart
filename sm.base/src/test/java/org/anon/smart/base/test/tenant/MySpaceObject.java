@@ -76,6 +76,11 @@ public class MySpaceObject implements DSpaceObject, java.io.Serializable
 		// TODO Auto-generated method stub
 		
 	}
+    
+    public boolean smart___isNew()
+    {
+        return false;
+    }
 
 }
 

@@ -114,19 +114,6 @@ public class TestRelation
         resp = clnt.post("GetShoppingCart", "{'ShoppingCart':{'___smart_action___':'lookup', '___smart_value___':'raji1shopping'}}");
         assertTrue(resp != null);
 
-        /*
-        SCShell shell = new SCShell();
-        String home = System.getenv("HOME");
-
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'ShoppingCart.soa'}", true);
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'shopping','enableFlow':'ShoppingCart','enableFeatures':['all']}", false);
-        Thread.sleep(7000);
-
-        postTo(shell, port, "localhost", "/shopping/ShoppingCart/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ShoppingCart'}, 'create':'ShoppingCart', 'data':{'cartName':'raji1shopping','totalCost':0.0,'noItems':0}}", true);
-        postTo(shell, port, "localhost", "/shopping/ShoppingCart/AddCartItem", "{'ShoppingCart':{'___smart_action___':'lookup', '___smart_value___':'raji1shopping'}, 'skuId':'book1','cost':250.10}", true);
-        postTo(shell, port, "localhost", "/shopping/ShoppingCart/GetShoppingCart", "{'ShoppingCart':{'___smart_action___':'lookup', '___smart_value___':'raji1shopping'}}", true);
-        Thread.sleep(3000);
-        */
         utils.stopServer();
     }
 
@@ -157,23 +144,6 @@ public class TestRelation
         resp = clnt.post("AddShopItem", "{'MShop':{'___smart_action___':'lookup', '___smart_value___':'raji1shopping'}, 'shopItem':'raji1sku','cost':250.10}");
         assertTrue(resp != null);
 
-        /*
-        SCShell shell = new SCShell();
-        String home = System.getenv("HOME");
-
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'MShop.soa'}", true);
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/.m2/repository/org/anon/sampleapp/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-SNAPSHOT.jar','flowsoa':'Catalogue.soa'}", true);
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'mshop','enableFlow':'Catalogue','enableFeatures':['all']}", false);
-        Thread.sleep(7000);
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/EnableFlow", "{'TenantAdmin':{'___smart_action___':'lookup','___smart_value___':'SmartOwner'}, 'tenant':'mshop','enableFeatures':[ 'all' ],'enableFlow':'MShop', 'links':[{'name':'itemlink', 'flow':'Catalogue', 'object':'CatalogueItem','attribute':'skuID'}]}", false);
-
-        postTo(shell, port, "localhost", "/mshop/Catalogue/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'Catalogue'}, 'create':'CatalogueItem', 'data':{'skuID':'raji1sku','itemName':'RajiItem','itemDescription':'TestingItem','itemCost':10.0,'itemQuantity':5}}", true);
-        postTo(shell, port, "localhost", "/mshop/MShop/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'MShop'}, 'create':'MShop', 'data':{'cartName':'raji1shopping','totalCost':0.0,'noItems':0}}", true);
-        //postTo(shell, port, "localhost", "/mshop/MShop/AddShopItem", "{'MShop':{'___smart_action___':'lookup', '___smart_value___':'raji1shopping'}, 'shopItem':{'___smart_action___':'lookup','___smart_value___':'raji1sku','___smart_flow___':'Catalogue','___key_type___':'CatalogueItem'},'cost':250.10}", true);
-        postTo(shell, port, "localhost", "/mshop/MShop/AddShopItem", "{'MShop':{'___smart_action___':'lookup', '___smart_value___':'raji1shopping'}, 'shopItem':'raji1sku','cost':250.10}", true);
-        //postTo(shell, port, "localhost", "/shopping/ShoppingCart/GetShoppingCart", "{'ShoppingCart':{'___smart_action___':'lookup', '___smart_value___':'raji1shopping'}}", true);
-        Thread.sleep(3000);
-        */
         utils.stopServer();
     }
 }

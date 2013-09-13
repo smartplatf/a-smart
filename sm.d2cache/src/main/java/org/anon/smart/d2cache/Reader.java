@@ -53,13 +53,18 @@ public interface Reader
     public Object lookup(String group, Object key)
         throws CtxException;
 
-    public List<Object> search(String group, Object query)
+    public List<Object> search(String group, Object query, long size)
         throws CtxException;
     
-    public List<Object> listAll(String group, int size)
-    	throws CtxException;
     
     public boolean exists(String group, Object key)
             throws CtxException;
+
+    public List<Object> getListings(String group, String sortBy,
+            int listingsPerPage, int pageNum)
+        throws CtxException;
+
+    public List<Object> list(ListParams filter)
+        throws CtxException;
 }
 

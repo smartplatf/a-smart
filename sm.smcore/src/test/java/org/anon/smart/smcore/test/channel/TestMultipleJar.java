@@ -115,23 +115,6 @@ public class TestMultipleJar
         assertTrue(resp != null);
 
         utils.stopServer();
-
-        /*SCShell shell = new SCShell();
-        String home = System.getenv("HOME");
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/privategithub/p-sampleapp2/testapp.jar','flowsoa':'TestApp.soa'}", true);
-
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/privategithub/p-sampleapp2/testapp2.jar','flowsoa':'TestApp2.soa'}", true);
-
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'testapptenant','enableFlow':'TestApp','enableFeatures':['all']}", false);
-        Thread.sleep(6000);
-
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'testapptenant2','enableFlow':'TestApp2','enableFeatures':['all']}", false);
-        Thread.sleep(6000);
-
-        postTo(shell, port, "localhost", "/testapptenant/TestApp/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'TestApp'}, 'create':'TestData', 'data':{'myKey':'testapp1','something':5}}", true);
-
-        postTo(shell, port, "localhost", "/testapptenant2/TestApp2/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'TestApp2'}, 'create':'TestData', 'data':{'myKey':'testapp2','something':5,'another':'trying'}}", true);
-        */
     }
 }
 

@@ -50,7 +50,8 @@ public class LookupResponse implements java.io.Serializable
 
     public LookupResponse(Object o) {
 		result = new ArrayList<Object>();
-        result.add(o);
+        if (o != null)
+            result.add(o);
 	}
     public List<Object> getResult(){ return result; }
 

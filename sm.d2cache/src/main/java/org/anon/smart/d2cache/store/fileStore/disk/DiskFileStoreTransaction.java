@@ -81,14 +81,11 @@ public class DiskFileStoreTransaction extends AbstractStoreTransaction
 		
 		for (Object fi : files.keySet()) {
 
-			String folder = files.get(fi);
-			String filePath = (String) fi;
-			String[] tmp = filePath.split("/");
-			String fileName = tmp[tmp.length - 1];
+			String[] params = (String[]) fi;
 
-			File destFile = new File(repo + "/" + folder + "/" + fileName);
+			File destFile = new File(repo + "/" + params[1]);
 
-			File srcFile = new File(filePath);
+			File srcFile = new File(params[0]);
 			FileUtils.copyFile(srcFile, destFile,false);
 			
 			srcFile.deleteOnExit();
@@ -145,5 +142,10 @@ public class DiskFileStoreTransaction extends AbstractStoreTransaction
 		files.put(file, group);
 		
 	}
+
+    public boolean shouldStore(String storeIn)
+    {
+        return true;
+    }
 
 }

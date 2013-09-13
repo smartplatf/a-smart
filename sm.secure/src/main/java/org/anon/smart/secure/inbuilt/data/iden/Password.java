@@ -65,6 +65,12 @@ public class Password implements SCredential, java.io.Serializable
     public Password(String pwd)
         throws CtxException
     {
+        change(pwd);
+    }
+
+    public void change(String pwd)
+        throws CtxException
+    {
         _passwordString = crypt().encrypt(pwd);
         _passwordBytes = new ArrayList<Byte>();
         for (int i = 0; i < _passwordString.length; i++)

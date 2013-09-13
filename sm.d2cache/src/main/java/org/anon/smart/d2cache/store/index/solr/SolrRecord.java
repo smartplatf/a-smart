@@ -84,7 +84,7 @@ public class SolrRecord extends AbstractStoreRecord implements Constants
     }
 
 
-    public void append(DataContext ctx)
+    public void append(DataContext ctx, boolean update)
         throws CtxException
     {
         try
@@ -103,7 +103,15 @@ public class SolrRecord extends AbstractStoreRecord implements Constants
                 if ((fldval != null) && (SUFFIXES.containsKey(ctx.field().getType())))
                 {
                     key = key + SUFFIXES.get(ctx.field().getType());
-                    _document.addField(key, fldval);
+
+                    if (update)
+                    {
+                        Map<String, Object> partialUpdate = new HashMap<String, Object>();
+                        partialUpdate.put("set", fldval);
+                        _document.addField(key, partialUpdate);
+                    }
+                    else
+                        _document.addField(key, fldval);
                     //System.out.println("----->Indexing:"+key+":"+fldval);
                 }
             }

@@ -97,4 +97,10 @@ public abstract class AbstractMetricCounter implements MetricCounter, Serializab
 		
 	}
 
+    public boolean smart___isNew()
+    {
+        return false; //for now no permissions here??
+    }
+
+
 }

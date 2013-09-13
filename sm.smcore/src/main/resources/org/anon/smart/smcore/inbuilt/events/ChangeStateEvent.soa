@@ -1,0 +1,3 @@
+name:       ChangeStateEvent
+type:       Event
+flow:       AllFlows

@@ -45,6 +45,7 @@ import java.util.UUID;
 
 import org.anon.smart.channels.data.PData;
 import org.anon.smart.base.tenant.SmartTenant;
+import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.smcore.channel.internal.MessagePData;
 import org.anon.smart.smcore.channel.server.EventPData;
 import org.anon.smart.smcore.channel.distill.sanitization.SanitizeData;
@@ -73,7 +74,7 @@ public class SecureSanitizeData extends SanitizeData
         //search for session.
         EventPData epdata = (EventPData)data;
         SecureSearchedData spopulate = (SecureSearchedData)populate;
-        spopulate.setupSearchContext(epdata.eventName());
+        spopulate.setupSearchContext(epdata.eventName(), epdata.flow());
         if (epdata.sessionId() != null)
         {
             Object session = searchSession(epdata.sessionId(), populate.tenant());
@@ -82,7 +83,7 @@ public class SecureSanitizeData extends SanitizeData
         }
     }
 
-    private Object searchSession(UUID sessid, SmartTenant tenant)
+    private Object searchSession(UUID sessid, CrossLinkSmartTenant tenant)
         throws CtxException
     {
         return SessionDirector.crosslinkSessionIn(sessid.toString(), tenant);

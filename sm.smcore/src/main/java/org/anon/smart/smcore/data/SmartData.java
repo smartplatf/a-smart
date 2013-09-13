@@ -59,5 +59,9 @@ public interface SmartData extends StateEntity, TaggedData, DSpaceObject
         throws CtxException;
     public SmartDataTruth smart___myTruth()
         throws CtxException;
+    public void smart___setGroup(String grp);
+    public void smart___setOwner(String owner);
+
+    public void smart___setIsNew(boolean n);
 }
 

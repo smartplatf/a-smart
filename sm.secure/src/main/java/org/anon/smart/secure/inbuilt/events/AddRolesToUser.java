@@ -51,6 +51,11 @@ public class AddRolesToUser
     {
     }
 
+    public AddRolesToUser(List<String> r)
+    {
+        roles = r;
+    }
+
     public List<String> getRoles() { return roles; }
 }
 

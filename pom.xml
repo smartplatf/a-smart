@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.anon.smart</groupId>
 	<artifactId>smart</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>smart</name>
@@ -16,9 +15,13 @@
 	</properties>
 
 	<distributionManagement>
+		<snapshotRepository>
+			<id>snapshots</id>
+            <url>http://github.com/smartplatf/smart-releases/raw/snapshots</url>
+		</snapshotRepository>
 		<repository>
 			<id>releases</id>
-			<url>http://192.168.1.100:8888/archiva/repository/releases</url>
+            <url>http://github.com/smartplatf/smart-releases/raw/releases</url>
 		</repository>
 	</distributionManagement>
 
@@ -50,17 +53,17 @@
     <dependency>
       <groupId>org.anon.utilities</groupId>
       <artifactId>utilities</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.anon.sampleapp</groupId>
       <artifactId>sampleapp</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.anon.utilities</groupId>
       <artifactId>utilities</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.1-SNAPSHOT</version>
       <scope>test</scope>
       <classifier>tests</classifier>
     </dependency>
@@ -149,12 +152,20 @@
                         <value>smart/sm.smcore/${project.version}/sm.smcore-${project.version}.jar</value>
                     </property>
                     <property>
+                        <name>smart.monitor</name>
+                        <value>smart/sm.monitor/${project.version}/sm.monitor-${project.version}.jar</value>
+                    </property>
+                    <property>
                         <name>utilities</name>
                         <value>utilities/utilities/${project.version}/utilities-${project.version}.jar</value>
                     </property>
                     <property>
                         <name>sampleapp</name>
                         <value>sampleapp/sampleapp/${project.version}/sampleapp-${project.version}.jar</value>
+                    </property>
+                    <property>
+                        <name>smart.version</name>
+                        <value>${project.version}</value>
                     </property>
 					</systemProperties>
 				</configuration>
@@ -173,5 +184,6 @@
 		<module>sm.codegen</module>
 		<module>sm.template</module>
 		<module>sm.generator</module>
-	</modules>
+    <module>sm.monitor</module>
+  </modules>
 </project>

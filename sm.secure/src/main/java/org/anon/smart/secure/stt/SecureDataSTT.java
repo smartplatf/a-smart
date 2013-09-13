@@ -45,13 +45,17 @@ import java.util.List;
 import java.util.ArrayList;
 import java.security.AccessController;
 
+import org.anon.smart.base.stt.annot.MethodExit;
 import org.anon.smart.secure.access.Access;
 import org.anon.smart.secure.sdomain.SmartPAction;
 import org.anon.smart.secure.sdomain.SmartSecureData;
 import org.anon.smart.secure.sdomain.SmartAccessController;
 import org.anon.smart.secure.inbuilt.data.Session;
+import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.transition.TransitionContext;
 
 import static org.anon.utilities.services.ServiceLocator.*;
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -63,6 +67,30 @@ public class SecureDataSTT implements SmartSecureData
 
     public SecureDataSTT()
     {
+    }
+
+    @MethodExit("constructor")
+    private void smart___initializeSecure()
+        throws CtxException
+    {
+        //this will setup the owner if it is smart data
+        Object obj = this;
+        if (obj instanceof SmartData)
+        {
+            TransitionContext ctx = (TransitionContext)threads().threadContext();
+            if (ctx == null)
+                return;
+
+            Object evt = ctx.event();
+            if (evt instanceof SmartSecureData)
+            {
+                SmartSecureData data = (SmartSecureData)evt;
+                SmartData sdata = (SmartData)obj;
+                Session sess = data.smart___session();
+                if ((sess != null) && (sess.getUserId() != null))
+                    sdata.smart___setOwner(sess.getUserId());
+            }
+        }
     }
 
     public List<Object> ___smart_permitted___(Access access, Object ... parms)

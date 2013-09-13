@@ -61,4 +61,9 @@ public class FileStoreReader extends DefaultReader{
 
 		return ((FileStore)_store).getFileAsStream(fileName,group,cl);
 	}
+
+	public String getBaseDir() throws CtxException{
+		 
+		return ((FileStore)_store).getBaseDir();
+	}
 }

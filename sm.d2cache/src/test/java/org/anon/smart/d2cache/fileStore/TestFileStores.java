@@ -41,6 +41,7 @@
 package org.anon.smart.d2cache.fileStore;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -77,6 +78,7 @@ import com.google.common.io.Files;
 public class TestFileStores {
 
 	String projectHome = System.getProperty("user.dir");
+	String fsStore  = projectHome + "/fsStore";
 	private String masterFl = "pom.xml";
 	private String fl1 = "pom.xml.1";
 	private String fl2 = "pom.xml.2";
@@ -94,9 +96,11 @@ public class TestFileStores {
 
 		D2CacheTransaction tx = dc.startTransaction(UUID.randomUUID());
 
-		
-		StoreItem sItem1 = new StoreItem(null, fl1, "testGroup");
-		StoreItem sItem2 = new StoreItem(null, fl2, "testGroup");
+		String[] one = {fl1 , fl1};		
+		String[] two = {fl2 , fl2};		
+	
+		StoreItem sItem1 = new StoreItem(null, one, "testGroup");
+		StoreItem sItem2 = new StoreItem(null, two, "testGroup");
 
 		tx.add(sItem1);
 		tx.add(sItem2);
@@ -107,9 +111,12 @@ public class TestFileStores {
 	
 		
 		FileStoreReader r = (FileStoreReader) dc.myReader();
-		InputStream s1 = r.getFileAsStream(sItem1.getTruth().toString(),sItem1.group(),null);
-		InputStream s2 = r.getFileAsStream(sItem2.getTruth().toString(),sItem2.group(),null);
-		
+		InputStream s1 = r.getFileAsStream( fl1,sItem1.group(),null);
+		InputStream s2 = r.getFileAsStream( fl2,sItem2.group(),null);
+	
+		assertNotNull(s1);	
+		assertNotNull(s2);
+	
 		writeToFile("dFile1", s1);
 		writeToFile("dFile2", s2);
 		
@@ -150,9 +157,11 @@ public class TestFileStores {
 
 		D2CacheTransaction tx = dc.startTransaction(UUID.randomUUID());
 
+		String[] one = {fl1 , fl1};		
+		String[] two = {fl2 , fl2};		
 		
-		StoreItem sItem1 = new StoreItem(null, fl1, "testGroup");
-		StoreItem sItem2 = new StoreItem(null, fl2, "testGroup");
+		StoreItem sItem1 = new StoreItem(null, one, "testGroup");
+		StoreItem sItem2 = new StoreItem(null, two, "testGroup");
 
 		tx.add(sItem1);
 		tx.add(sItem2);
@@ -168,8 +177,13 @@ public class TestFileStores {
 						+ "/../sm.kernel/src/main/resources/dbscripts/hadoop-0.20.2-cdh3u5/conf/hdfs-site.xml"));
 
 		FileStoreReader r = (FileStoreReader) dc.myReader();
-		InputStream s1 = r.getFileAsStream(sItem1.getTruth().toString(),sItem1.group(),null);
-		InputStream s2 = r.getFileAsStream(sItem2.getTruth().toString(),sItem2.group(),null);
+		System.out.println(fsStore + "/" + fl1);		
+
+		InputStream s1 = r.getFileAsStream( fl1 ,sItem1.group(),null);
+		InputStream s2 = r.getFileAsStream( fl2 ,sItem2.group(),null);
+		
+		assertNotNull(s1);	
+		assertNotNull(s2);
 		
 		writeToFile("hFile1", s1);
 		writeToFile("hFile2", s2);

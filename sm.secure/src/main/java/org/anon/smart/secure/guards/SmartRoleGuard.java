@@ -81,6 +81,12 @@ public class SmartRoleGuard extends BaseSGuard
         //initURIs(cls);
     }
 
+    public SmartRoleGuard(String type, String parms, Class cls)
+        throws CtxException
+    {
+        super(type, parms, cls);
+    }
+
     SmartRoleGuard()
     {
         super();
@@ -107,6 +113,8 @@ public class SmartRoleGuard extends BaseSGuard
         if (_deployedURIs == null)
             initURIs(_guardForClass);
 
+        System.out.println("Deployed URIs is: " + _deployedURIs.length + ":" + visitor.associatedSession() + ":" + accessed.getAccessed());
+
         if (visitor.associatedSession() == null)
             return Access.none;
 
@@ -132,6 +140,7 @@ public class SmartRoleGuard extends BaseSGuard
             usr = SmartUser.getUser(sess.getUserId());
         }
 
+        System.out.println("Deployed URIs is: " + _deployedURIs.length + ":" + usr);
         System.out.println("URI is: " + _deployedURIs.length);
         List<SmartRole> roles = usr.lookupRoles();
         List<Access> ret = new ArrayList<Access>();
@@ -156,7 +165,10 @@ public class SmartRoleGuard extends BaseSGuard
         throws CtxException
     {
         SGuardParms parm = (SGuardParms)vars;
-        return new SmartRoleGuard(parm.getAnnotate(), parm.getKlass());
+        if (parm.getAnnotate() != null)
+            return new SmartRoleGuard(parm.getAnnotate(), parm.getKlass());
+        else
+            return new SmartRoleGuard(parm.getType(), parm.getParms(), parm.getKlass());
     }
 }
 

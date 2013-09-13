@@ -1,0 +1,3 @@
+name:       Logout
+type:       Event
+flow:       Security

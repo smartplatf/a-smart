@@ -50,7 +50,8 @@ import java.util.Map;
 public class UploadEvent implements java.io.Serializable {
 
 	private Map<String, String> files;
-	
+    private Map<String, String> data;
+    private String customGroup;	
 	private String uploadUri ;
 
 	public Map getFiles() {
@@ -68,6 +69,14 @@ public class UploadEvent implements java.io.Serializable {
 	public String getUploadUri(){
 		return uploadUri;
 	}
+
+    public String getCustomGroup() {
+        return customGroup;
+    }
+
+    public Map getPostData() {
+        return data;
+    }
 
 	@Override
 	public String toString() {

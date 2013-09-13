@@ -123,18 +123,6 @@ public class TestDefaultConfig
         assertTrue(resp != null);
         resp = clnt.postTo(port, "localhost", "/SmartOwner/AdminSmartFlow/ListEnabledFlows", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'reviewtenant'}}", true);
         assertTrue(resp != null);
-        /*
-        SCShell shell = new SCShell();
-        String home = System.getenv("HOME");
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/DeployEvent", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'deployJar':'" + home + "/privategithub/p-sampleapp2/testreview.jar','flowsoa':'ReviewFlow2.soa'}", true);
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/NewTenant", "{'TenantAdmin':{'___smart_action___':'lookup', '___smart_value___':'SmartOwner'}, 'tenant':'reviewtenant','enableFlow':'ReviewFlow2','enableFeatures':['all']}", false);
-        Thread.sleep(7000);
-        postTo(shell, port, "localhost", "/reviewtenant/AdminSmartFlow/ListDeployments", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'AdminSmartFlow'}, 'dType':'Event','flow':'ReviewFlow2'}", true);
-        postTo(shell, port, "localhost", "/SmartOwner/AdminSmartFlow/ListDeployments", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'AdminSmartFlow'}}", true);
-        postTo(shell, port, "localhost", "/reviewtenant/AdminSmartFlow/ListDeployments", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'AdminSmartFlow'}, 'dType':'PrimeData','flow':'ReviewFlow2'}", true);
-        postTo(shell, port, "localhost", "/reviewtenant/ReviewFlow2/CreatePrime", "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'ReviewFlow2'}, 'create':'ReviewMe', 'data':{'_name':'ReviewObject1'}}", true);
-        postTo(shell, port, "localhost", "/reviewtenant/ReviewFlow2/ReviewEvent", "{'ReviewMe':{'___smart_action___':'lookup', '___smart_value___':'ReviewObject1'}, 'review':'Reviewed','rating':1}", true);
-        */
 	 utils.stopServer();
         
     }

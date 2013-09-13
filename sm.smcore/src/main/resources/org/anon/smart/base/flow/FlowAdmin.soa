@@ -12,9 +12,12 @@ states:
 security:
     - name:     flowauthaccess
       type:     unauthenticated
-      parm:     Authenticate
+      parm:     Authenticate,ListAllEvent,UpdatePrime,CreatePrime,SearchEvent,LookupEvent,DownloadEvent,UploadEvent
       access:   execute
     - name:     roleaccess
       type:     smartrole
+      access:   execute
+    - name:     flowaccess
+      type:     flow
       access:   execute
 

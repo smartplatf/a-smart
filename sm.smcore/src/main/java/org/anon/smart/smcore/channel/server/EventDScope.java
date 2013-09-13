@@ -92,7 +92,7 @@ public class EventDScope extends HTTPMessageDScope
     protected void handleHeader(String key, String value)
     {
         super.handleHeader(key, value);
-        if (key.equalsIgnoreCase("Session-Id"))
+        if (key.equalsIgnoreCase("Session-Id") && (value != null) && (value.length() > 0))
             _sessionId = UUID.fromString(value);
     }
 

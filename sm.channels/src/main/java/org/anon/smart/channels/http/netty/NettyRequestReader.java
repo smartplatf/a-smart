@@ -59,8 +59,10 @@ import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 
 import org.anon.smart.channels.data.PData;
+import org.anon.smart.channels.Route;
 import org.anon.smart.channels.http.HTTPMessageReader;
 
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -104,7 +106,7 @@ public class NettyRequestReader implements HTTPMessageReader
         return stream;
     }
 
-    public Object transmitObject(PData[] resp)
+    public Object transmitObject(PData[] resp,Route r)
         throws CtxException
     {
         HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
@@ -128,6 +130,7 @@ public class NettyRequestReader implements HTTPMessageReader
         response.setContent(ChannelBuffers.copiedBuffer(buff, CharsetUtil.UTF_8));
         response.setHeader(CONTENT_TYPE, "text/html");
         response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Headers", "Session-id");
         response.setHeader(CONTENT_LENGTH, response.getContent().readableBytes());
 
         return response;
@@ -150,6 +153,17 @@ public class NettyRequestReader implements HTTPMessageReader
     {
         HttpRequest request = (HttpRequest)msg;
         return HttpHeaders.isKeepAlive(request);
+    }
+
+    public boolean isOptionsRequest(Object msg)
+    {
+        if (msg instanceof HttpRequest)
+        {
+            HttpRequest request = (HttpRequest)msg;
+            return request.getMethod().equals(HttpMethod.OPTIONS);
+        }
+
+        return false;
     }
 }
 

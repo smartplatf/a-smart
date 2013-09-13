@@ -45,10 +45,10 @@ import org.anon.utilities.exception.CtxException;
 
 public interface DSpaceAuthor
 {
-    public DSpace newSpaceFor(String name)
+    public DSpace newSpaceFor(String name, String fileStore)
         throws CtxException;
 
-    public DSpace browsableSpaceFor(String name)
+    public DSpace browsableSpaceFor(String name, String fileStore)
         throws CtxException;
 
     public SpaceFilter[] spaceFilters()

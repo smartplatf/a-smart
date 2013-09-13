@@ -78,9 +78,13 @@ public class FileStoreCache extends AbstractD2Cache {
 		if(isDevel)
 		{	
 			hSegment.setupSegment(_name, _config.getDiskStoreConfig());
-		}else
+		}
+        else
 		{
-			hSegment.setupSegment(_name, _config.getHadoopStoreConfig());
+            if ((_flags & D2CacheScheme.DISK_FILESTORE) == D2CacheScheme.DISK_FILESTORE)
+                hSegment.setupSegment(_name, _config.getDiskStoreConfig());
+            else
+                hSegment.setupSegment(_name, _config.getHadoopStoreConfig());
 		}
 		
 		return hSegment;

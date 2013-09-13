@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.ArrayList;
 
+import org.anon.smart.smcore.data.DataLegend;
 import org.anon.smart.base.stt.annot.MethodExit;
 import org.anon.smart.base.utils.AnnotationUtils;
 import org.anon.smart.smcore.transition.TransitionContext;
@@ -57,7 +58,8 @@ import org.anon.utilities.exception.CtxException;
 public class ConfigSTT implements ConfigData
 {
     private List<Object> ___smart_keys___;
-    private UUID ___smart_id___;
+    //private UUID ___smart_id___;
+    private DataLegend ___smart_legend___;
 
     public ConfigSTT()
     {
@@ -67,7 +69,8 @@ public class ConfigSTT implements ConfigData
     private void configstt___init()
         throws CtxException
     {
-        ___smart_id___ = UUID.randomUUID();
+        //___smart_id___ = UUID.randomUUID();
+        ___smart_legend___ = new DataLegend();
         TransitionContext ctx = (TransitionContext)threads().threadContext();
         if (ctx != null)
             ctx.atomicity().includeNewConfig(this);
@@ -81,7 +84,11 @@ public class ConfigSTT implements ConfigData
 
     public List<Object> smart___keys()
     {
-        return ___smart_keys___;
+        List<Object> keys = new ArrayList<Object>();
+        keys.add(___smart_legend___.id());
+        for (int i = 0; (___smart_keys___ != null) && (i < ___smart_keys___.size()); i++)
+            keys.add(___smart_keys___.get(i));
+        return keys;
     }
 
     public void smart___addKey(Object k)
@@ -97,6 +104,12 @@ public class ConfigSTT implements ConfigData
         return AnnotationUtils.objectName(this);
     }
 
-    public UUID smart___id() { return ___smart_id___; }
+    //public UUID smart___id() { return ___smart_id___; }
+    public UUID smart___id() { return ___smart_legend___.id(); }
+
+    public boolean smart___isNew()
+    {
+        return true; //always config is always created not edited.
+    }
 }
 

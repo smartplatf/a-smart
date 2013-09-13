@@ -41,7 +41,7 @@
 
 package org.anon.smart.smcore.stt;
 
-import static org.anon.smart.base.utils.AnnotationUtils.objectName;
+import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.threads;
 
 import java.util.UUID;
@@ -68,6 +68,7 @@ public class MessageSTT implements SmartEvent {
 	public void smarteventstt____init() throws CtxException {
 		___smart_name___ = objectName(this);
 		___smart_legend___ = new EventLegend();
+        ___smart_flow_name___ = flowFor(this.getClass());
 		
 		//include into txn
         if (threads().threadContext() instanceof TransitionContext)

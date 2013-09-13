@@ -53,6 +53,7 @@ import org.anon.smart.deployment.MacroDeployer;
 import org.anon.smart.secure.stt.SecureSTTService;
 import org.anon.smart.secure.sdomain.SmartSecurityManager;
 import org.anon.smart.secure.inbuilt.transition.TransitionService;
+import org.anon.smart.secure.flow.SecureFlowService;
 
 
 import org.anon.utilities.anatomy.AModule;
@@ -75,6 +76,7 @@ public class SecureModule extends AModule implements FlowConstants
     {
         SecureSTTService.initialize();
         TransitionService.initialize();
+        SecureFlowService.initialize();
     }
 
     public Repeatable repeatMe(RepeaterVariants vars)

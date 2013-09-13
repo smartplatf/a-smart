@@ -56,11 +56,14 @@ import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
 import org.anon.smart.base.tenant.shell.CrossLinkRuntimeShell;
 import org.anon.smart.base.tenant.shell.DeploymentShell;
 import org.anon.smart.base.tenant.shell.RuntimeShell;
+import org.anon.smart.base.anatomy.SmartModuleContext;
 import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.inbuilt.events.LinkFor;
 import org.anon.smart.smcore.inbuilt.events.ListEnabledFlows;
 import org.anon.smart.smcore.inbuilt.events.NewTenant;
+import org.anon.smart.smcore.inbuilt.events.NewInternalTenant;
 import org.anon.smart.smcore.inbuilt.events.EnableFlow;
+import org.anon.smart.smcore.inbuilt.events.InternalEnableFlow;
 import org.anon.smart.smcore.inbuilt.responses.ListEnabledFlowsResponse;
 import org.anon.smart.smcore.inbuilt.responses.SuccessCreated;
 import org.anon.smart.smcore.transition.TransitionContext;
@@ -68,6 +71,7 @@ import org.anon.smart.smcore.transition.TransitionContext;
 import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
+import org.anon.utilities.anatomy.AModule;
 import org.anon.utilities.exception.CtxException;
 
 public class SmartTenantManager
@@ -77,10 +81,29 @@ public class SmartTenantManager
     {
         assertion().assertTrue(dest.isPlatformOwner(), "Cannot create a tenant on any other tenant other than the owner.");
         assertion().assertNotNull(tenant.tenantName(), "Cannot create a null tenant");
-        System.out.println("Creating a tenant: " + tenant.tenantName());
+        CrossLinkSmartTenant ptenant = CrossLinkSmartTenant.currentTenant();
+        System.out.println("Creating a tenant: " + tenant.tenantName() + ":" + this.getClass().getClassLoader() + ":" + ptenant.getName());
         SmartTenant stenant = new SmartTenant(tenant.tenantName());
-        stenant.deploymentShell().enableForMe("AdminSmartFlow", new String[] { "all" }, new HashMap<String, String>());
-        stenant.deploymentShell().enableForMe("AllFlows", new String[] { "all" }, new HashMap<String, String>());
+        stenant.setDomain(tenant.getDomain());
+        stenant.setClientOf(tenant.getClientOf());
+        stenant.setControlsAdmin(tenant.getControlsAdmin());
+
+        //get from all modules and enable not just these.
+        AModule[] mods = anatomy().allModules();
+        List<String> stdenable = new ArrayList<String>();
+        for (int i = 0; i < mods.length; i++)
+        {
+            String[] std = ((SmartModuleContext)(mods[i].context())).getEnableFlows();
+            for (int j = 0; (std != null) && (j < std.length); j++)
+            {
+                if (!stdenable.contains(std[j]))
+                    stdenable.add(std[j]);
+            }
+        }
+        //stenant.deploymentShell().enableForMe("AdminSmartFlow", new String[] { "all" }, new HashMap<String, String>());
+        //stenant.deploymentShell().enableForMe("AllFlows", new String[] { "all" }, new HashMap<String, String>());
+        for (int i = 0; i < stdenable.size(); i++)
+            stenant.deploymentShell().enableForMe(stdenable.get(i), new String[] { "all" }, new HashMap<String, String>());
         TenantAdmin admin = new TenantAdmin(tenant.tenantName(), stenant);
 
         String flow = tenant.getEnableFlow();
@@ -140,6 +163,48 @@ public class SmartTenantManager
         Collection<String> flows = stenant.listEnableFlows();
         ListEnabledFlowsResponse resp = new ListEnabledFlowsResponse(flows);
         System.out.println("Enabled Flows For Tenant:"+dest.tenantName()+":"+flows);
+    }
+
+    //The below two methods are exposed to all tenants, we have to control it via security when we
+    //include security.
+    //links in the format flow.name=object.attribute
+    public void enableFlowService(String tenant, String domain, String clientOf, String flow, List<String> features, Map<String, String> links)
+        throws CtxException
+    {
+        System.out.println(">>>>>> Called enableFlowService: "  + tenant + ":" + flow + ":" + features + ":" + links);
+        CrossLinkSmartTenant ten = CrossLinkSmartTenant.currentTenant();
+        assertion().assertTrue(ten.controlsAdmin(), "Cannot enable a flow for a tenant without having admin permissions");
+        CrossLinkSmartTenant ptenant = TenantsHosted.crosslinkedPlatformOwner();
+        DefaultObjectsManager.setupInternalServiceContext("enableFlowService", ptenant.getRelatedLoader());
+        CrossLinkRuntimeShell shell = new CrossLinkRuntimeShell(ptenant.runtimeShell());
+        Object tentxn = shell.lookupFor("AdminSmartFlow", "TenantAdmin", ptenant.getName());
+        CrossLinkSmartTenant stenant = TenantsHosted.crosslinkedTenantFor(tenant);
+        if (stenant == null)
+        {
+            //post a NewInternalTenant event, else post the enableflow event
+            // assumption here is that if this is the first tenant, no links can be present, since there is no flow to linkto.
+            newTenantService(tenant, domain, clientOf, flow, features);
+        }
+        else
+        {
+            InternalEnableFlow evt = new InternalEnableFlow(tenant, flow, features, links, tentxn);
+            SuccessCreated created = new SuccessCreated("Posted a new Enable Flow message. Please check after sometime.");
+        }
+    }
+
+
+    public void newTenantService(String name, String domain, String clientOf, String enableflow, List<String> features)
+        throws CtxException
+    {
+        System.out.println(">>>>>> Called newTenantService: " + name + ":" + domain + ":" + clientOf + ":" + enableflow + ":" + features);
+        CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+        assertion().assertTrue(tenant.controlsAdmin(), "Cannot create a tenant without having admin permissions");
+        CrossLinkSmartTenant ptenant = TenantsHosted.crosslinkedPlatformOwner();
+        DefaultObjectsManager.setupInternalServiceContext("newTenantService", ptenant.getRelatedLoader());
+        CrossLinkRuntimeShell shell = new CrossLinkRuntimeShell(ptenant.runtimeShell());
+        Object tentxn = shell.lookupFor("AdminSmartFlow", "TenantAdmin", ptenant.getName());
+        NewInternalTenant evt = new NewInternalTenant(name, enableflow, domain, clientOf, features, tentxn);
+        SuccessCreated created = new SuccessCreated("Posted a new tenant creation message. Please check after sometime.");
     }
 }
 

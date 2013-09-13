@@ -46,9 +46,11 @@ import java.util.Map;
 
 public class SearchEvent implements Serializable {
 	private String group;
+    private long size = -1; //default returns all
 	private Map<String, String> queryMap;
 	public SearchEvent(){}
 	
 	public Map<String, String> getQueryMap() { return queryMap; }
 	public String getGroup() { return group; }
+    public long getSize() { if (size == 0) return -1; else return size; } //return all
 }

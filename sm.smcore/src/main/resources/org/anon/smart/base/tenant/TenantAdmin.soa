@@ -10,4 +10,12 @@ states:
       startState:   true
     - name:         inactive
       endState:     true
+security:
+    - name:     intaccess
+      type:     unauthenticated
+      parm:     InternalEnableFlow,NewInternalTenant,InternalDeployEvent
+      access:   execute
+    - name:     roleaccess
+      type:     smartrole
+      access:   execute
 

@@ -116,5 +116,11 @@ public class ClazzDescriptor implements Constants
     {
         return collectionValues(ACTION_CONFIG);
     }
+
+    public List<BaseTL> services()
+        throws CtxException
+    {
+        return collectionValues(SERVICE_CONFIG);
+    }
 }
 

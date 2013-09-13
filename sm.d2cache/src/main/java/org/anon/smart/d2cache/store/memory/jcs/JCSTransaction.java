@@ -138,5 +138,10 @@ public class JCSTransaction extends AbstractStoreTransaction
 			Object orig, Object relatedKey) throws CtxException {
 		return addRecord(group, primarykey, curr, orig);
 	}
+
+    public boolean shouldStore(String storeIn)
+    {
+        return ((storeIn == null) || (storeIn.length() <= 0) || (storeIn.indexOf("memory") >= 0));
+    }
 }
 

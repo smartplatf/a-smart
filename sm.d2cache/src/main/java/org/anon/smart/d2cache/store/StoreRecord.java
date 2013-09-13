@@ -49,7 +49,7 @@ public interface StoreRecord
     public Object getRowId();
     public String getGroup();
     public Object getCurrent();
-    public void append(DataContext ctx)
+    public void append(DataContext ctx, boolean update)
         throws CtxException;
 }
 

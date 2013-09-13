@@ -8,7 +8,7 @@ then
     export SMART_PATH=$HOME/.m2/repository/
 #    export SMART_LIB_PATH=$SMART_PATH/lib
     export SMART_LIB_PATH=$SMART_PATH/
-    export SMART_VERSION=1.0-SNAPSHOT
+    export SMART_VERSION=1.1-SNAPSHOT
 fi
 
 if [ -f setupEnv.sh ];
@@ -30,6 +30,7 @@ CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/anon/smart/sm.atomicity/$SMART_VERSION/
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/anon/smart/sm.generator/$SMART_VERSION/sm.generator-$SMART_VERSION.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/anon/smart/sm.template/$SMART_VERSION/sm.template-$SMART_VERSION.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/anon/smart/sm.codegen/$SMART_VERSION/sm.codegen-$SMART_VERSION.jar:"
+CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/anon/smart/sm.secure/$SMART_VERSION/sm.secure-$SMART_VERSION.jar:"
 
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/io/netty/netty/3.6.5.Final/netty-3.6.5.Final.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/concurrent/concurrent/1.0/concurrent-1.0.jar:"
@@ -46,7 +47,7 @@ CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/apache/commons/commons-javaflow/1.0-SNA
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/springframework/spring-core/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/springframework/spring-asm/3.0.5.RELEASE/spring-asm-3.0.5.RELEASE.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/commons-logging/commons-logging/1.1/commons-logging-1.1.jar:"
-CLASSPATH="$CLASSPATH$SMART_LIB_PATH/net/sf/json-lib/json-lib/2.4/json-lib-2.4-jdk15.jar:"
+CLASSPATH="$CLASSPATH$SMART_LIB_PATH/net/sf/json-lib/json-lib/2.4/json-lib-2.4.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/commons-lang/commons-lang/2.5/commons-lang-2.5.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/commons-collections/commons-collections/3.2/commons-collections-3.2.jar:"
@@ -82,6 +83,7 @@ CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/slf4j/slf4j-api/1.6.1/slf4j-api-1.6.1.j
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/slf4j/slf4j-log4j12/1.6.4/slf4j-log4j12-1.6.4.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/commons-io/commons-io/1.4/commons-io-1.4.jar:"
+CLASSPATH="$CLASSPATH$SMART_LIB_PATH/commons-codec/commons-codec/1.4/commons-codec-1.4.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/commons-fileupload/commons-fileupload/1.2.1/commons-fileupload-1.2.1.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/org/apache/httpcomponents/httpclient/4.1.3/httpclient-4.1.3.jar:"
@@ -91,9 +93,12 @@ CLASSPATH="$CLASSPATH$SMART_LIB_PATH/javax/servlet/servlet-api/2.3/servlet-api-2
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/flowdepjars/*:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/velocity/velocity/1.5/velocity-1.5.jar:"
 CLASSPATH="$CLASSPATH$SMART_LIB_PATH/logkit/logkit/1.0.1/logkit-1.0.1.jar:";
+CLASSPATH="$CLASSPATH$SMART_LIB_PATH/javax/mail/mail/1.4/mail-1.4.jar:";
 
-#java  -javaagent:/home/vjaasti/jvmtools/plumbr/plumbr.jar -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/vjaasti/heapDumps -cp $CLASSPATH org.anon.smart.kernel.SmartKernel $1 yes
-#java  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/vjaasti/heapDumps -cp $CLASSPATH org.anon.smart.kernel.SmartKernel $1 yes
-java  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/vjaasti/heapDumps  -DSmart.Codegen.DumpPath=/smartcodegenjars/codegen/smartdump -cp $CLASSPATH org.anon.smart.kernel.SmartKernel $1 yes
-#java  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/vjaasti/heapDumps -DSmart.Development.Mode=true -DSmart.Codegen.DumpPath=/tmp/codegen/smartdump -cp $CLASSPATH org.anon.smart.kernel.SmartKernel $1 yes
+#java  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$SMART_PATH/heapDumps  -DSmart.Codegen.DumpPath=/smartcodegenjars/codegen/smartdump -cp $CLASSPATH org.anon.smart.kernel.SmartKernel $1 yes
+nohup java  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$SMART_PATH/heapDumps  -DSmart.Codegen.DumpPath=/smartcodegenjars/codegen/smartdump -cp $CLASSPATH org.anon.smart.kernel.SmartKernel $1 yes &
+echo $! > smartkernel.pid
+
+#for development mode i.e. no hadoop
+#java  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$SMART_PATH/heapDumps -DSmart.Development.Mode=true -DSmart.Codegen.DumpPath=/tmp/codegen/smartdump -cp $CLASSPATH org.anon.smart.kernel.SmartKernel $1 yes
 

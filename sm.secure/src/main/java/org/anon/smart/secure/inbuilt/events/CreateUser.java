@@ -59,6 +59,13 @@ public class CreateUser implements java.io.Serializable
         name = nm;
     }
 
+    public CreateUser(String ID, String nm, List<String> r)
+    {
+        id = ID;
+        name = nm;
+        roles = r;
+    }
+
     public String getID() { return id; }
     public String getName() { return name; }
     public List<String> getRoles() { return roles; }

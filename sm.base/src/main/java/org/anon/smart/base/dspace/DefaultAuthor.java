@@ -42,6 +42,7 @@
 package org.anon.smart.base.dspace;
 
 import org.anon.smart.d2cache.D2Cache;
+import org.anon.smart.d2cache.DataFilter;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -51,16 +52,18 @@ public class DefaultAuthor implements DSpaceAuthor
     {
     }
 
-    public DSpace newSpaceFor(String name)
+    public DSpace newSpaceFor(String name, String fileStore)
         throws CtxException
     {
-        return new TransactDSpaceImpl(name);
+        FSMDataFilter filter = new FSMDataFilter();
+        return new TransactDSpaceImpl(name, new DataFilter[] { filter }, fileStore);
     }
 
-    public DSpace browsableSpaceFor(String name)
+    public DSpace browsableSpaceFor(String name, String fileStore)
         throws CtxException
     {
-        return new BrowsableTransactDSpace(name);
+        FSMDataFilter filter = new FSMDataFilter();
+        return new BrowsableTransactDSpace(name, new DataFilter[] { filter }, fileStore);
     }
 
     public SpaceFilter[] spaceFilters()

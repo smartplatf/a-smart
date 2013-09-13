@@ -14,12 +14,15 @@ public class HbaseObjectTraversal implements TVisitor
 {
     private Map<String, List<Object>> _traversed;
     private StoreRecord _rec;
+    private boolean _update = false;
 
     public HbaseObjectTraversal(StoreRecord rec)
     {
         _traversed = new HashMap<String, List<Object>>();
         _rec = rec;
     }
+
+    public void setUpdate() { _update = true; }
 
     public Object visit(DataContext ctx)
         throws CtxException
@@ -46,7 +49,7 @@ public class HbaseObjectTraversal implements TVisitor
             ret = ctx.traversingObject();
         }
         //vinay
-        _rec.append(ctx);
+        _rec.append(ctx, _update);
         
         return ret;
     }

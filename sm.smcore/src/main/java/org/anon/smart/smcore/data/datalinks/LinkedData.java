@@ -105,5 +105,10 @@ public class LinkedData implements DSpaceObject, java.io.Serializable
         //if (_links == null)
          //   _links = new ArrayList<UUID>();
     }
+
+    public boolean smart___isNew()
+    {
+        return false;
+    }
 }
 

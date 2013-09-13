@@ -46,6 +46,7 @@ import java.util.ArrayList;
 
 import org.anon.smart.base.stt.tl.BaseTL;
 import org.anon.smart.base.annot.TransitionAnnotate;
+import org.anon.smart.smcore.annot.ServicesAnnotate;
 
 import org.anon.utilities.exception.CtxException;
 
@@ -55,6 +56,8 @@ public class TransitionTL extends BaseTL
     private String event;
     private String foreach;
     private List<MethodTL> actions;
+    private List<MethodTL> services;
+    private List<ServiceTL> callservices;
 
     public TransitionTL()
     {
@@ -70,6 +73,7 @@ public class TransitionTL extends BaseTL
             annons.add(annots[i]);
 
         annons.add(TransitionAnnotate.class);
+        annons.add(ServicesAnnotate.class);
         return annons.toArray(new Class[0]);
     }
 

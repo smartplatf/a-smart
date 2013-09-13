@@ -9,7 +9,7 @@
  * SMART is a free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ _* (at your option) any later version.
  *
  * SMART is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -64,15 +64,21 @@ public class FileItem implements DSpaceObject {
 
 	private String _srcFile;
 	private String _flowName;
+	private String _destFileName;
 	private List<Object> ___smartKeys;
 	private String ___smartObjectGroup;
 
-	public FileItem(String srcFlName,String flw) {
+	public FileItem(String srcFlName,String flw , String destFileName) {
 		_srcFile = srcFlName;
 		_flowName = flw;
+		_destFileName = destFileName;
 		___smartKeys = new ArrayList<Object>();
 		___smartKeys.add(_flowName);
 
+	}
+
+	public String getDestFileName(){
+		return _destFileName;
 	}
 
 	public String getSrcFile(){
@@ -114,5 +120,10 @@ public class FileItem implements DSpaceObject {
 		// TODO Auto-generated method stub
 		return _flowName;
 	}
+
+    public boolean smart___isNew()
+    {
+        return false;
+    }
 
 }
