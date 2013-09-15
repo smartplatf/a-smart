@@ -46,11 +46,16 @@ if [ ! -f $1/lib ];
 then
     mkdir -p $1/lib
 fi
+if [ ! -f $1/testclient ];
+then
+    mkdir -p $1/testclient
+fi
 
 echo "[Copying required files.]"
 cp startSmart.sh $1
 cp runsmart.sh $1
 cp smart $1
+cp -R testclient/* $1/testclient
 
 echo "[Changing to directory]"
 scriptsdir=`pwd`

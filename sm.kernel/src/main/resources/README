@@ -28,7 +28,7 @@ To setup SMART to run as a service:
 Ensure you have setup SMART and it is running using the manual commands before doing this.
 
 Step 1) 
-Setup SMART's user to login without a password using a key. 
+Setup SMART user to login without a password using a key. 
 1) ssh-keygen -t rsa
 2) cd .ssh 
 3) cat id_rsa.pub >> authorized_keys
@@ -44,7 +44,22 @@ Copy the files required and create the appropriate links, so that we can setup a
 5) update-rc.d smart defaults 91 -- run this if you want SMART to start up during reboot. You can restart the server to check this.
 6) To remove SMART from reboot run update-rc.d -f smart remove
 
+---------------------------------------------------
+To test flows in SMART
+---------------------------------------------------
+There is a simple html test client included with the installation that can be used to deploy and test flows.
+1) Open FlowTest.html in a browser
+2) Enter the server details and click on connect to smart
+3) Enter the jar to deploy and click on Deploy and Enable
+4) Now you can use the Post to SMART section to post different events to SMART.
+
+The status messages in JSON format returned by SMART is shown in the STATUS Message box. List results are shown in the results section.
+This is a very primitive test tool and helps you get started with writing a client.
+smartcom.js can be accessed from fixchg.com. The js files that you write can be derived from this to inherit the standard SMART client functions.
+
+---------------------------------------------------
 FAQ:
+---------------------------------------------------
 1) How do I manually startup smart server?
 To do this, you have to first make sure hadoop and hbase are running. To run hadoop and hbase:
 cd smart_install_path/hadoop

@@ -56,6 +56,7 @@ createdir $configdir
 cd $install
 cp $($scriptdir + "\startSmart.bat") .
 cp -R $($scriptdir + "\solr-datastore\") .
+cp -R $($scriptdir + "\testclient\") .
 
 Get-Content $($scriptdir + "smartDirs.txt") | ForEach-Object { createdir $($libdir + $_) }
 

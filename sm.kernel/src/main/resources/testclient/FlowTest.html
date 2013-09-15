@@ -1,0 +1,324 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN">
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>SMART - Flow Testing tool</title>
+    <link rel="stylesheet" href="http://fixchg.com/css/bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="http://fixchg.com/css/media.css" type="text/css">
+    <link rel="stylesheet" href="http://fixchg.com/style.css">
+    <script>
+        document.documentElement.className = document.documentElement.className.replace(/(\s|^)no-js(\s|$)/, '$1js$2');
+    </script>
+</head>
+<body>
+    <!-- Start Top Bar -->
+    <div class="container tophead">
+        <div class="left span3">
+            <ul class="social">
+                <li><a title="Home" data-placement="bottom" data-toggle="tooltip" href="http://fixchg.com/index.php" target="_blank"><i class="icon-home"></i></a></li>
+                <li><a title="Learn More" data-placement="bottom" data-toggle="tooltip" href="http://fixchg.com/learnmore.php" target="_blank"><i class="icon-info-sign" target="_blank"></i></a></li>
+                <li><a title="Like us on Facebook" data-placement="bottom" data-toggle="tooltip" href="http://facebook.com/webdesigntunes.com"><i class="icon-facebook"></i></a></li>
+                <li><a title="Follow us on Twitter" data-placement="bottom" data-toggle="tooltip" href="http://twitter.com/smartplatf"><i class="icon-twitter"></i></a></li>
+            </ul>
+        </div>
+        <div class="right">
+            <div id="wdt-links">
+                <ul>
+                    <li class="register"><span class="label label-success font14">Local Testing Client For SMART Flows <i class="icon-info"></i></span></li>
+                    <li class="register"><span class="label label-success font14"> Beta Version <i class="icon-info"></i></span></li>
+                    <li class="register"><a href="http://fixchg.com/register.php" id="wdt-register" target="_blank">Register <i class="icon-user"></i></a></li>
+                    <li><a href="http://fixchg.com/login.php" target="_blank">Login <i class="icon-unlock-alt" ></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- END Top Bar -->
+    <!-- Start Header Bar -->
+    <div class="container header-wrap make-bg">
+        <div class="left brand">
+            <h1><a href="http://fixchg.com/index.php">FiXchg</a></h1>
+        </div>
+    </div>
+
+    <!-- Start Main Menu -->
+    <div class="container make-bg">
+        <div class="navbar">
+            <div class="container">
+                <div class="navbar-inner">
+                    <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav pull-left">
+                            <li class="active"><a href="FlowTest.html">Test Events</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Main Menu -->
+    <!-- Start Site Container -->
+    <div class="container make-bg" id="body-container">
+    <div class="row-fluid">
+        <div class="span6">
+            <h2 class="widget-title">Setup SMART for testing</h2>
+            <div class="sidebar-line"><span></span></div>
+            <div class="boxlight">
+            <form class="register-form" id="connectsmart" method="post">
+                <input type="text" id="server" class="input-block-level" placeholder="Enter the server name" value="localhost" required="required"/>
+                <input type="text" id="port" class="input-block-level" placeholder="Enter the server port" value="9081" required="required"/>
+                <input type="text" id="tenant" class="input-block-level" placeholder="Enter a default tenant name" value="smarttest" required="required"/>
+                <button type="submit" class="btn btn-general input-block-level" id='connectto'>Connect To SMART</button>
+            </form>
+            </div>
+            <div class="boxlight">
+            <form class="register-form" id="setupdata" method="post">
+                <input type="text" id="deployjar" class="input-block-level" placeholder="Enter the file path for deployment" required="required"/>
+                <input type="text" id="soafile" class="input-block-level" placeholder="Enter the Soa file name in the jar" required="required"/>
+                <input type="text" id="flowname" class="input-block-level" placeholder="Enter the flow name in the soa file" required="required"/>
+                <input type="text" id="features" class="input-block-level" placeholder="Enter the list of features to enable" required="required"/>
+                <input type="hidden" id="adminsessid" value=""/>
+                <button type="submit" class="btn btn-general input-block-level" id='setup'>Deploy and Enable</button>
+            </form>
+            </div>
+        </div>
+        <div class="span6">
+            <h2 class="widget-title">Post Events</h2>
+            <div class="sidebar-line"><span></span></div>
+            <div class="boxlight">
+            <select id="flow" class="input-block-level" placeholder="Select a flow">
+            </select>
+            <select id="event" class="input-block-level" placeholder="Select an Event">
+            </select>
+            <select id="posttotype" class="input-block-level" placeholder="Select a prime">
+            </select>
+            <input id="posttoval" type="text" class="input-block-level" placeholder="Enter the value of the prime object to which to post"/>
+            <input type="hidden" id="sessionid" name="sessionid" value=""/>
+            <p>To add values to be posted as JSON, double click on the name and value columns and edit them. Hit enter to accept the value.</p>
+            <button class="btn btn-general icon-plus" id="addrow"></button>
+            <form class="register-form" id="postgeneral" method="POST">
+            <table class="table table-striped" id="datatbl">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="data">
+                </tbody>
+            </table>
+            <button id="check" type="submit" class="btn btn-general input-block-level">Post to SMART</button>
+            </form>
+            </div>
+        </div>
+    </div>
+    <section id="tabbedelements">
+        <ul id="resultstabs" class="nav nav-tabs">
+          <li class="active"><a id="stataref" href="#status" data-toggle="tab">Status Messages</a></li>
+          <li><a id="resultaref" href="#results" data-toggle="tab">Results</a></li>
+        </ul>
+        <div class="tab-content">
+        <div class="span10 tab-pane fade active in" id="status">
+            <div id="statmsg">
+            </div>
+        </div>
+        <div class="span10 tab-pane fade" id="results">
+            <div id="resultsdiv">
+            <table class="table table-striped" id="resulttab">
+            </table>
+            </div>
+        </div>
+        </div>
+    </section>
+</div>
+<!-- End Site Container -->
+<div class="container">
+    <!-- Start Footer -->
+        <footer class="footer-wrapper">
+            <div class="row-fluid">
+                <div class="span4">
+                    <h2 class="widget-title"><span>FiXchg is ...</span></h2>
+                        <div class="sidebar-line"><span></span></div>
+                            <p>A marketplace for SMART Flows. If it is your first time visiting the site, please visit our <a href="learnmore.php">"Learn More"</a> page.</p>
+                            <p>As a developer you can rapidly develop "Lightweight flows" and publish it for customers. Get out of the box security, persistence, transaction, scalability and much more.</p>
+                            <p>As a customer you can easily assemble "Lightweight flows" to create power packed solution on cutting edge technology.</p>
+                </div>
+
+
+                <div class="span3">
+            <h2 class="widget-title"><span>GET IN TOUCH</span></h2>
+                        <div class="sidebar-line"><span></span></div>
+                            <ul class="contact-details">
+                            <li><i class="icon-home"></i> SMART </li>
+                            <li><i class="icon-phone"></i> +91 9902530998</li>
+                            <li><i class="icon-envelope-alt"></i> <a href="mailto:support@smart-platform.com">support@smart-platform.com</a></li>
+                            <li><i class="icon-envelope-alt"></i> <a href="mailto:info@smart-platform.com">info@smart-platform.com</a></li>
+                            <li><i class="icon-map-marker"></i> <a href="#">View on Google Maps</a></li>
+                            </ul>
+                </div>
+            </div>
+        </footer>
+    <!-- End Footer -->
+
+    <!-- Start Copyright -->
+    <div class="copyright">
+        <div class="footer-menu left">
+            <ul class="menu">
+                <li><a href="http://fixchg.com/index.php">Home</a></li>
+                <li><a href="http://www.smart-platform.com" target="_blank">About SMART</a></li>
+                <li><a href="#">Sitemap</a></li>
+                <li><a href="#">Site Terms</a></li>
+                <li><a href="http://blog.smart-platform.com/" target="_blank">Blog</a></li>
+                <li><a href="mailto:support@smart-platform.com">Support</a></li>
+            </ul>
+        </div>
+
+        <div class="right">
+            <p>© 2013 - 2014 <a href="index.html">SMART</a>. All rights reserved.</p>
+
+        </div>
+    </div>
+    <!-- End Copyright -->
+<div class="wdttop">Scroll To Top</div>
+<progress id="progressbar" class="wdtprogress" value="70" max="100"><strong>working</strong></progress>
+</div>
+    <!-- JS Files -->
+    <script src="http://fixchg.com/js/jquery.js" type="text/javascript" ></script>
+    <script src="http://fixchg.com/js/jquery.ui.core.js" type="text/javascript" ></script>
+    <script src="http://fixchg.com/js/jquery.ui.widget.js" type="text/javascript"></script>
+    <script src="http://fixchg.com/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="http://fixchg.com/js/smartcom.js" type="text/javascript"></script>
+    <script src="http://fixchg.com/js/smartadmin.js" type="text/javascript"></script>
+    <script src="http://fixchg.com/js/jquery.form.js" type="text/javascript"></script>
+    <script src="http://fixchg.com/js/smartsecurity.js" type="text/javascript"></script>
+    <script src="js/flowtest.js" type="text/javascript"></script>
+
+    <script>
+    $(document).ready(function() {
+        $('#statmsg').css({height:'300px'});
+        //adminlogin();
+        $('#addrow').click(function() {
+            var tbody = $('#data');
+            addrow(tbody, true);
+        });
+
+        $('#event').change(function() {
+            var evt = $(this).val();
+            addStandardRow(evt);
+        });
+
+        $('#flow').change(function() {
+            $('#event').empty();
+            $('#posttotype').empty();
+            populateEvents();
+            populatePrimes();
+        });
+    });
+
+    function addrow(tbody, top) {
+        var tr = $("<tr/>");
+        var td1 = $("<td/>", { 'text':'Double click to enter Name' });
+        tr.append(td1);
+        var td2 = $("<td/>", { 'text':'Double click to enter Value' });
+        tr.append(td2);
+        td1.dblclick(edittd);
+        td2.dblclick(edittd);
+
+        if (top)
+        {
+            var cnt = tbody.children().length;
+            var a = $("<a/>", { 'href':'#' }).append($("<i/>", { 'class':'icon-remove'}));
+            a.click(deleterow);
+            var a1 = $("<a/>", { 'href':'#' }).append($("<i/>", { 'class':'icon-table'}));
+            a1.click(changetable);
+            var td3 = $("<td/>");
+            td3.append(a);
+            td3.append(a1);
+
+            tr.append(td3);
+        }
+
+        tbody.append(tr);
+    };
+
+    function deleterow() {
+             var tr = $(this).closest('tr');
+             tr.css("background-color","#FF3700");
+             tr.fadeOut(400, function(){
+             tr.remove();
+        });
+     return false;
+   };
+
+   function addsubtblrow()
+   {
+       var tbl = $(this).closest('table');
+       var tbody = $(tbl.children()[1]);
+       addrow(tbody, false);
+       return false;
+   };
+
+
+    function changetable() {
+       var tr = $(this).closest('tr');
+       var childs = tr.children();
+       var val = $(childs[1]); //this is the value field
+       val.text('');
+       val.unbind('dblclick');
+
+       var tbl = $("<table/>", { 'class':'table table-striped' });
+
+       var add = $("<a/>", { 'href' : '#'}).append($("<i/>", { 'class':'icon-plus' }));
+       add.click(addsubtblrow);
+       var th = $("<thead/>");
+       var td = $("<td/>");
+       td.append(add);
+       th.append(td);
+       tbl.append(th);
+
+       var tbody = $("<tbody/>");
+       tbl.append(tbody);
+
+       val.append(tbl);
+
+       return false;
+    };
+
+    function edittd() {
+            var OriginalContent = $(this).text();
+            var w = $(this).width();
+
+            $(this).html("<input type='text' value='" + OriginalContent + "' width='50px' />");
+            $(this).children().first().focus();
+
+            $(this).children().first().keypress(function (e) {
+                if (e.which == 13) {
+                    var newContent = $(this).val();
+                    $(this).parent().text(newContent);
+                }
+                else if (e.which == 27) {
+                    $(this).parent().text(OriginalContent);
+                }
+                else if (e.which == 9) {
+                    $(this).parent().next().dblclick();
+                }
+            });
+
+        $(this).children().first().blur(function(){
+            var newContent = $(this).val();
+            $(this).parent().text(newContent);
+        });
+    };
+
+    function delRow(cnt) {
+        var table = document.getElementById('datatbl');
+        table.deleteRow(cnt + 1);
+    };
+
+    </script>
+</body>
+</html>
