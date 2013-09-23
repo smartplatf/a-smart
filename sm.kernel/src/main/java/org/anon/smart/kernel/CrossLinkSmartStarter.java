@@ -46,18 +46,18 @@ import org.anon.utilities.exception.CtxException;
 
 public class CrossLinkSmartStarter extends CrossLinker
 {
-    public CrossLinkSmartStarter(Object config, boolean master, String[] startOrder, ClassLoader cl)
+    public CrossLinkSmartStarter(Object config, boolean master, String[] startOrder, boolean stop, ClassLoader cl)
         throws CtxException
     {
         super(cl);
-        create(config, master, startOrder);
+        create(config, master, startOrder, stop);
     }
 
     protected Class[] parmTypes(String mthd, Object ... params)
     {
         if (mthd.equals("<init>"))
         {
-            return new Class[] { params[0].getClass(), Boolean.TYPE, String[].class };
+            return new Class[] { params[0].getClass(), Boolean.TYPE, String[].class, Boolean.TYPE };
         }
 
         return super.parmTypes(mthd, params);

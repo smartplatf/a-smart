@@ -53,6 +53,7 @@ import org.anon.smart.smcore.annot.MethodAnnotate;
 import org.anon.smart.smcore.annot.ServiceAnnotate;
 import org.anon.smart.smcore.annot.ServicesAnnotate;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
+import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
 
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
@@ -93,7 +94,7 @@ public class GraphCreator
                 Class cls = transitions.get(i);
                 Method[] methods = cls.getDeclaredMethods();
                 addMethods(key, keyextra, cls, methods, ret);
-                addServices(key, keyextra, cls, ret, shell);
+                addServices(key, keyextra, cls, ret, shell, flow);
             }
 
             //now add dependencies
@@ -151,7 +152,7 @@ public class GraphCreator
         }
     }
 
-    private GraphNode createNode(String key, String keyextra, Class cls, Method mthd, ServiceAnnotate annot)
+    private GraphNode createNode(String key, String keyextra, Class cls, Method mthd, ServiceAnnotate annot, String parms)
         throws CtxException
     {
         if (annot != null)
@@ -168,7 +169,7 @@ public class GraphCreator
 
             if (isfor)
             {
-                TransitionNodeDetails det = new TransitionNodeDetails(cls, mthd, annot);
+                TransitionNodeDetails det = new TransitionNodeDetails(cls, mthd, annot, parms);
                 return new GraphNode(det.name(), cls, mthd, det);
             }
         }
@@ -202,24 +203,46 @@ public class GraphCreator
         return null;
     }
 
-    private void addServices(String key, String keyextra, Class cls, Map<String, Graph> into, CrossLinkDeploymentShell shell)
+    private void addServices(String key, String keyextra, Class cls, Map<String, Graph> into, CrossLinkDeploymentShell shell, String flow)
         throws CtxException
     {
         ServicesAnnotate sannot = (ServicesAnnotate)reflect().getAnyAnnotation(cls, ServicesAnnotate.class.getName());
         if (sannot == null)
             return;
 
+        CrossLinkFlowDeployment dep = shell.deploymentFor(flow);
         ServiceAnnotate[] sannots = sannot.callservices();
         for (int i = 0; i < sannots.length; i++)
         {
-            Object[] det = shell.getServiceFor(sannots[i].service());
-            assertion().assertNotNull(det, "Cannot find service for: " + sannots[i].service());
-            Class svccls = (Class)det[0];
-            Method mthd = (Method)det[1];
-            GraphNode nde = createNode(key, keyextra, svccls, mthd, sannots[i]);
-            if (nde == null)
-                continue;
-            addNode(nde, into);
+            String svc = sannots[i].service();
+            String parms = sannots[i].parms();
+            if (sannots[i].service().equals("needsService"))
+            {
+                svc = dep.getServiceMash(sannots[i].name());
+                System.out.println("Unparsed is: " + svc);
+                if (svc == null)
+                    svc = "notMapped";
+
+                String[] vals = svc.split("\\(");
+                svc = vals[0];
+                if (vals.length > 1)
+                {
+                    parms = "(" + vals[1];
+                }
+                System.out.println("Got svc as: " + svc + ":" + parms);
+            }
+
+            if (!svc.equals("needsService") && !svc.equals("notMapped"))
+            {
+                Object[] det = shell.getServiceFor(svc);
+                assertion().assertNotNull(det, "Cannot find service for: " + svc);
+                Class svccls = (Class)det[0];
+                Method mthd = (Method)det[1];
+                GraphNode nde = createNode(key, keyextra, svccls, mthd, sannots[i], parms);
+                if (nde == null)
+                    continue;
+                addNode(nde, into);
+            }
         }
     }
 

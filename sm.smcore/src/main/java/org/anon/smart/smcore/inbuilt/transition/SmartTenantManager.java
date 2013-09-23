@@ -64,6 +64,7 @@ import org.anon.smart.smcore.inbuilt.events.NewTenant;
 import org.anon.smart.smcore.inbuilt.events.NewInternalTenant;
 import org.anon.smart.smcore.inbuilt.events.EnableFlow;
 import org.anon.smart.smcore.inbuilt.events.InternalEnableFlow;
+import org.anon.smart.smcore.inbuilt.events.AddFlowLinks;
 import org.anon.smart.smcore.inbuilt.responses.ListEnabledFlowsResponse;
 import org.anon.smart.smcore.inbuilt.responses.SuccessCreated;
 import org.anon.smart.smcore.transition.TransitionContext;
@@ -154,6 +155,42 @@ public class SmartTenantManager
         }
         SuccessCreated created = new SuccessCreated(enable.getEnableFlow());
     }
+
+    public void addLinksToFlow(TenantAdmin adm, AddFlowLinks lnk)
+        throws CtxException
+    {
+        assertion().assertNotNull(lnk.getTenant(), "Cannot add links for a null tenant");
+        assertion().assertNotNull(lnk.getEnableFlow(), "Cannot add links for  null flow.");
+        assertion().assertNotNull(lnk.getLinks(), "Cannot add null links.");
+        assertion().assertTrue((lnk.getLinks().size() > 0), "Cannot add 0 links.");
+
+        SmartTenant stenant = TenantsHosted.tenantFor(lnk.getTenant());
+        //CrossLinkSmartTenant stenant = CrossLinkSmartTenant.currentTenant();
+        CrossLinkSmartTenant ptenant = TenantsHosted.crosslinkedPlatformOwner();
+        //TODO: a hack currently to get this working.
+        CrossLinkRuntimeShell shell = new CrossLinkRuntimeShell(ptenant.runtimeShell());
+        Object tentxn = shell.lookupFor("AdminSmartFlow", "TenantAdmin", lnk.getTenant());
+        TenantAdmin tadmin = (TenantAdmin)tentxn;
+        tadmin.setupTenant(stenant); //set this up, else it will try to commit the SmartOwner
+        TransitionContext ctx = (TransitionContext)threads().threadContext();
+        if (ctx != null)
+            ctx.atomicity().includeData((SmartData)tentxn);
+        //TODO: a hack, will have to be removed when the related data is implemented.
+
+        String flow = lnk.getEnableFlow();
+        if ((flow != null) && (flow.length() > 0))
+        {
+            Map<String, String> linked = new HashMap<String, String>();
+            if (lnk.getLinks() != null)
+            {
+                for (LinkFor l : lnk.getLinks())
+                    linked.put(l.getName(), l.getTo());
+            }
+            System.out.println("Trying to add links flow for: " + flow + ":" + linked);
+            stenant.deploymentShell().addLinksFor(flow, linked);
+        }
+        SuccessCreated created = new SuccessCreated(" Links for " + lnk.getEnableFlow());
+    }
     
     public void listEnabledFlows(TenantAdmin dest, ListEnabledFlows event)
         throws CtxException
@@ -206,5 +243,6 @@ public class SmartTenantManager
         NewInternalTenant evt = new NewInternalTenant(name, enableflow, domain, clientOf, features, tentxn);
         SuccessCreated created = new SuccessCreated("Posted a new tenant creation message. Please check after sometime.");
     }
+
 }
 

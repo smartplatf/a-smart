@@ -147,13 +147,14 @@ public class SmartDataTruth implements TruthData
         assertion().assertTrue(_confirmed.containsKey(txnid), "Cannot be accepted. The data is not present in the confirmed list.");
         TransitionContext ctx = (TransitionContext)threads().threadContext();
         assertion().assertNotNull(ctx, "The object is not in an transition context to be accepted.");
-        //ctx.transaction().addToTransaction(_truthData);
-        ctx.transaction().addToTransaction((SmartDataED)edata);
         //In this scenario the prime object from which it is linked is locked, hence we 
         //need not lock the linkeddata. TODO: if this is not true, then the data has to
         //be locked.
         DataLinker linker = new DataLinker();
         linker.createLinks(ctx, (SmartDataED)edata, _truthData, _isNew);
+
+        //ctx.transaction().addToTransaction(_truthData);
+        ctx.transaction().addToTransaction((SmartDataED)edata);
 
         //call the commit function if any present
         String commit = commitFor(_truthData.getClass());

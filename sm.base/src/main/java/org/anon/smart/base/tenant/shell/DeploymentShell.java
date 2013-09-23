@@ -113,14 +113,15 @@ public class DeploymentShell implements SmartShell, FlowConstants
          //   System.out.println("Added artefact for " + name + ": " + artefacts[i].getName() + ":" + artefacts[i].getClazz());
         FlowDeployment deploy = _licensed.assistant().deploymentFor(name);
         //if there are links needed, then ensure they are there.
-        if (deploy.getNeedLinks() > 0)
+        System.out.println("The number of links in " + name + ":" + deploy.getStrictNeedLinks());
+        if (linked.size() > 0)
         {
-            assertion().assertTrue(((linked != null) && (linked.size() >= deploy.getNeedLinks())), "The deployment cannot be enabled without links provided");
+            assertion().assertTrue(((linked != null) && (linked.size() >= deploy.getStrictNeedLinks())), "The deployment cannot be enabled without links provided");
             for (String n : linked.keySet())
                 deploy.setupLinkFor(n, linked.get(n));
         }
 
-        assertion().assertTrue((deploy.getNeedLinks() <= 0), "Not all links are provided. Need links for: " + deploy.getNeedLinkNames());
+        assertion().assertTrue((deploy.getStrictNeedLinks() <= 0), "Not all links are provided. Need links for: " + deploy.getNeedLinkNames());
         List<String> jars = deploy.myJars();
         for (String jar : jars)
         {
@@ -129,8 +130,24 @@ public class DeploymentShell implements SmartShell, FlowConstants
         }
         Object model = deploy.model(_loader);
         _tenant.enableFlow(model, artefacts, deploy);
-        _tenant.registerEnabledFlow(name, features);
+        _tenant.registerEnabledFlow(name, features, linked);
         cacheLinks(deploy);
+        return deploy;
+    }
+
+    public FlowDeployment addLinksFor(String name, Map<String, String> linked)
+        throws CtxException
+    {
+        FlowDeployment deploy = _licensed.assistant().deploymentFor(name);
+        //if there are links needed, then ensure they are there.
+        if (deploy.getNeedLinks() > 0)
+        {
+            assertion().assertTrue(((linked != null) && (linked.size() >= deploy.getNeedLinks())), "The deployment cannot be enabled without links provided");
+            for (String n : linked.keySet())
+                deploy.setupLinkFor(n, linked.get(n));
+        }
+
+        _tenant.registerLinks(name, linked);
         return deploy;
     }
 
@@ -193,7 +210,7 @@ public class DeploymentShell implements SmartShell, FlowConstants
     {
         String[] parts = service.split("\\.");
         assertion().assertNotNull(parts, "Cannot find service for: " + service);
-        assertion().assertTrue((parts.length == 3), "The format for service has to be in the form flow.transitioname.servicemethod");
+        assertion().assertTrue((parts.length == 3), "The format for service has to be in the form flow.transitioname.servicemethod " + service);
         String dep = parts[0]; String data = parts[1];
         ArtefactType atype = ArtefactType.artefactTypeFor(TRANSITION);
         String srch = atype.createKey(data, ".*", ".*");

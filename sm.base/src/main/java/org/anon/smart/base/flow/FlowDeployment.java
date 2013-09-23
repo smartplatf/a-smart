@@ -77,6 +77,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
     private Map<String, String> _nameToClass;
     private Map<String, String> _keyMap;
     private Map<String, Link> _needLinks;
+    private Map<String, String> _serviceMashes;
 
     public FlowDeployment()
     {
@@ -84,6 +85,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
         initialize();
         _keyMap = new HashMap<String, String>();
         _needLinks = new HashMap<String, Link>();
+        _serviceMashes = new HashMap<String, String>();
     }
 
     public FlowDeployment(String nm, Artefact[] a)
@@ -105,6 +107,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
         _nameToClass = new HashMap<String, String>();
         _keyMap = new HashMap<String, String>();
         _needLinks = new HashMap<String, Link>();
+        _serviceMashes = new HashMap<String, String>();
         initialize();
     }
 
@@ -133,6 +136,8 @@ public class FlowDeployment extends Deployment implements FlowConstants
 
         for (String k : dep._needLinks.keySet())
             _needLinks.put(k, new Link(dep._needLinks.get(k)));
+
+        _serviceMashes = new HashMap<String, String>();
 
         primeData = new ArrayList<String>();
         data = new ArrayList<String>();
@@ -182,6 +187,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
         _nameToClass = new HashMap<String, String>();
         _keyMap = new HashMap<String, String>();
         _needLinks = new HashMap<String, Link>();
+        _serviceMashes = new HashMap<String, String>();
         if (keys != null)
         {
             for (Key k : keys)
@@ -395,7 +401,8 @@ public class FlowDeployment extends Deployment implements FlowConstants
         }
         else
         {
-            except().te(this, "Cannot add a link for: " + name  + ":" + to + " Does not require a link.");
+            setupServiceMashupFor(name, to);
+            //except().te(this, "Cannot add a link for: " + name  + ":" + to + " Does not require a link.");
         }
     }
 
@@ -413,6 +420,35 @@ public class FlowDeployment extends Deployment implements FlowConstants
             return _needLinks.keySet();
 
         return null;
+    }
+
+    public int getStrictNeedLinks()
+    {
+        if (_needLinks != null)
+        {
+            int cnt = 0;
+            for (Link lnk : _needLinks.values())
+            {
+                if (!lnk.isOptional())
+                    cnt++;
+            }
+
+            return cnt;
+        }
+
+        return 0;
+    }
+
+    public void setupServiceMashupFor(String name, String svc)
+        throws CtxException
+    {
+
+        _serviceMashes.put(name, svc);
+    }
+
+    public String getServiceMash(String name)
+    {
+        return _serviceMashes.get(name);
     }
 }
 

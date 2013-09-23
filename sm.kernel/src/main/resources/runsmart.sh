@@ -11,7 +11,7 @@ case "$1" in
     stop)
         if [ -e "$2/smartkernel.pid" ]
         then
-            kill -9 $(cat $2/smartkernel.pid)
+            kill $(cat $2/smartkernel.pid)
             rm $2/smartkernel.pid
         fi
 
@@ -21,7 +21,7 @@ case "$1" in
     restart)
         if [ -e "$2/smartkernel.pid" ]
         then
-            kill -9 $(cat $2/smartkernel.pid)
+            kill $(cat $2/smartkernel.pid)
             rm $2/smartkernel.pid
         fi
 

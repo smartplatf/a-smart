@@ -139,5 +139,11 @@ public class CrossLinkFlowDeployment extends CrossLinker
     {
         return (String[])linkMethod("deployedURI", nm);
     }
+
+    public String getServiceMash(String name)
+        throws CtxException
+    {
+        return (String)linkMethod("getServiceMash", name);
+    }
 }
 

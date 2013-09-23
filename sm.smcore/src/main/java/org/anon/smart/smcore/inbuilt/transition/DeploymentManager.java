@@ -42,6 +42,7 @@
 package org.anon.smart.smcore.inbuilt.transition;
 
 import java.io.File;
+import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,6 +53,7 @@ import org.anon.smart.base.tenant.shell.CrossLinkRuntimeShell;
 import org.anon.smart.base.tenant.TenantAdmin;
 import org.anon.smart.base.tenant.TenantsHosted;
 import org.anon.smart.base.flow.FlowDeploymentSuite;
+import org.anon.smart.base.flow.FlowDeployment;
 import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 import org.anon.smart.base.flow.FlowConstants;
 import org.anon.smart.deployment.MacroDeployer;
@@ -101,6 +103,13 @@ public class DeploymentManager implements FlowConstants
                 Collection<String> flows = tenant.listEnableFlows();
                 ListEnabledFlowsResponse resp = new ListEnabledFlowsResponse(flows);
                 return null;
+            }
+            else if ((lst.getFlow() != null) && (lst.getDType().equals("links")))
+            {
+                FlowDeployment dep = FlowDeploymentSuite.getAssistant().deploymentFor(lst.getFlow());
+                assertion().assertNotNull(dep, "Cannot find the deployment for flow: " + lst.getFlow());
+                Set<String> lnks = dep.getNeedLinkNames();
+                deps.addAll(lnks);
             }
             else
             {

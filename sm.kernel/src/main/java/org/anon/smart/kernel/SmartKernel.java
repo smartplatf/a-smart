@@ -76,7 +76,7 @@ public class SmartKernel
         try
         {
             Object cfg = serial().cloneIn(_config, _startLoader);
-            CrossLinkSmartStarter starter = new CrossLinkSmartStarter(cfg, master, _startOrder, _startLoader);
+            CrossLinkSmartStarter starter = new CrossLinkSmartStarter(cfg, master, _startOrder, false, _startLoader);
             Object run = starter.link();
             Thread thrd = new Thread((Runnable)run);
             thrd.setContextClassLoader(_startLoader);
@@ -87,6 +87,48 @@ public class SmartKernel
         {
             e.printStackTrace();
             except().rt(e, new CtxException.Context("Error starting server: " + _serverType, "Exception"));
+        }
+    }
+
+    public void stopServer()
+        throws CtxException
+    {
+        try
+        {
+            Object cfg = serial().cloneIn(_config, _startLoader);
+            CrossLinkSmartStarter starter = new CrossLinkSmartStarter(cfg, false, _startOrder, true, _startLoader);
+            Object run = starter.link();
+            Thread thrd = new Thread((Runnable)run);
+            thrd.setContextClassLoader(_startLoader);
+            thrd.start();
+            thrd.join();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            except().rt(e, new CtxException.Context("Error starting server: " + _serverType, "Exception"));
+        }
+    }
+
+    public static class ShutdownRun implements Runnable
+    {
+        SmartKernel kernel;
+
+        ShutdownRun(SmartKernel k)
+        {
+            kernel = k;
+        }
+
+        public void run()
+        {
+            try
+            {
+                kernel.stopServer();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -103,6 +145,8 @@ public class SmartKernel
             boolean master = convert().stringToBoolean(args[1]);
             SmartKernel kernel = new SmartKernel(args[0]);
             kernel.startServer(master);
+            System.out.println("Added shutdownhook.");
+            Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownRun(kernel)));
         }
         catch (Exception e)
         {

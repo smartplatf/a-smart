@@ -67,6 +67,9 @@ public class LinkFor implements java.io.Serializable
     public String getAttribute() { return attribute; }
 
     public String getName() { return name; }
-    public String getTo() { return flow + "." + object + "." + attribute; }
+    public String getTo() 
+    { 
+        return flow + "." + object + "." + attribute; 
+    }
 }
 

@@ -49,8 +49,12 @@ import org.anon.smart.smcore.data.SmartDataED;
 import org.anon.smart.smcore.transition.TransitionContext;
 import org.anon.smart.smcore.transition.atomicity.AtomicityConstants;
 
+import java.util.List;
+
 import static org.anon.utilities.services.ServiceLocator.*;
 
+import org.anon.utilities.gconcurrent.execute.PProbe;
+import org.anon.utilities.gconcurrent.execute.ParamType;
 import org.anon.utilities.gconcurrent.execute.PDescriptor;
 import org.anon.utilities.gconcurrent.execute.ProbeParms;
 import org.anon.utilities.gconcurrent.execute.AbstractProbe;
@@ -69,11 +73,46 @@ public class TxnDataProbe extends AbstractProbe implements AtomicityConstants
         return null; //this is an explicit param, and cannot be used with descriptor
     }
 
+    private String evaluate(String[] lnks, ProbeParms parms, String attr)
+        throws CtxException
+    {
+        ParamType t = ParamType.valueOf(lnks[0]);
+        if (t != null)
+        {
+            String pstr = "(" + lnks[0] + "." + attr + ")";
+            List<PDescriptor> desc = PDescriptor.parseParamDesc(pstr);
+            PProbe p = t.myProbe();
+            Object val = p.valueFor(parms, null, desc.get(0));
+            System.out.println("Got the value for: " + pstr + ":" + p + ":" + val);
+            if (val != null)
+                return val.toString();
+        }
+
+        return null;
+    }
+
     @Override
     public Object valueFor(ProbeParms parms, Type type, PDescriptor desc)
         throws CtxException
     {
         String attr = desc.attribute();
+        boolean computeattr = false;
+        if ((desc.links() != null) && (desc.links().length > 0))
+        {
+            //means we need to evaluate the tag
+            ParamType t = ParamType.valueOf(desc.links()[0]);
+            if (t != null)
+            {
+                attr = evaluate(desc.links(), parms, attr);
+                if (attr == null)
+                    return null;
+            }
+            else
+            {
+                attr = desc.links()[0];
+                computeattr = true;
+            }
+        }
         assertion().assertNotNull(attr, "Cannot get parameter where attribute is null");
         TransitionContext ctx = (TransitionContext)parms.context();
         assertion().assertNotNull(ctx, "Cannot get parameter where context is null");
@@ -82,7 +121,14 @@ public class TxnDataProbe extends AbstractProbe implements AtomicityConstants
         if ((ret !=  null) && (ret.size() > 0))
         {
             SmartDataED edata = (SmartDataED)ret.get(0);
-            return edata.empirical();
+            Object data = edata.empirical();
+            if ((data != null) && (computeattr))
+            {
+                Object fval = reflect().getAnyFieldValue(data.getClass(), data, desc.attribute());
+                return fval;
+            }
+            else
+                return data;
         }
 
         return null;

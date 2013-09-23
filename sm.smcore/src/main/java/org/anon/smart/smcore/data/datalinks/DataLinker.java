@@ -216,6 +216,10 @@ public class DataLinker
                     Object setkey = reflect().getAnyFieldValue(evt.getClass(), evt, eattr);
                     if (setkey != null)
                     {
+                        //check it is present.
+                        String tflow = tobj.getFlow();
+                        SmartData d = (SmartData)_rshell.lookupFor(tflow, toobj, setkey);
+                        assertion().assertNotNull(d, "Cannot link to a invalid key for: " + tflow + ":" + toobj + ":" + setkey + " does not exist. ");
                         modkey = setkey;
                         reflect().setAnyFieldValue(dcls, modified, attr, setkey);
                     }

@@ -69,10 +69,10 @@ public class TransitionNodeDetails extends DefaultNodeDetails
         System.out.println("Annotate is: " + annot + ":" + _after);
     }
 
-    public TransitionNodeDetails(Class cls, Method mthd, ServiceAnnotate annot)
+    public TransitionNodeDetails(Class cls, Method mthd, ServiceAnnotate annot, String parms)
         throws CtxException
     {
-        super(cls, mthd, annot.parms());
+        super(cls, mthd, parms);
         _from = annot.from();
         _to = annot.to();
         _after = annot.runAfter();

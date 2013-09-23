@@ -128,6 +128,15 @@ public class SmartDataSTT implements SmartData, DSpaceObject
     {
         List<String> tags = new ArrayList<String>();
         tags.add(___smart_name___);
+        //adding even keys here, so we can lookup by keys?
+        //again assumption here is that we can do a tostring and get a better tag??
+        Object[] keys = reflect().getAnnotatedFieldValues(this, KeyAnnotate.class);
+        for (int i = 0; (keys != null) && (i < keys.length); i++)
+        {
+            if (keys[i] != null)
+                tags.add(keys[i].toString());
+        }
+
         return tags.toArray(new String[0]);
     }
 

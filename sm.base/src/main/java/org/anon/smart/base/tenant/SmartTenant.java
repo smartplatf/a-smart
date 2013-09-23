@@ -70,6 +70,8 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 
 	private static final String FLOW_FEATURE_SEPARATOR = ":";
 
+    private static final String LINK_SEPARATOR = "|";
+
 	static {
 		/*
 		 * GROUP_MAPPING.put(USERS_SPACE, STANDARD_GROUP);
@@ -271,10 +273,11 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 
 	private void enableFlows() throws CtxException {
 		Map<String, List<String>> flowFeatureMap = new HashMap<String, List<String>>();
+        Map<String, Map<String, String>> links = new HashMap<String, Map<String, String>>();
 		
 		for(FeatureName feature: _enabledFeatureList)
 		{
-			String[] flowFeatureStr = feature.toString().split(FLOW_FEATURE_SEPARATOR, 2);
+			String[] flowFeatureStr = feature.getName().split(FLOW_FEATURE_SEPARATOR, 2);
 			assertion().assertTrue((flowFeatureStr.length == 2), feature.toString()+" is NOT WELL FORMED");
 			String flowName = flowFeatureStr[0];
 			String featureName = flowFeatureStr[1];
@@ -288,6 +291,21 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 				featureList.add(featureName);
 				flowFeatureMap.put(flowName, featureList);
 			}
+
+            if ((feature.getLinks() != null) && (feature.getLinks().length() > 0))
+            {
+                String[] alllnks = feature.getLinks().split(";");
+                Map<String, String> lnks = links.get(flowName);
+                if (lnks == null)
+                    lnks = new HashMap<String, String>();
+                for (int i = 0; (alllnks != null) && (i < alllnks.length); i++)
+                {
+                    String[] vals = alllnks[i].split("\\" + LINK_SEPARATOR);
+                    assertion().assertTrue((vals.length == 2), "Not stored correctly: " + alllnks[i]);
+                    lnks.put(vals[0], vals[1]);
+                }
+                links.put(flowName, lnks);
+            }
 		}
 		
 		System.out.println("Reenabling Flows:"+flowFeatureMap);
@@ -296,19 +314,36 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 		{
 			//System.out.println("Enabling:"+me.getKey()+"::"+me.getValue());
             //TODO: need to check how to reenable the links
-			_deploymentShell.enableForMe(me.getKey(), me.getValue().toArray(new String[0]), new HashMap<String, String>());
+            Map<String, String> lnks = links.get(me.getKey());
+            if (lnks == null)
+                lnks = new HashMap<String, String>();
+			_deploymentShell.enableForMe(me.getKey(), me.getValue().toArray(new String[0]), lnks);
 		}
 		
 	}
 
-	public void registerEnabledFlow(String name, String[] features) {
+	public void registerEnabledFlow(String name, String[] features, Map<String, String> lnks) {
 		for(String feature : features)
         {
-            if (!_enabledFeatureList.contains(name + FLOW_FEATURE_SEPARATOR + feature))
-                _enabledFeatureList.add(new FeatureName(name+FLOW_FEATURE_SEPARATOR+feature));
+            FeatureName nm = new FeatureName(name+FLOW_FEATURE_SEPARATOR+feature);
+            if (!_enabledFeatureList.contains(nm))
+            {
+                nm.addLink(lnks);
+                _enabledFeatureList.add(nm);
+            }
         }
         System.out.println("Currently enabled flows are: " + _enabledFeatureList);
 	}
+
+    public void registerLinks(String name, Map<String, String> lnks)
+    {
+        for (int i = 0; i < _enabledFeatureList.size(); i++)
+        {
+            FeatureName nm = _enabledFeatureList.get(i);
+            if (nm.getName().startsWith(name))
+                nm.addLink(lnks);
+        }
+    }
 	
 	public Set<String> listEnableFlows()
 	    throws CtxException
@@ -336,10 +371,24 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 	
 	private class FeatureName{
 		private String _name;
+        private String _links;
 		FeatureName(String name)
 		{
 			_name = name;
 		}
+
+        void addLink(Map<String, String> lnks)
+        {
+            for(String nm : lnks.keySet())
+            {
+                String val = lnks.get(nm);
+                String lnk = nm + LINK_SEPARATOR + val;
+                if ((_links == null) || (_links.length() <= 0))
+                    _links = lnk;
+                else
+                    _links = _links + ";" + lnk;
+            }
+        }
 
         @Override
         public boolean equals(Object o)
@@ -357,6 +406,9 @@ public class SmartTenant implements RelatedObject, TenantConstants,
         {
             return _name.hashCode();
         }
+
+        public String getName() { return _name; }
+        public String getLinks() { return _links; }
 		
 		public String toString() { return _name; }
 	}

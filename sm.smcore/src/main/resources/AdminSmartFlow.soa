@@ -6,6 +6,7 @@ events:
     - org.anon.smart.smcore.inbuilt.events.NewTenant
     - org.anon.smart.smcore.inbuilt.events.NewInternalTenant
     - org.anon.smart.smcore.inbuilt.events.EnableFlow
+    - org.anon.smart.smcore.inbuilt.events.AddFlowLinks
     - org.anon.smart.smcore.inbuilt.events.InternalEnableFlow
     - org.anon.smart.smcore.inbuilt.events.DeployEvent
     - org.anon.smart.smcore.inbuilt.events.InternalDeployEvent
@@ -29,6 +30,7 @@ features:
         - org.anon.smart.smcore.inbuilt.events.NewTenant
         - org.anon.smart.smcore.inbuilt.events.NewInternalTenant
         - org.anon.smart.smcore.inbuilt.events.EnableFlow
+        - org.anon.smart.smcore.inbuilt.events.AddFlowLinks
         - org.anon.smart.smcore.inbuilt.events.InternalEnableFlow
         - org.anon.smart.smcore.inbuilt.events.DeployEvent
         - org.anon.smart.smcore.inbuilt.events.InternalDeployEvent

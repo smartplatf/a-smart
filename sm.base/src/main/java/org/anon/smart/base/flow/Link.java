@@ -110,6 +110,7 @@ public class Link implements Constants
     private String from;
     private String to;
     private String via;
+    private boolean optional;
 
     private LinkObject _fromObject;
     private LinkObject _toObject;
@@ -128,6 +129,8 @@ public class Link implements Constants
         from = lnk.from;
         to = lnk.to;
         via = lnk.via;
+        optional = lnk.optional;
+        System.out.println("When copying link: " + optional + ":" + lnk.optional + ":" + name);
 
         if (lnk._fromObject != null)
             _fromObject = new LinkObject(lnk._fromObject);
@@ -149,6 +152,7 @@ public class Link implements Constants
         throws CtxException
     {
         _internal = false;
+        System.out.println("Optional for: " + name + " during setup is; " + optional);
         if ((from != null) && (from.length() > 0))
             _fromObject = new LinkObject(from, currFlow);
 
@@ -194,6 +198,12 @@ public class Link implements Constants
         to = asto;
         _toObject = new LinkObject(asto, currFlow);
         _internal = internal;
+    }
+
+    public boolean isOptional()
+    {
+        System.out.println("Optional for: " + name + ":" + optional);
+        return optional;
     }
 }
 

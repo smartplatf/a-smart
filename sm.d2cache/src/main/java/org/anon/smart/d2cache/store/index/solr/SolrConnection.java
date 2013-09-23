@@ -52,6 +52,7 @@ import java.util.List;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.SolrCore;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
@@ -151,13 +152,18 @@ public class SolrConnection implements StoreConnection, Constants
                 _logger.info("Core "+corename+" exists:reloading........");
                 
                 /*** WorkAround till correct solution ***/
-                String iDir = _container.getCore(corename).getIndexDir();
-                String indexLock = iDir+File.separator+"write.lock";
-                File iFile = new File(indexLock);
-                if(iFile.isFile())
+                SolrCore core = _container.getCore(corename);
+                if (core != null)
                 {
-                    System.out.println("********* Deleting unremoved index lock file **********");
-                    iFile.delete();
+                    String iDir = core.getIndexDir();
+                    String indexLock = iDir+File.separator+"write.lock";
+                    File iFile = new File(indexLock);
+                    if(iFile.isFile())
+                    {
+                        System.out.println("********* Deleting unremoved index lock file **********");
+                        iFile.delete();
+                    }
+                    core.close();//close to release references
                 }
                 /*** WorkAround till correct solution END ***/
                 

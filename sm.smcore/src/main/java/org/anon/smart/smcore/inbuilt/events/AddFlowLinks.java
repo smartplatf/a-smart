@@ -26,29 +26,60 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.transition.TConstants
+ * File:                org.anon.smart.smcore.inbuilt.events.AddFlowLinks
  * Author:              rsankar
  * Revision:            1.0
- * Date:                24-01-2013
+ * Date:                21-09-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A set of constants used in transitions
+ * An event to add links to a flow after it is enabled
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.transition;
+package org.anon.smart.smcore.inbuilt.events;
 
-public interface TConstants
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+
+public class AddFlowLinks implements java.io.Serializable
 {
-    public static final String EVENT = "event";
-    public static final String DATA = "data";
-    public static final String RELATED = "related";
-    public static final String CONFIG = "config";
-    public static final String TXN = "txn";
-    public static final String LINK = "link";
-    public static final String SEARCH = "srch";
+    private String tenant;
+    private String enableFlow;
+    private List<LinkFor> links;
+
+    public AddFlowLinks()
+    {
+    }
+
+    protected AddFlowLinks(String t, String ef, Map<String, String> lnks)
+    {
+        tenant = t;
+        enableFlow = ef;
+        if (lnks != null)
+        {
+            links = new ArrayList<LinkFor>();
+            for (String k : lnks.keySet())
+            {
+                LinkFor l = new LinkFor(k, lnks.get(k));
+                links.add(l);
+            }
+        }
+    }
+
+    public String getEnableFlow()
+    {
+        return enableFlow;
+    }
+
+    public String getTenant()
+    {
+        return tenant;
+    }
+
+    public List<LinkFor> getLinks() { return links; }
 }
 

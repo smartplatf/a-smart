@@ -59,6 +59,7 @@ import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 import org.anon.utilities.gconcurrent.execute.PDescriptor;
+import org.anon.utilities.gconcurrent.execute.ParamType;
 import org.anon.utilities.gconcurrent.execute.ProbeParms;
 import org.anon.utilities.gconcurrent.execute.PProbe;
 import org.anon.utilities.exception.CtxException;
@@ -69,26 +70,9 @@ public class LinkedDataProbe implements AtomicityConstants, PProbe
     {
     }
 
-    public Object valueFor(Class cls, Type type, ProbeParms parms, PDescriptor desc)
+    private Object getLinkedData(Class cls, Type type, SmartPrimeData prime)
         throws CtxException
     {
-        if (desc != null)
-        {
-
-        }
-        //TODO
-        return null;
-    }
-
-    public Object valueFor(Class cls, Type type, ProbeParms parms)
-        throws CtxException
-    {
-        //if the descriptor is not given it is assumed to be related in the current flow.
-        TransitionProbeParms tparms = (TransitionProbeParms)parms;
-        //when nothing is specified, relation is searched in the flow for which this
-        //event is posted if not present then no data is retrieved
-        SmartPrimeData prime = tparms.primeData();
-        String flow = tparms.event().smart___flowname();
         DataLinker linker = new DataLinker();
         List<SmartData> data = linker.getLinked(cls, type, prime);
 
@@ -123,15 +107,105 @@ public class LinkedDataProbe implements AtomicityConstants, PProbe
         return null;
     }
 
+    private SmartPrimeData getPrimeData(String[] lnks, ProbeParms parms, String attribute)
+        throws CtxException
+    {
+        ParamType t = ParamType.valueOf(lnks[0]);
+        assertion().assertNotNull(t, "Cannot find the provided param type. " + lnks[0]);
+        //for now the assumption is that there is only one parameter
+        String pstr = "(" + lnks[0] + "." + attribute + ")";
+        List<PDescriptor> desc = PDescriptor.parseParamDesc(pstr);
+        PProbe p = t.myProbe();
+        SmartPrimeData val = (SmartPrimeData)p.valueFor(parms, null, desc.get(0));
+        return val;
+    }
+
+    public Object valueFor(Class cls, Type type, ProbeParms parms, PDescriptor desc)
+        throws CtxException
+    {
+        if ((desc != null) && (desc.links().length > 0))
+        {
+            SmartPrimeData prime = getPrimeData(desc.links(), parms, desc.attribute());
+
+            if (prime == null)
+                return null;
+
+            System.out.println("Got prime as: " + prime);
+            return getLinkedData(cls, type, prime);
+        }
+        //TODO
+        return null;
+    }
+
+    public Object valueFor(Class cls, Type type, ProbeParms parms)
+        throws CtxException
+    {
+        //if the descriptor is not given it is assumed to be related in the current flow.
+        TransitionProbeParms tparms = (TransitionProbeParms)parms;
+        //when nothing is specified, relation is searched in the flow for which this
+        //event is posted if not present then no data is retrieved
+        SmartPrimeData prime = tparms.primeData();
+        String flow = tparms.event().smart___flowname();
+
+        /*
+        DataLinker linker = new DataLinker();
+        List<SmartData> data = linker.getLinked(cls, type, prime);
+
+        System.out.println("Searched for type: " + cls + ":" + data);
+
+        if ((data == null) || (data.size() <= 0))
+            return null; //let it be picked up and handled by others
+
+        List <SmartData> ret = new ArrayList<SmartData>(); //can this list be greater than some value X?? we need to validate
+        for (SmartData d1 : data)
+        {
+            TransitionContext ctx = (TransitionContext)threads().threadContext();
+            if (ctx != null)
+            {
+                SmartDataED ed = ctx.atomicity().includeData(d1);
+                ret.add(ed.empirical());
+            }
+        }
+
+        //return the empirical data
+        if (type().isAssignable(cls, Collection.class)) //if it is a collection just pass what we have.
+            return ret;
+
+        SmartData d = ret.get(0);
+
+        //we pick up and pass the first one, not sure which to pass,
+        //have to handle it as a list in the transition, but shd we
+        //throw exception?
+        if (type().isAssignable(d.getClass(), cls))
+            return d;
+
+        return null;
+        */
+
+        return getLinkedData(cls, type, prime);
+    }
+
     public Object valueFor(ProbeParms parms, Type type, PDescriptor desc)
         throws CtxException
     {
+        System.out.println("Current in valueFor: " + parms + ":" + type + ":" + desc + ":" + desc.links() + ":" + desc.attribute());
+        if ((desc != null) && (desc.links().length > 0))
+        {
+            SmartPrimeData prime = getPrimeData(desc.links(), parms, desc.attribute());
+
+            if (prime == null)
+                return null;
+
+            System.out.println("Value for prime as: " + prime);
+            return getLinkedData(null, type, prime);
+        }
         return null;
     }
 
     public void releaseValues(Object[] val)
         throws CtxException
     {
+        //TODO
     }
 }
 
