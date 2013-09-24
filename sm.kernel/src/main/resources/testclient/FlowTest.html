@@ -186,13 +186,45 @@
 <div class="wdttop">Scroll To Top</div>
 <progress id="progressbar" class="wdtprogress" value="70" max="100"><strong>working</strong></progress>
 </div>
+
+    <div class="span8 wdtpopup" id="configurelinks" name="configurelinks">
+        <div class="boxhead">
+        <div class="left span3">
+        <h2>Configure Mashup Links</h2>
+        </div>
+        <div class="right">
+        <div id="wdt-links">
+        <ul>
+        <li class="register"><a href="javascript:hideBox($('#configurelinks'));"><i class="icon-remove"></i></a></li>';
+        </ul>
+        </div>
+        </div>
+        </div>
+        <div class="boxwhite">
+        <form id="configlinks" method="post" class="register-form">
+        <input type="hidden" value="0" id="linklength"/>
+        <table class='table table-striped'>
+        <thead>
+            <th>Name</th>
+            <th>Flow</th>
+            <th>Object</th>
+            <th>Attribute</th>
+        </thead>
+        <tbody id="reqdlinks">
+        </tbody>
+        </table>
+        <button class="btn btn-general input-block-level" type="submit">Configure</button>
+        </form>
+        </div>
+    </div>
+
     <!-- JS Files -->
     <script src="http://fixchg.com/js/jquery.js" type="text/javascript" ></script>
     <script src="http://fixchg.com/js/jquery.ui.core.js" type="text/javascript" ></script>
     <script src="http://fixchg.com/js/jquery.ui.widget.js" type="text/javascript"></script>
     <script src="http://fixchg.com/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="http://fixchg.com/js/smartcom.js" type="text/javascript"></script>
-    <script src="http://fixchg.com/js/smartadmin.js" type="text/javascript"></script>
+    <script src="js/smartadmin.js" type="text/javascript"></script>
     <script src="http://fixchg.com/js/jquery.form.js" type="text/javascript"></script>
     <script src="http://fixchg.com/js/smartsecurity.js" type="text/javascript"></script>
     <script src="js/flowtest.js" type="text/javascript"></script>

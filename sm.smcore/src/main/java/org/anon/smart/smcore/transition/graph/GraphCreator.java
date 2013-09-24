@@ -49,6 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.lang.reflect.Method;
 
 import org.anon.smart.deployment.ArtefactType;
+import org.anon.smart.smcore.transition.TConstants;
 import org.anon.smart.smcore.annot.MethodAnnotate;
 import org.anon.smart.smcore.annot.ServiceAnnotate;
 import org.anon.smart.smcore.annot.ServicesAnnotate;
@@ -63,7 +64,7 @@ import org.anon.utilities.gconcurrent.Graph;
 import org.anon.utilities.gconcurrent.GraphNode;
 import org.anon.utilities.exception.CtxException;
 
-public class GraphCreator
+public class GraphCreator implements TConstants
 {
 	public static final String ANY = "Any|";
     GraphCreator()
@@ -216,12 +217,12 @@ public class GraphCreator
         {
             String svc = sannots[i].service();
             String parms = sannots[i].parms();
-            if (sannots[i].service().equals("needsService"))
+            if (sannots[i].service().equals(NEEDSSERVICE))
             {
                 svc = dep.getServiceMash(sannots[i].name());
                 System.out.println("Unparsed is: " + svc);
                 if (svc == null)
-                    svc = "notMapped";
+                    svc = NOTMAPPED;
 
                 String[] vals = svc.split("\\(");
                 svc = vals[0];
@@ -232,7 +233,7 @@ public class GraphCreator
                 System.out.println("Got svc as: " + svc + ":" + parms);
             }
 
-            if (!svc.equals("needsService") && !svc.equals("notMapped"))
+            if (!svc.equals(NEEDSSERVICE) && !svc.equals(NOTMAPPED))
             {
                 Object[] det = shell.getServiceFor(svc);
                 assertion().assertNotNull(det, "Cannot find service for: " + svc);

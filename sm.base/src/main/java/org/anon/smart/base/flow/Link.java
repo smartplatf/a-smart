@@ -152,7 +152,7 @@ public class Link implements Constants
         throws CtxException
     {
         _internal = false;
-        System.out.println("Optional for: " + name + " during setup is; " + optional);
+        //System.out.println("Optional for: " + name + " during setup is; " + optional);
         if ((from != null) && (from.length() > 0))
             _fromObject = new LinkObject(from, currFlow);
 
@@ -202,7 +202,7 @@ public class Link implements Constants
 
     public boolean isOptional()
     {
-        System.out.println("Optional for: " + name + ":" + optional);
+        //System.out.println("Optional for: " + name + ":" + optional);
         return optional;
     }
 }

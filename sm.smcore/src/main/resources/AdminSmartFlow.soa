@@ -4,6 +4,7 @@ primeData:
     - org.anon.smart.base.tenant.TenantAdmin
 events:
     - org.anon.smart.smcore.inbuilt.events.NewTenant
+    - org.anon.smart.smcore.inbuilt.events.UpdateTenant
     - org.anon.smart.smcore.inbuilt.events.NewInternalTenant
     - org.anon.smart.smcore.inbuilt.events.EnableFlow
     - org.anon.smart.smcore.inbuilt.events.AddFlowLinks
@@ -28,6 +29,7 @@ features:
       artefacts:
         - org.anon.smart.base.tenant.TenantAdmin
         - org.anon.smart.smcore.inbuilt.events.NewTenant
+        - org.anon.smart.smcore.inbuilt.events.UpdateTenant
         - org.anon.smart.smcore.inbuilt.events.NewInternalTenant
         - org.anon.smart.smcore.inbuilt.events.EnableFlow
         - org.anon.smart.smcore.inbuilt.events.AddFlowLinks

@@ -120,6 +120,21 @@ public class SuiteAssistant<T extends Deployment>
         return clazzFor(dep, key, atype, ldr);
     }
 
+    public Class clazzFor(String dep, String clsname)
+        throws CtxException
+    {
+        Deployment d = deploymentFor(dep);
+        MicroArtefacts marts = _suite.artefacts(dep);
+        if (marts != null)
+        {
+            Artefact[] artefacts = marts.artefactsForClazz(clsname);
+            if ((artefacts != null) && (artefacts.length > 0))
+                return artefacts[0].getClazz();
+        }
+        return null;
+
+    }
+
     public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
         throws CtxException
     {

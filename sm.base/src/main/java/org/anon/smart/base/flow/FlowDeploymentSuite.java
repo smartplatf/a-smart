@@ -49,6 +49,7 @@ import org.anon.smart.deployment.ArtefactType;
 import org.anon.smart.base.loader.SmartLoader;
 import org.anon.smart.base.loader.LoaderVars;
 
+import org.anon.utilities.crosslink.CrossLinkAny;
 import org.anon.utilities.exception.CtxException;
 
 public class FlowDeploymentSuite extends DeploymentSuite<FlowDeployment>
@@ -104,6 +105,14 @@ public class FlowDeploymentSuite extends DeploymentSuite<FlowDeployment>
     {
         SuiteAssistant<FlowDeployment> assist = getAssistant();
         return assist.allDeployments();
+    }
+
+    public static Object getCLAssistant()
+        throws CtxException
+    {
+        Object suite = getAppInstance(FLOWSUITE);
+        CrossLinkAny clany = new CrossLinkAny(suite);
+        return clany.invoke("assistant");
     }
 }
 

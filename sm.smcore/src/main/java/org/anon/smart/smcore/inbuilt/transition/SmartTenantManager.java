@@ -61,6 +61,7 @@ import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.inbuilt.events.LinkFor;
 import org.anon.smart.smcore.inbuilt.events.ListEnabledFlows;
 import org.anon.smart.smcore.inbuilt.events.NewTenant;
+import org.anon.smart.smcore.inbuilt.events.UpdateTenant;
 import org.anon.smart.smcore.inbuilt.events.NewInternalTenant;
 import org.anon.smart.smcore.inbuilt.events.EnableFlow;
 import org.anon.smart.smcore.inbuilt.events.InternalEnableFlow;
@@ -119,6 +120,26 @@ public class SmartTenantManager
         DefaultObjectsManager.createDefaultObjects(admin, stenant, ldr);
 
         SuccessCreated created = new SuccessCreated(tenant.tenantName());
+    }
+
+    public void updateTenant(TenantAdmin dest, UpdateTenant tenant)
+        throws CtxException
+    {
+        assertion().assertTrue(dest.isPlatformOwner(), "Cannot update a tenant on any other tenant other than the owner.");
+        assertion().assertNotNull(tenant.getTenant(), "Cannot update a null tenant");
+        CrossLinkSmartTenant ptenant = CrossLinkSmartTenant.currentTenant();
+        System.out.println("Updating a tenant: " + tenant.getTenant() + ":" + this.getClass().getClassLoader() + ":" + ptenant.getName());
+        SmartTenant stenant = TenantsHosted.tenantFor(tenant.getTenant());
+        stenant.setDomain(tenant.getDomains());
+
+        CrossLinkRuntimeShell shell = new CrossLinkRuntimeShell(ptenant.runtimeShell());
+        TenantAdmin tentxn = (TenantAdmin)shell.lookupFor("AdminSmartFlow", "TenantAdmin", stenant.getName());
+        tentxn.setupTenant(stenant);
+        TransitionContext ctx = (TransitionContext)threads().threadContext();
+        if (ctx != null)
+            ctx.atomicity().includeData((SmartData)tentxn);
+        
+        SuccessCreated created = new SuccessCreated(tenant.getDomains());
     }
 
     public void enableFlow(TenantAdmin dest, EnableFlow enable)

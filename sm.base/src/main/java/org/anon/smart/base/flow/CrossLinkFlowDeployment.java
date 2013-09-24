@@ -41,6 +41,7 @@
 
 package org.anon.smart.base.flow;
 
+import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -144,6 +145,12 @@ public class CrossLinkFlowDeployment extends CrossLinker
         throws CtxException
     {
         return (String)linkMethod("getServiceMash", name);
+    }
+
+    public Set<String> getNeedLinkNames()
+        throws CtxException
+    {
+        return (Set<String>)linkMethod("getNeedLinkNames");
     }
 }
 

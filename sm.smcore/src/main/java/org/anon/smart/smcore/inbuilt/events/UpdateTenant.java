@@ -26,32 +26,31 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.transition.TConstants
+ * File:                org.anon.smart.smcore.inbuilt.events.UpdateTenant
  * Author:              rsankar
  * Revision:            1.0
- * Date:                24-01-2013
+ * Date:                24-09-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A set of constants used in transitions
+ * An event to update tenant
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.transition;
+package org.anon.smart.smcore.inbuilt.events;
 
-public interface TConstants
+public class UpdateTenant
 {
-    public static final String EVENT = "event";
-    public static final String DATA = "data";
-    public static final String RELATED = "related";
-    public static final String CONFIG = "config";
-    public static final String TXN = "txn";
-    public static final String LINK = "link";
-    public static final String SEARCH = "srch";
+    private String tenant;
+    private String domain;
 
-    public static final String NEEDSSERVICE = "needsService";
-    public static final String NOTMAPPED = "notMapped";
+    public UpdateTenant()
+    {
+    }
+
+    public String getTenant() { return tenant; }
+    public String getDomains() { return domain; }
 }
 

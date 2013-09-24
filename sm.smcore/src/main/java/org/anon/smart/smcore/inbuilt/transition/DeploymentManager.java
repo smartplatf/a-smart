@@ -46,6 +46,8 @@ import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.lang.reflect.Array;
+import java.lang.annotation.Annotation;
 
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
 import org.anon.smart.base.tenant.shell.CrossLinkDeploymentShell;
@@ -63,13 +65,17 @@ import org.anon.smart.smcore.inbuilt.events.ListDeployments;
 import org.anon.smart.smcore.inbuilt.responses.ListEnabledFlowsResponse;
 import org.anon.smart.smcore.inbuilt.responses.SuccessCreated;
 import org.anon.smart.smcore.inbuilt.responses.DeploymentList;
+import org.anon.smart.smcore.annot.ServiceAnnotate;
+import org.anon.smart.smcore.annot.ServicesAnnotate;
+import org.anon.smart.smcore.transition.TConstants;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
+import org.anon.utilities.crosslink.CrossLinkAny;
 import org.anon.utilities.loader.RelatedLoader;
 import org.anon.utilities.exception.CtxException;
 
-public class DeploymentManager implements FlowConstants
+public class DeploymentManager implements FlowConstants, TConstants
 {
     public DeploymentManager()
     {
@@ -91,6 +97,27 @@ public class DeploymentManager implements FlowConstants
         SuccessCreated resp = new SuccessCreated(deploy.getJar());
     }
 
+    private void addLinksIfPresent(Class cls, List<String> deps)
+        throws Exception
+    {
+        Annotation sannot = reflect().getAnyAnnotation(cls, ServicesAnnotate.class.getName());
+        if (sannot != null)
+        {
+            Class acls = sannot.annotationType();
+            Object ret = acls.getDeclaredMethod("callservices").invoke(sannot);
+            int len = Array.getLength(ret);
+            for (int i = 0; i < len; i++)
+            {
+                Object sobj = Array.get(ret, i);
+                Class scls = sobj.getClass();
+                String svc = (String)scls.getDeclaredMethod("service").invoke(sobj);
+                String nm = (String)scls.getDeclaredMethod("name").invoke(sobj);
+                if (svc.equals(NEEDSSERVICE))
+                    deps.add(nm);
+            }
+        }
+    }
+
     public DeploymentList retrieveDeployments(ListDeployments lst)
         throws CtxException
     {
@@ -106,10 +133,56 @@ public class DeploymentManager implements FlowConstants
             }
             else if ((lst.getFlow() != null) && (lst.getDType().equals("links")))
             {
-                FlowDeployment dep = FlowDeploymentSuite.getAssistant().deploymentFor(lst.getFlow());
-                assertion().assertNotNull(dep, "Cannot find the deployment for flow: " + lst.getFlow());
-                Set<String> lnks = dep.getNeedLinkNames();
-                deps.addAll(lnks);
+                if (tenant.isPlatformOwner())
+                {
+                    FlowDeployment dep = FlowDeploymentSuite.getAssistant().deploymentFor(lst.getFlow());
+                    assertion().assertNotNull(dep, "Cannot find the deployment for flow: " + lst.getFlow());
+                    Set<String> lnks = dep.getNeedLinkNames();
+                    deps.addAll(lnks);
+
+                    //get all the mashups required for transitions also
+                    List<String> trans = dep.getDeploymentFor(TRANSITIONTYPE);
+                    for (String t : trans)
+                    {
+                        try
+                        {
+                            Class cls = FlowDeploymentSuite.getAssistant().clazzFor(lst.getFlow(), t);
+                            if (cls != null)
+                                addLinksIfPresent(cls, deps);
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                else
+                {
+                    CrossLinkSmartTenant ten = CrossLinkSmartTenant.currentTenant();
+                    assertion().assertTrue(ten.controlsAdmin(), "Cannot check links for a flow without having admin permissions");
+                    CrossLinkSmartTenant ptenant = TenantsHosted.crosslinkedPlatformOwner();
+                    CrossLinkAny fsuite = new CrossLinkAny(FlowDeploymentSuite.getCLAssistant());
+                    Object cldep = fsuite.invoke("deploymentFor", lst.getFlow());
+                    CrossLinkFlowDeployment dep = new CrossLinkFlowDeployment(cldep);
+                    Set<String> lnks = dep.getNeedLinkNames();
+                    deps.addAll(lnks);
+
+                    //get all the mashups required for transitions also
+                    List<String> trans = dep.getDeploymentFor(TRANSITIONTYPE);
+                    for (String t : trans)
+                    {
+                        try
+                        {
+                            Class cls = (Class)fsuite.invoke("clazzFor", lst.getFlow(), t);
+                            if (cls != null)
+                                addLinksIfPresent(cls, deps);
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
             else
             {
