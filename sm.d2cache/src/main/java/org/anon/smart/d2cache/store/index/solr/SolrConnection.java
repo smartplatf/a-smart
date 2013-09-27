@@ -255,6 +255,27 @@ public class SolrConnection implements StoreConnection, Constants
 		return resultSet;
 	}
 
+    public SolrDocument lookup(String idcol, String id)
+        throws CtxException
+    {
+        SolrDocument doc = null;
+        try
+        {
+            SolrQuery query = new SolrQuery();
+            query.setQuery( idcol + ":" + id );
+            QueryResponse response = _server.query( query );
+            SolrDocumentList docList = response.getResults();
+            if (docList.size() > 0)
+                doc = docList.get(0);
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("SolrConnection.lookup", "Exception while lookup: "));
+        }
+
+        return doc;
+    }
+
     public Iterator<Object> list(ListParams parms)
         throws CtxException
     {

@@ -308,7 +308,7 @@ public class SmartTenant implements RelatedObject, TenantConstants,
             }
 		}
 		
-		System.out.println("Reenabling Flows:"+flowFeatureMap);
+		System.out.println("Reenabling Flows:"+flowFeatureMap + ":" + links);
 		
 		for(Map.Entry<String, List<String>> me : flowFeatureMap.entrySet())
 		{

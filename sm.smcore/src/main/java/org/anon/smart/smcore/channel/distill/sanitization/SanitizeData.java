@@ -270,6 +270,33 @@ public class SanitizeData implements ChannelConstants
             sanitizedKeys.add("FlowAdmin");
         }
 
+        //check in linked flows
+        if ((populate.getPrimes().size() <= 0) && (populate.flowDeployment() != null))
+        {
+            String[] lflows = populate.flowDeployment().getLinkedFlows();
+            System.out.println("Got linked flows as: " + lflows.length);
+            for (int i = 0; (lflows != null) && (i < lflows.length); i++)
+            {
+                String check = lflows[i];
+                CrossLinkFlowDeployment lfd = thisTenant.deploymentShell().deploymentFor(check);
+                List<String> lprimes =  lfd.getPrimeData();
+                System.out.println("Checking for linked flow : " + check + ":" + lprimes);
+                for (int j = 0; j < lprimes.size(); j++)
+                {
+                    String lobj = lprimes.get(j);
+                    String llook =	lfd.nameFor(lobj);
+                    System.out.println("Checking for linked flow : " + check + ":" + llook + ":" + data.get(llook));
+                    if (data.containsKey(llook))
+                    {
+                        Object srch = data.get(llook);
+                        sanitizePrime(check, llook, srch, populate);
+                        sanitizedKeys.add(llook);
+                        break;
+                    }
+                }
+            }
+        }
+
         assertion().assertTrue((populate.getPrimes().size() > 0), "There are no flows defined to which to post the event.");
 
         for (String key : data.keySet())

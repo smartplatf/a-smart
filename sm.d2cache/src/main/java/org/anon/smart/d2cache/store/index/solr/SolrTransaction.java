@@ -67,7 +67,7 @@ public class SolrTransaction extends AbstractStoreTransaction
     protected StoreRecord createNewRecord(String group, Object primarykey, Object curr, Object orig)
         throws CtxException
     {
-        return new SolrRecord(group, primarykey, curr, orig);
+        return new SolrRecord(group, primarykey, curr, orig, _connection);
     }
 
     public void commit()

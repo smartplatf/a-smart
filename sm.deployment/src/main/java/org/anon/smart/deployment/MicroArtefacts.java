@@ -97,14 +97,14 @@ public class MicroArtefacts
         }
     }
 
-    public Artefact[] deployArtefacts(Artefact[] arts)
+    public Artefact[] deployArtefacts(Artefact[] arts, Map<String, String> links)
         throws CtxException
     {
         if (arts == null)
             return arts;
 
         List<Artefact> ret = new ArrayList<Artefact>();
-        Artefact[] artefacts = Artefact.artefactsFor(arts);
+        Artefact[] artefacts = Artefact.artefactsFor(arts, links);
         Map<String, List<Artefact>> group = new HashMap<String, List<Artefact>>();
         for (int i = 0; i < artefacts.length; i++)
         {

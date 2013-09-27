@@ -41,6 +41,8 @@
 
 package org.anon.smart.deployment;
 
+import java.util.Map;
+
 import org.anon.utilities.exception.CtxException;
 
 public interface DSuite<T extends Deployment>
@@ -48,7 +50,7 @@ public interface DSuite<T extends Deployment>
     public MicroArtefacts artefacts(String dep);
     public MicroArtefacts artefactsCreate(String dep);
     public MacroDeployments<T> deployments();
-    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
+    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features, Map<String, String> links)
         throws CtxException;
 }
 

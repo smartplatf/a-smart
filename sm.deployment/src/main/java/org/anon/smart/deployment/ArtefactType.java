@@ -157,6 +157,39 @@ public class ArtefactType
         return ret.toArray(new String[0]);
     }
 
+    public static String[] getKeyParts(String key)
+    {
+        return key.split("\\" + KEY_SEPARATOR);
+    }
+
+    public static String[] createKeys(String[] keyparts, String[] val, int ind)
+    {
+        List<String> k = new ArrayList<String>();
+
+        for (int i = 0; i < val.length; i++)
+        {
+            if (ind == 0)
+                k.add(val[i]);
+            else
+                k.add(keyparts[0]);
+        }
+
+        for (int i = 1; i < keyparts.length; i++)
+        {
+            String add = keyparts[i];
+            for (int j = 0; j < val.length; j++)
+            {
+                String curr = k.get(j);
+                if (i == ind)
+                    add = val[j];
+                curr = curr + KEY_SEPARATOR + add;
+                k.set(j, curr);
+            }
+        }
+
+        return k.toArray(new String[0]);
+    }
+
     public static String createKey(String ... keyvals)
         throws CtxException
     {

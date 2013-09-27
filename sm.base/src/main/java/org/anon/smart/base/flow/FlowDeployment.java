@@ -450,5 +450,32 @@ public class FlowDeployment extends Deployment implements FlowConstants
     {
         return _serviceMashes.get(name);
     }
+
+    public String[] getLinkedFlows()
+    {
+        List<String> ret = new ArrayList<String>();
+        System.out.println("Got Links: " + links + ":" + deployedName());
+        for (int i = 0; (links != null) && (i < links.size()); i++)
+        {
+            Link lnk = links.get(i);
+            String fflow = null;
+            if (lnk.getFromObject() != null)
+                fflow = lnk.getFromObject().getFlow();
+            
+            String tflow = null;
+            if (lnk.getToObject() != null)
+                tflow = lnk.getToObject().getFlow();
+
+            if ((fflow != null) && (!fflow.equals(deployedName())))
+                ret.add(fflow);
+
+            if ((tflow != null) && (!tflow.equals(deployedName())))
+                ret.add(tflow);
+
+            System.out.println("Link is: " + lnk.getName() + ":" + fflow + ":" + tflow + ":" + deployedName());
+        }
+
+        return ret.toArray(new String[0]);
+    }
 }
 

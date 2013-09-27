@@ -70,7 +70,7 @@ public class SmartDataSTT implements SmartData, DSpaceObject
 {
     private FiniteState ___smart_currentState___;
     private DataLegend ___smart_legend___;
-    private String ___smart_name___;
+    private transient String ___smart_name___;
     private transient boolean ___smart_isNew___;
 
     public SmartDataSTT()
@@ -93,6 +93,8 @@ public class SmartDataSTT implements SmartData, DSpaceObject
     private void startFSM()
         throws CtxException
     {
+        if (___smart_name___ == null)
+            ___smart_name___ = objectName(this);
         FiniteStateMachine mc = fsm().fsm(___smart_name___);
         assertion().assertNotNull(mc, "The finite state machine for " + ___smart_name___ + " has not been setup correctly.");
         mc.start(this);
@@ -127,6 +129,8 @@ public class SmartDataSTT implements SmartData, DSpaceObject
         throws CtxException
     {
         List<String> tags = new ArrayList<String>();
+        if (___smart_name___ == null)
+            ___smart_name___ = objectName(this);
         tags.add(___smart_name___);
         //adding even keys here, so we can lookup by keys?
         //again assumption here is that we can do a tostring and get a better tag??
@@ -189,12 +193,16 @@ public class SmartDataSTT implements SmartData, DSpaceObject
     public String smart___objectGroup()
         throws CtxException
     {
+        if (___smart_name___ == null)
+            ___smart_name___ = objectName(this);
     	return ___smart_name___;
     }
 
     public void smart___transition(String tostate)
         throws CtxException
     {
+        if (___smart_name___ == null)
+            ___smart_name___ = objectName(this);
         FiniteStateMachine mc = fsm().fsm(___smart_name___);
         assertion().assertNotNull(mc, "Finite state machine for " + ___smart_name___ + " has not been setup correctly. Cannot transition.");
         mc.transition(this, tostate);

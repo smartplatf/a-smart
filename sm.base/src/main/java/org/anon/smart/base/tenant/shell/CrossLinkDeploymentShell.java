@@ -164,5 +164,11 @@ public class CrossLinkDeploymentShell extends CrossLinker
     {
         return (Object[])linkMethod("getServiceFor", service);
     }
+
+    public String[] linksFor(String dep, Class cls, String key)
+        throws CtxException
+    {
+        return (String[])linkMethod("linksFor", dep, cls, key);
+    }
 }
 

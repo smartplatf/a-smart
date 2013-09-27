@@ -101,7 +101,7 @@ public abstract class DeploymentSuite<T extends Deployment> extends ApplicationS
         return _assistant;
     }
 
-    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
+    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features, Map<String, String> links)
         throws CtxException
     {
         T deployment = _macroDeployments.deploymentFor(dep);
@@ -132,7 +132,7 @@ public abstract class DeploymentSuite<T extends Deployment> extends ApplicationS
             ldeployment.addArtefacts(artefacts);
             for (int j = 0; j < artefacts.length; j++)
                 enabledartefacts.add(artefacts[j]);
-            ldeploy.deployArtefacts(dep, artefacts);
+            ldeploy.deployArtefacts(dep, artefacts, links);
         }
         return enabledartefacts.toArray(new Artefact[0]);
     }

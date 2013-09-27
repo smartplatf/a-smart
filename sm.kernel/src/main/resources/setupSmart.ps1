@@ -125,25 +125,25 @@ wget_url "http://repo1.maven.org/maven2/javax/mail/mail/1.4/mail-1.4.jar" $($ins
 
 
 Write-Output "[Copying smart jars **************************************************************]"
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.atomicity/1.1-SNAPSHOT/sm.atomicity-1.1-20130908.154459-1.jar?raw=true" $($installlib + "org/anon/smart/sm.atomicity/1.1-SNAPSHOT/sm.atomicity-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.base/1.1-SNAPSHOT/sm.base-1.1-20130908.154458-1.jar?raw=true" $($installlib + "org/anon/smart/sm.base/1.1-SNAPSHOT/sm.base-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.channels/1.1-SNAPSHOT/sm.channels-1.1-20130908.154505-1.jar?raw=true" $($installlib + "org/anon/smart/sm.channels/1.1-SNAPSHOT/sm.channels-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.codegen/1.1-SNAPSHOT/sm.codegen-1.1-20130908.154506-1.jar?raw=true" $($installlib + "org/anon/smart/sm.codegen/1.1-SNAPSHOT/sm.codegen-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.d2cache/1.1-SNAPSHOT/sm.d2cache-1.1-20130908.154442-1.jar?raw=true" $($installlib + "org/anon/smart/sm.d2cache/1.1-SNAPSHOT/sm.d2cache-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.deployment/1.1-SNAPSHOT/sm.deployment-1.1-20130908.154437-1.jar?raw=true" $($installlib + "org/anon/smart/sm.deployment/1.1-SNAPSHOT/sm.deployment-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.generator/1.1-SNAPSHOT/sm.generator-1.1-20130908.154506-1.jar?raw=true" $($installlib + "org/anon/smart/sm.generator/1.1-SNAPSHOT/sm.generator-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.kernel/1.1-SNAPSHOT/sm.kernel-1.1-20130908.155034-1.jar?raw=true" $($installlib + "org/anon/smart/sm.kernel/1.1-SNAPSHOT/sm.kernel-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.monitor/1.1-SNAPSHOT/sm.monitor-1.1-20130908.155017-1.jar?raw=true" $($installlib + "org/anon/smart/sm.monitor/1.1-SNAPSHOT/sm.monitor-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.secure/1.1-SNAPSHOT/sm.secure-1.1-20130908.155016-1.jar?raw=true" $($installlib + "org/anon/smart/sm.secure/1.1-SNAPSHOT/sm.secure-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.smcore/1.1-SNAPSHOT/sm.smcore-1.1-20130908.154954-1.jar?raw=true" $($installlib + "org/anon/smart/sm.smcore/1.1-SNAPSHOT/sm.smcore-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/smart/sm.template/1.1-SNAPSHOT/sm.template-1.1-20130908.154505-1.jar?raw=true" $($installlib + "org/anon/smart/sm.template/1.1-SNAPSHOT/sm.template-1.1-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/utilities/utilities/1.1-SNAPSHOT/utilities-1.1-20130908.154355-1.jar?raw=true" $($installlib + "org/anon/utilities/utilities/1.1-SNAPSHOT/utilities-1.1-SNAPSHOT.jar")
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.atomicity/1.1/sm.atomicity-1.1.jar?raw=true lib/org/anon/smart/sm.atomicity/1.1/sm.atomicity-1.1.jar    
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.base/1.1/sm.base-1.1.jar?raw=true lib/org/anon/smart/sm.base/1.1/sm.base-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.channels/1.1/sm.channels-1.1.jar?raw=true lib/org/anon/smart/sm.channels/1.1/sm.channels-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.codegen/1.1/sm.codegen-1.1.jar?raw=true lib/org/anon/smart/sm.codegen/1.1/sm.codegen-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.d2cache/1.1/sm.d2cache-1.1.jar?raw=true lib/org/anon/smart/sm.d2cache/1.1/sm.d2cache-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.deployment/1.1/sm.deployment-1.1.jar?raw=true lib/org/anon/smart/sm.deployment/1.1/sm.deployment-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.generator/1.1/sm.generator-1.1.jar?raw=true lib/org/anon/smart/sm.generator/1.1/sm.generator-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.kernel/1.1/sm.kernel-1.1.jar?raw=true lib/org/anon/smart/sm.kernel/1.1/sm.kernel-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.monitor/1.1/sm.monitor-1.1.jar?raw=true lib/org/anon/smart/sm.monitor/1.1/sm.monitor-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.secure/1.1/sm.secure-1.1.jar?raw=true lib/org/anon/smart/sm.secure/1.1/sm.secure-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.smcore/1.1/sm.smcore-1.1.jar?raw=true lib/org/anon/smart/sm.smcore/1.1/sm.smcore-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.template/1.1/sm.template-1.1.jar?raw=true lib/org/anon/smart/sm.template/1.1/sm.template-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/utilities/utilities/1.1/utilities-1.1.jar?raw=true lib/org/anon/utilities/utilities/1.1/utilities-1.1.jar
 
 Write-Output "[Copying FX flow jars **************************************************************]"
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/fixchg/fx.catalogue/1.0-SNAPSHOT/fx.catalogue-1.0-20130908.155156-1.jar?raw=true" $($installlib + "org/anon/fixchg/fx.catalogue/1.0-SNAPSHOT/fx.catalogue-1.0-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/fixchg/fx.contact/1.0-SNAPSHOT/fx.contact-1.0-20130908.155157-1.jar?raw=true" $($installlib + "org/anon/fixchg/fx.contact/1.0-SNAPSHOT/fx.contact-1.0-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/fixchg/fx.registration/1.0-SNAPSHOT/fx.registration-1.0-20130908.155155-1.jar?raw=true" $($installlib + "org/anon/fixchg/fx.registration/1.0-SNAPSHOT/fx.registration-1.0-SNAPSHOT.jar")
-wget_url "https://github.com/smartplatf/smart-releases/blob/master/snapshots/org/anon/fixchg/fx.subscribe/1.0-SNAPSHOT/fx.subscribe-1.0-20130908.155159-1.jar?raw=true" $($installlib + "org/anon/fixchg/fx.subscribe/1.0-SNAPSHOT/fx.subscribe-1.0-SNAPSHOT.jar")
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/fixchg/fx.catalogue/1.0/fx.catalogue-1.0.jar?raw=true lib/org/anon/fixchg/fx.catalogue/1.0/fx.catalogue-1.0.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/fixchg/fx.contact/1.0/fx.contact-1.0.jar?raw=true lib/org/anon/fixchg/fx.contact/1.0/fx.contact-1.0.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/fixchg/fx.registration/1.0/fx.registration-1.0.jar?raw=true lib/org/anon/fixchg/fx.registration/1.0/fx.registration-1.0.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/fixchg/fx.subscribe/1.0/fx.subscribe-1.0.jar?raw=true lib/org/anon/fixchg/fx.subscribe/1.0/fx.subscribe-1.0.jar
 
 Write-Output "[Setting up soflink to lib for secure server path dependency ********]"
 & $mylink '/d' 'org' '.\lib\org'
@@ -151,7 +151,7 @@ Write-Output "[Setting up soflink to lib for secure server path dependency *****
 Write-Output "[Setting up environment ********]"
 Add-Content setupEnv.bat $("set SMART_PATH=/" + $install + "\")
 Add-Content setupEnv.bat $("set SMART_LIB_PATH=" + $installlib)
-Add-Content setupEnv.bat "set SMART_VERSION=1.1-SNAPSHOT"
+Add-Content setupEnv.bat "set SMART_VERSION=1.1"
 
 Write-Output "[Setting up environment completed with creating setupEnv ********]"
 

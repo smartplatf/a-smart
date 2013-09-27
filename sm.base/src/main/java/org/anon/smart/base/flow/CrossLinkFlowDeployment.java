@@ -152,5 +152,11 @@ public class CrossLinkFlowDeployment extends CrossLinker
     {
         return (Set<String>)linkMethod("getNeedLinkNames");
     }
+
+    public String[] getLinkedFlows()
+        throws CtxException
+    {
+        return (String[])linkMethod("getLinkedFlows");
+    }
 }
 

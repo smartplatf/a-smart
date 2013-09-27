@@ -222,22 +222,33 @@ public class Atomicity
     public void finish()
         throws CtxException
     {
-        boolean started = startTxn();
-        assertion().assertTrue(started, "Cannot start Transaction for: " + _atomicID);
+        try
+        {
+            boolean started = startTxn();
+            assertion().assertTrue(started, "Cannot start Transaction for: " + _atomicID);
 
-        boolean outcome = true;
-        for (Hypothesis h : _hypothesis.values())
-            outcome = (outcome && h.outcome());
+            boolean outcome = true;
+            for (Hypothesis h : _hypothesis.values())
+                outcome = (outcome && h.outcome());
 
-        starting(outcome);
+            starting(outcome);
 
-        if (outcome)
-            outcome = tryAcceptAllHypothesis();
-        else
+            if (outcome)
+                outcome = tryAcceptAllHypothesis();
+            else
+                discardAllHypothesis();
+
+            ending(outcome);
+        }
+        catch (CtxException e)
+        {
             discardAllHypothesis();
-
-        ending(outcome);
-        endTxn();
+            throw e;
+        }
+        finally
+        {
+            endTxn();
+        }
     }
 
     protected void starting(boolean outcome)

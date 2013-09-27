@@ -91,17 +91,17 @@ public class LicensedDeploymentSuite<T extends Deployment> implements DSuite<T>
         return _assistant;
     }
 
-    public void deployArtefacts(String dep, Artefact[] artefacts)
+    public void deployArtefacts(String dep, Artefact[] artefacts, Map<String, String> links)
         throws CtxException
     {
         MicroArtefacts m = _licensedClazzez.get(dep);
         if (m == null)
             m = new MicroArtefacts();
-        m.deployArtefacts(artefacts);
+        m.deployArtefacts(artefacts, links);
         _licensedClazzez.put(dep, m);
     }
 
-    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features)
+    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features, Map<String, String> links)
         throws CtxException
     {
         except().te(this, "Enabling from an already licensed suite is not supported");

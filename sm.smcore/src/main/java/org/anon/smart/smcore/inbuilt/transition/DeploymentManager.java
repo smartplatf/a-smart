@@ -59,6 +59,8 @@ import org.anon.smart.base.flow.FlowDeployment;
 import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 import org.anon.smart.base.flow.FlowConstants;
 import org.anon.smart.deployment.MacroDeployer;
+import org.anon.smart.deployment.ArtefactType;
+import org.anon.smart.base.annot.TransitionAnnotate;
 import org.anon.smart.smcore.inbuilt.events.DeployEvent;
 import org.anon.smart.smcore.inbuilt.events.InternalDeployEvent;
 import org.anon.smart.smcore.inbuilt.events.ListDeployments;
@@ -70,6 +72,7 @@ import org.anon.smart.smcore.annot.ServicesAnnotate;
 import org.anon.smart.smcore.transition.TConstants;
 
 import static org.anon.utilities.services.ServiceLocator.*;
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 import org.anon.utilities.crosslink.CrossLinkAny;
 import org.anon.utilities.loader.RelatedLoader;
@@ -116,6 +119,30 @@ public class DeploymentManager implements FlowConstants, TConstants
                     deps.add(nm);
             }
         }
+
+        Annotation tannot = reflect().getAnyAnnotation(cls, TransitionAnnotate.class.getName());
+        if (tannot != null)
+        {
+            Class tcls = tannot.annotationType();
+            Object foreach = tcls.getDeclaredMethod("foreach").invoke(tannot);
+            if (foreach != null)
+            {
+                String check = foreach.toString();
+                if (check.indexOf("needslink") >= 0)
+                {
+                    String[] keys = value().listAsString(check);
+                    for (int i = 0; i < keys.length; i++)
+                    {
+                        String[] keyparts = ArtefactType.getKeyParts(keys[i]);
+                        for (int j = 0; j < keyparts.length; j++)
+                        {
+                            if (keyparts[j].indexOf("needslink") >= 0)
+                                deps.add(keyparts[j]);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public DeploymentList retrieveDeployments(ListDeployments lst)
@@ -142,17 +169,20 @@ public class DeploymentManager implements FlowConstants, TConstants
 
                     //get all the mashups required for transitions also
                     List<String> trans = dep.getDeploymentFor(TRANSITIONTYPE);
-                    for (String t : trans)
+                    if (trans != null)
                     {
-                        try
+                        for (String t : trans)
                         {
-                            Class cls = FlowDeploymentSuite.getAssistant().clazzFor(lst.getFlow(), t);
-                            if (cls != null)
-                                addLinksIfPresent(cls, deps);
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
+                            try
+                            {
+                                Class cls = FlowDeploymentSuite.getAssistant().clazzFor(lst.getFlow(), t);
+                                if (cls != null)
+                                    addLinksIfPresent(cls, deps);
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
@@ -163,23 +193,26 @@ public class DeploymentManager implements FlowConstants, TConstants
                     CrossLinkSmartTenant ptenant = TenantsHosted.crosslinkedPlatformOwner();
                     CrossLinkAny fsuite = new CrossLinkAny(FlowDeploymentSuite.getCLAssistant());
                     Object cldep = fsuite.invoke("deploymentFor", lst.getFlow());
-                    CrossLinkFlowDeployment dep = new CrossLinkFlowDeployment(cldep);
-                    Set<String> lnks = dep.getNeedLinkNames();
-                    deps.addAll(lnks);
-
-                    //get all the mashups required for transitions also
-                    List<String> trans = dep.getDeploymentFor(TRANSITIONTYPE);
-                    for (String t : trans)
+                    if (cldep != null)
                     {
-                        try
+                        CrossLinkFlowDeployment dep = new CrossLinkFlowDeployment(cldep);
+                        Set<String> lnks = dep.getNeedLinkNames();
+                        deps.addAll(lnks);
+
+                        //get all the mashups required for transitions also
+                        List<String> trans = dep.getDeploymentFor(TRANSITIONTYPE);
+                        for (String t : trans)
                         {
-                            Class cls = (Class)fsuite.invoke("clazzFor", lst.getFlow(), t);
-                            if (cls != null)
-                                addLinksIfPresent(cls, deps);
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
+                            try
+                            {
+                                Class cls = (Class)fsuite.invoke("clazzFor", lst.getFlow(), t);
+                                if (cls != null)
+                                    addLinksIfPresent(cls, deps);
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }

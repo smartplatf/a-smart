@@ -2,9 +2,9 @@
 if exist setupEnv.bat (
     call "setupEnv.bat"
 ) else (
-    set SMART_PATH=%USERPROFILE%\.m2\repository
-    set SMART_LIB_PATH=%USERPROFILE%\.m2\repository
-    set SMART_VERSION=1.0-SNAPSHOT
+    set SMART_PATH=/%USERPROFILE%\.m2\repository
+    set SMART_LIB_PATH=/%USERPROFILE%\.m2\repository
+    set SMART_VERSION=1.1-SNAPSHOT
 )
 
 echo jarfiles location:  %SMART_PATH%
@@ -87,6 +87,7 @@ set CLASSPATH=%CLASSPATH%%SMART_LIB_PATH%\velocity\velocity\1.5\velocity-1.5.jar
 ::set CLASSPATH=%CLASSPATH%%SMART_LIB_PATH%\org\apache\velocity\velocity\1.7\velocity-1.7.jar;
 set CLASSPATH=%CLASSPATH%%SMART_LIB_PATH%\logkit\logkit\1.0.1\logkit-1.0.1.jar;
 set CLASSPATH=%CLASSPATH%%SMART_LIB_PATH%/javax/mail/mail/1.4/mail-1.4.jar;
+set CLASSPATH=%CLASSPATH%%SMART_LIB_PATH%/commons-codec/commons-codec/1.4/commons-codec-1.4.jar;
 
 echo classpath : %CLASSPATH%
 

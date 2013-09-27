@@ -162,7 +162,8 @@ public class UploadManager {
 			File file = new File(f.toString());
 			SmartFileObject fo = new SmartFileObject();
 			
-			String[] fs = f.split(File.separator);
+			// Do not use File.seperator as in windows it gives wrong reg ex
+			String[] fs = f.split("/");
 			String filenm = fs[fs.length -1];
 			String fileExtension = getFileExtension(filenm);			
 

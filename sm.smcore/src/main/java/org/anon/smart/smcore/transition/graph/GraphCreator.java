@@ -94,7 +94,7 @@ public class GraphCreator implements TConstants
             {
                 Class cls = transitions.get(i);
                 Method[] methods = cls.getDeclaredMethods();
-                addMethods(key, keyextra, cls, methods, ret);
+                addMethods(key, keyextra, cls, methods, ret, shell, flow);
                 addServices(key, keyextra, cls, ret, shell, flow);
             }
 
@@ -178,7 +178,7 @@ public class GraphCreator implements TConstants
         return null;
     }
 
-    private GraphNode createNode(String key, String keyextra, Class cls, Method mthd)
+    private GraphNode createNode(String key, String keyextra, Class cls, Method mthd, CrossLinkDeploymentShell shell, String flow)
         throws CtxException
     {
         MethodAnnotate annot = (MethodAnnotate)mthd.getAnnotation(MethodAnnotate.class);
@@ -189,9 +189,24 @@ public class GraphCreator implements TConstants
             boolean isfor = false;
             for (int i = 0; (!isfor) && (i < per.length); i++)
             {
-            	if (key.equals(per[i]) || ((keyextra != null) && (keyextra.equals(per[i]))) || 
-            			((per[i].startsWith(ANY)) && (per[i].endsWith(key.substring(key.indexOf('|')+1, key.length())))))
-                    isfor = true;
+                List<String> check = new ArrayList<String>();
+                check.add(per[i]);
+                if (per[i].indexOf("needslink") >= 0)
+                {
+                    String[] links = shell.linksFor(flow, cls, per[i]);
+                    for (int j = 0; (links != null) && (j < links.length); j++)
+                        check.add(links[j]);
+                }
+
+                System.out.println("Creating a method for: " + check);
+
+                for (int k = 0; k < check.size(); k++)
+                {
+                    String one = check.get(k);
+                    if (key.equals(one) || ((keyextra != null) && (keyextra.equals(one))) || 
+                            ((key.startsWith(ANY)) && (one.endsWith(key.substring(key.indexOf('|')+1, key.length())))))
+                        isfor = true;
+                }
             }
 
             if (isfor)
@@ -247,12 +262,13 @@ public class GraphCreator implements TConstants
         }
     }
 
-    private void addMethods(String key, String keyextra, Class cls, Method[] methods, Map<String, Graph> into)
+    private void addMethods(String key, String keyextra, Class cls, Method[] methods, Map<String, Graph> into, CrossLinkDeploymentShell shell,
+            String flow)
         throws CtxException
     {
         for (int i = 0; i < methods.length; i++)
         {
-            GraphNode nde = createNode(key, keyextra, cls, methods[i]);
+            GraphNode nde = createNode(key, keyextra, cls, methods[i], shell, flow);
             if (nde == null)
                 continue;
             addNode(nde, into);

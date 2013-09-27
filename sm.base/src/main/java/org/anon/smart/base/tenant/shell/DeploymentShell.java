@@ -108,7 +108,7 @@ public class DeploymentShell implements SmartShell, FlowConstants
     {
         //this has to be run from the same classloader as the tenant which will be
         //the application class loader. Anything else should anyways give error.
-        Artefact[] artefacts = FlowDeploymentSuite.getAssistant().enableFor(_licensed, name, features);
+        Artefact[] artefacts = FlowDeploymentSuite.getAssistant().enableFor(_licensed, name, features, linked);
         //for (int i = 0; i < artefacts.length; i++)
          //   System.out.println("Added artefact for " + name + ": " + artefacts[i].getName() + ":" + artefacts[i].getClazz());
         FlowDeployment deploy = _licensed.assistant().deploymentFor(name);
@@ -184,6 +184,12 @@ public class DeploymentShell implements SmartShell, FlowConstants
         throws CtxException
     {
         return deployment(dep, name, CONFIG);
+    }
+
+    public String[] linksFor(String dep, Class cls, String key)
+        throws CtxException
+    {
+        return _licensed.assistant().linkFor(dep, cls, key);
     }
 
     public List<Class> transitionsFor(String dep, String prime, String event, String extra)

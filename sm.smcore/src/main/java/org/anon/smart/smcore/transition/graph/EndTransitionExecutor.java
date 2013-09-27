@@ -81,10 +81,13 @@ public class EndTransitionExecutor implements CtxRunnable
             if ((_context instanceof TransitionContext) && (_parent.hasCompleted()))
             {
                 TransitionContext gctx = (TransitionContext)_context;
-                if (gctx.graphDone())
+                boolean done = gctx.graphDone();
+                System.out.println("Running the completed: " + done);
+                if (done)
                 {
                     try
                     {
+                        System.out.println("Calling finish of atomicity: ");
                         gctx.atomicity().finish();
                     }
                     catch (Exception e1)

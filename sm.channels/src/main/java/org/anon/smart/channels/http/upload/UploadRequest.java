@@ -104,7 +104,7 @@ public class UploadRequest {
 	public String toString() {
 		String ret = "{";
 		for (Object k : msg.keySet()) {
-			ret = ret + "'" + k.toString() + "'" + ":" + "'" + msg.get(k) + "'"
+			ret = ret + "'" + (k.toString()).replace('\\', '/') + "'" + ":" + "'" + msg.get(k) + "'"
 					+ ",";
 		}
 		ret = ret.substring(0, ret.length() - 1);

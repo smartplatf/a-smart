@@ -93,7 +93,16 @@ public class EventDScope extends HTTPMessageDScope
     {
         super.handleHeader(key, value);
         if (key.equalsIgnoreCase("Session-Id") && (value != null) && (value.length() > 0))
-            _sessionId = UUID.fromString(value);
+        {
+            try
+            {
+                _sessionId = UUID.fromString(value);
+            }
+            catch (Exception e)
+            {
+                _sessionId = null;
+            }
+        }
     }
 
     public String tenant() { return _tenant; }

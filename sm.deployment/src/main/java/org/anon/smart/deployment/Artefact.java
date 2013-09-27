@@ -41,6 +41,11 @@
 
 package org.anon.smart.deployment;
 
+import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
+
 import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.crosslink.CrossLinkAny;
@@ -53,6 +58,8 @@ public class Artefact implements Deployable
     private ArtefactType _type;
     private String[] _keys;
 
+    private Map<String, String> _links;
+
     private Artefact(Class clazz, ArtefactType type)
         throws CtxException
     {
@@ -62,12 +69,72 @@ public class Artefact implements Deployable
         _name = type.getName(clazz);
     }
 
-    private Artefact(Artefact art)
+    public String[] expandLinks(String key)
+    {
+        if (_links != null)
+        {
+            List<String> k = new ArrayList<String>();
+            expandMe(key, _links, k, false);
+            return k.toArray(new String[0]);
+        }
+
+        return new String[] { key };
+    }
+
+    private void expandMe(String key, Map<String, String> links, List<String> k, boolean add)
+    {
+        if (key.indexOf("needslink") >= 0)
+        {
+            String[] keyparts = ArtefactType.getKeyParts(key);
+            //only one part can have a needslink
+            String[] val = null;
+            int ind = keyparts.length;
+            for (int j = 0; j < keyparts.length; j++)
+            {
+                System.out.println("Checking: " + keyparts[j] + ":" + links.get(keyparts[j]));
+                if ((keyparts[j].indexOf("needslink") >= 0) && (links.containsKey(keyparts[j])))
+                {
+                    System.out.println("Got: " + keyparts[j] + ":" + links.get(keyparts[j]));
+                    if (add) _links.put(keyparts[j], links.get(keyparts[j]));
+                    String[] lparts = links.get(keyparts[j]).split("\\.");
+                    String use = links.get(keyparts[j]);
+                    if (lparts.length >= 2)
+                        use = lparts[1];
+                    val = use.split(",");
+                    ind = j;
+                    break;
+                }
+            }
+
+            if (ind < keyparts.length)
+            {
+                String[] get = ArtefactType.createKeys(keyparts, val, ind);
+                for (int l = 0; l < get.length; l++)
+                    k.add(get[l]);
+            }
+            else
+                k.add(key); //add as is, there is no link created
+
+            System.out.println("Expanded: " + key + ":" + k + ":" + links);
+        }
+    }
+
+    private Artefact(Artefact art, Map<String, String> links)
     {
         _name = art._name;
         _clazz = art._clazz;
         _type = art._type;
-        _keys = art._keys;
+
+        List<String> k = new ArrayList<String>();
+        _links = new HashMap<String, String>();
+        for (int i = 0; i < art._keys.length; i++)
+        {
+            if (art._keys[i].indexOf("needslink") >= 0)
+                expandMe(art._keys[i], links, k, true);
+            else
+                k.add(art._keys[i]);
+        }
+        _keys = k.toArray(new String[0]);
     }
 
     public String[] getKeys() { return _keys; }
@@ -119,7 +186,7 @@ public class Artefact implements Deployable
         return ret;
     }
 
-    public static Artefact[] artefactsFor(Artefact[] arts)
+    public static Artefact[] artefactsFor(Artefact[] arts, Map<String, String> links)
         throws CtxException
     {
         if (arts == null)
@@ -127,7 +194,7 @@ public class Artefact implements Deployable
 
         Artefact[] ret = new Artefact[arts.length];
         for (int i = 0; i < arts.length; i++)
-            ret[i] = new Artefact(arts[i]);
+            ret[i] = new Artefact(arts[i], links);
 
         return ret;
     }
