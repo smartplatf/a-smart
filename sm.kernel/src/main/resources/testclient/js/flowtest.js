@@ -1,6 +1,5 @@
 var recognized = {
 "ListAllEvent":["group", "size"],
-"GetListings":["group", "listingsPerPage", "pageNum"],
 "SearchEvent":["group"],
 "LookupEvent":["group", "key"],
 "CreatePrime":["group"],
@@ -111,6 +110,11 @@ function setEvents(resp)
 
 function setPrimes(resp)
 {
+   setPrimesIn(resp, $('#posttotype'));
+}
+
+function setPrimesIn(resp, obj)
+{
     console.log(resp);
     var f = $("<option/>", {
        'text':'Standard Flow',
@@ -127,7 +131,7 @@ function setPrimes(resp)
             'text':nm,
             'value':nm
         });
-        $('#posttotype').append(opt);
+        obj.append(opt);
     }
 }
 
@@ -245,7 +249,7 @@ function populatevalues()
     populateFlows();
 }
 
-function enablefortenant()
+function enablefortenant(links)
 {
     var admsmart = new smartadmin();
     setupconn(admsmart, populatevalues);
@@ -255,13 +259,42 @@ function enablefortenant()
     var flow = $('#flowname').val();
     var features = $('#features').val();
     var farray = features.split(",");
-    admsmart.enableFlow($('#tenant').val(), flow, farray);
+    admsmart.enableFlow($('#tenant').val(), flow, farray, links);
+}
+
+function getmashup(resp)
+{
+    console.log(resp);
+    var ldep = resp.response['deployments'];
+    if ((ldep != undefined) && (ldep.length > 0))
+    {
+        var div = $('#reqdlinks');
+        div.empty();
+        $('#linklength').val(ldep.length);
+        for (var lnk in ldep)
+        {
+            addToReqdLinks(lnk, ldep[lnk]);
+        }
+
+        showBox($('#configurelinks'), '250px', '200px');
+    }
+    else
+        enablefortenant();
+}
+
+function checkmashup()
+{
+    var admsmart = new smartadmin();
+    setupconn(admsmart, getmashup);
+    admsmart.sessionId = $('#adminsessid').val();
+    admsmart.flowName = "AdminSmartFlow";
+    admsmart.listLinks($('#flowname').val());
 }
 
 function filedeploy()
 {
     var admsmart = new smartadmin();
-    setupconn(admsmart, enablefortenant);
+    setupconn(admsmart, checkmashup);
     admsmart.sessionId = $('#adminsessid').val();
     admsmart.flowName = "AdminSmartFlow";
     admsmart.deploy($('#deployjar').val(), $('#soafile').val());
@@ -333,18 +366,19 @@ $('#setupdata').submit(function(e) {
 
 $('#connectsmart').submit(function(e) {
     e.preventDefault();
-
+    $('#adminsessid').val(''); //reset the sessionid
+    $('#sessionid').val(''); //reset the sessionid
     adminlogin();
     return false;
 });
 
 function addto(data, key, val)
 {
-    if (key.indexOf("Double click") >= 0)
+    /*if (key.indexOf("Double click") >= 0)
         return;
 
     if (val.indexOf("Double click") >= 0)
-        return;
+        return;*/
 
     if (data[key] != undefined)
     {
@@ -440,16 +474,33 @@ $('#postgeneral').submit(function(e) {
     return false;
 });
 
+
+$('#configlinks').submit(function(e) {
+    e.preventDefault();
+    var len = $('#linklength').val();
+    var links = [];
+    for (var i = 0; i < len; i++)
+    {
+        var lnk = {};
+        lnk['name'] = $('#name' + i).val();
+        lnk['flow'] = $('#flow' + i).val();
+        lnk['object'] = $('#object' + i).val();
+        lnk['attribute'] = $('#attribute' + i).val();
+        if (lnk['attribute'] != '')
+            links.push(lnk);
+    }
+
+    enablefortenant(links);
+    hideBox($('#configurelinks'));
+    return false;
+});
+
 function runStandard(fsmart, evt, std, data)
 {
     if (evt == 'ListAllEvent')
     {
         fsmart.list(std["group"], parseInt(std["size"]));
     }
-    else if (evt == 'GetListings')
-    {
-        fsmart.getListings(std["group"], parseInt(std["pageNum"]), parseInt(std["listingsPerPage"]));
-    }    
     else if (evt == 'CreatePrime')
     {
         fsmart.createPrime(std["group"], data);
@@ -467,4 +518,79 @@ function runStandard(fsmart, evt, std, data)
     }
     else
        alert("Not Supported");
+}
+
+function addToReqdLinks(cnt, lnk)
+{
+    var div = $('#reqdlinks');
+    var tr = $("<tr/>");
+    var td1 = $("<td/>");
+    var td2 = $("<td/>");
+    var td3 = $("<td/>");
+    var td4 = $("<td/>");
+    var lnkin = $('<input/>', {
+        'class':'input-block-level',
+        'type':'text',
+        'value':lnk,
+        'readonly':'readonly',
+        'id':'name' + cnt
+    });
+
+    td1.append(lnkin);
+
+    var flows = $('<select/>', {
+        'class':'input-block-level',
+        'id':'flow' + cnt,
+        'placeholder':'Select a flow from which to link'
+    });
+
+    $("#flow option").each(function() {
+        var val = $(this).val();
+        var txt = $(this).html();
+        flows.append(
+            $('<option/>').val(val).html(txt)
+        );
+    });
+
+    td2.append(flows);
+
+    var objs = $('<input/>', {
+        'class':'input-block-level',
+        'type':'text',
+        'id':'object' + cnt,
+        'placeholder':'Enter an object to link to'
+    });
+
+    td3.append(objs);
+
+    var attr = $('<input/>', {
+        'class':'input-block-level',
+        'type':'text',
+        'id':'attribute' + cnt,
+        'placeholder': 'Enter the attribute of the object to link this to'
+    });
+
+    td4.append(attr);
+
+    tr.append(td1);
+    tr.append(td2);
+    tr.append(td3);
+    tr.append(td4);
+    div.append(tr);
+}
+
+function showBox(div, x, y)
+{
+    div.css({left: x});
+    div.css({top: y});
+    div.css({opacity:"1"});
+    $('#body-container').css({'pointer-events':'none'})
+}
+
+function hideBox(div)
+{
+    div.css({left: "-1000px"});
+    div.css({top: "-1000px"});
+    div.css({opacity:"0"});
+    $('#body-container').css({'pointer-events':'auto'})
 }
