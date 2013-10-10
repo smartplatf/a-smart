@@ -85,6 +85,8 @@ public class RepositorySegment implements CSegment {
     {
         if (_store != null)
             _store.close();
+
+        _store = null;
     }
 
 }

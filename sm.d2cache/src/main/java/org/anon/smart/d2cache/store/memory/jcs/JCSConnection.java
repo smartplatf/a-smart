@@ -48,6 +48,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.jcs.JCS;
+import org.apache.jcs.engine.control.CompositeCache;
+import org.apache.jcs.engine.control.CompositeCacheManager;
 
 import org.anon.smart.d2cache.store.StoreTransaction;
 import org.anon.smart.d2cache.store.StoreConnection;
@@ -67,6 +69,7 @@ import com.sleepycat.je.util.DbSpace;
 public class JCSConnection implements StoreConnection
 {
     private JCS _cache;
+    private String _name;
 
     public JCSConnection()
     {
@@ -78,6 +81,7 @@ public class JCSConnection implements StoreConnection
         try
         {
             _cache = JCS.getInstance(name);
+            _name = name;
         }
         catch (Exception e)
         {
@@ -138,7 +142,13 @@ public class JCSConnection implements StoreConnection
         try
         {
             if (_cache != null)
+            {
                 _cache.clear();
+                CompositeCacheManager.getInstance().freeCache(_name);
+                //we are currently just removing the element event q.
+                CompositeCache.elementEventQ.destroy(); //so that the reference to the classloader is released
+                _cache = null;
+            }
         }
         catch (Exception e)
         {

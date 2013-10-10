@@ -54,6 +54,12 @@ public class PluginManager
 {
     private static PluginManager PLUGINS = new PluginManager();
 
+    public static void releasePlugins()
+    {
+        PLUGINS._plugins.clear();
+        PLUGINS = null;
+    }
+
     private List<TransitionPlugin> _plugins;
 
     private PluginManager()

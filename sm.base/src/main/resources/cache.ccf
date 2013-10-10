@@ -14,6 +14,9 @@ jcs.default.elementattributes.IsSpool=true
 jcs.default.elementattributes.IsRemote=true
 jcs.default.elementattributes.IsLateral=true
 
+#for TenantsHosted
+jcs.region.TenantsHosted.elementattributes=org.anon.smart.base.tenant.TenantMemoryAttributes
+
 #AVAILABLE AUXILIARY CACHES
 #jcs.auxiliary.DC=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheFactory
 #jcs.auxiliary.DC.attributes=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheAttributes

@@ -169,6 +169,11 @@ public class DataShell implements SmartShell, TenantConstants
         }
         for (DSpace s : _spaces.values())
             s.cleanup();
+
+        if (_context != null)
+            _context.cleanup();
+
+        _context = null;
     }
 
     public Object lookup(String spacemodel, String group, Object key)

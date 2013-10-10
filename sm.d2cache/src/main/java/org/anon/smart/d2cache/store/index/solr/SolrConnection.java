@@ -76,9 +76,11 @@ import org.anon.utilities.logger.Logger;
 public class SolrConnection implements StoreConnection, Constants
 {
     private EmbeddedSolrServer _server;
-    private static CoreContainer _container;
+    //private static CoreContainer _container;
     private StoreConfig _config;
     private File _home;
+    private String _homeFile;
+    private String _corename;
     
     private static SolrConnection _connection;
     
@@ -97,14 +99,15 @@ public class SolrConnection implements StoreConnection, Constants
         _config = cfg;
         try
         {
-        	if(_container == null)
+        	//if(_container == null)
         	{
             SolrConfig scfg = (SolrConfig)cfg;
             _home = new File(scfg.getIndexHome());
+            _homeFile = scfg.getIndexHome();
             assertion().assertTrue(_home.exists(), "The solr home directory does not exist. Please setup solr correctly." + scfg.getIndexHome());
             File solr = new File(_home, CORE_CONFIG);
             assertion().assertTrue(solr.exists(), "The solr config file does not exist. Please setup solr correctly." + CORE_CONFIG);
-            _container = new CoreContainer(scfg.getIndexHome(), solr);
+            //_container = new CoreContainer(scfg.getIndexHome(), solr);
             //_container.load(scfg.getIndexHome(), solr);
         	}
         
@@ -129,8 +132,11 @@ public class SolrConnection implements StoreConnection, Constants
         	{
         		corename = name.split(CORENAME_DELIM, 2)[0];
         	}
+
+            _corename = corename;
             
         	//System.out.println("CORE NAME is :"+corename);
+            CoreContainer container = SolrContainerSingleton.getContainer(_homeFile);
             File f = new File(_home, corename);
             if (!f.exists())
             {
@@ -141,10 +147,10 @@ public class SolrConnection implements StoreConnection, Constants
                 assertion().assertTrue((url != null), "The solr config and schema jars are not a part of the classpath. Please include it.");
                 f.mkdirs(); //create the directory
                 //have to test if there needs to be synchronization
-                _server = new EmbeddedSolrServer(_container, DEFAULT_CORE);
+                _server = new EmbeddedSolrServer(container, DEFAULT_CORE);
                 CoreAdminRequest.createCore(corename, corename, _server, SOLR_CONFIG, SCHEMA_CONFIG);
                 CoreAdminRequest.persist(CORE_CONFIG, _server);
-                _server = new EmbeddedSolrServer(_container, corename);
+                _server = new EmbeddedSolrServer(container, corename);
                 _logger.info("Solr server opened for connections:"+_server+"::"+corename);
              }
             else
@@ -152,22 +158,33 @@ public class SolrConnection implements StoreConnection, Constants
                 _logger.info("Core "+corename+" exists:reloading........");
                 
                 /*** WorkAround till correct solution ***/
-                SolrCore core = _container.getCore(corename);
-                if (core != null)
+                SolrCore core = container.getCore(corename);
+                try
                 {
-                    String iDir = core.getIndexDir();
-                    String indexLock = iDir+File.separator+"write.lock";
-                    File iFile = new File(indexLock);
-                    if(iFile.isFile())
+                    if (core != null)
                     {
-                        System.out.println("********* Deleting unremoved index lock file **********");
-                        iFile.delete();
+                        String iDir = core.getIndexDir();
+                        String indexLock = iDir+File.separator+"write.lock";
+                        File iFile = new File(indexLock);
+                        if(iFile.isFile())
+                        {
+                            System.out.println("********* Deleting unremoved index lock file **********");
+                            iFile.delete();
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+                finally
+                {
                     core.close();//close to release references
+                    System.out.println(">>>>>>>>>>>>>>>>>Solr core closed:"+corename + ":" + core.getOpenCount());
                 }
                 /*** WorkAround till correct solution END ***/
                 
-                _server = new EmbeddedSolrServer(_container, corename);
+                _server = new EmbeddedSolrServer(container, corename);
                 _logger.info(">>>>>>>>>>>>>>>>>Solr server opened for connections:"+_server+"::"+corename);
             }
         	}
@@ -203,13 +220,22 @@ public class SolrConnection implements StoreConnection, Constants
     public void close()
         throws CtxException
     {
-    	System.out.println("!!!!!!!!!!!!!!!!!  Closing Solr Server !!!!!!!!!!!!!!!!!");
+    	System.out.println("!!!!!!!!!!!!!!!!!  Closing Solr Server !!!!!!!!!!!!!!!!!" + _server);
         if (_server != null)
         {
-        	_container.shutdown();
-            _server.shutdown();
-            
+        	//_container.shutdown();
+            //_server.shutdown();
+            //_container = null;
+            CoreContainer container = _server.getCoreContainer();
+            if (container != null)
+            {
+                //checking if this releases the resources of the core.
+                //container.reload(_corename);
+            }
+            _server = null;
         }
+
+        _connection = null;
     }
 
     public Object find(String group, Object key)

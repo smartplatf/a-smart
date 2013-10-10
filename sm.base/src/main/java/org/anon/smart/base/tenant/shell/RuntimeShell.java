@@ -89,6 +89,15 @@ public class RuntimeShell implements SmartShell, TenantConstants
     public void cleanup()
         throws CtxException
     {
+        if (_transitionExecutor != null)
+            _transitionExecutor.shutdownNow();
+
+        _transitionExecutor = null;
+
+        if (_context != null)
+            _context.cleanup();
+
+        _context = null;
     }
 
     public Object lookupFor(String spacemodel, String group, Object key)

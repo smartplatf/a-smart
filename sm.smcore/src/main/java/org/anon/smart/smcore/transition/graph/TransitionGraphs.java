@@ -85,5 +85,11 @@ public class TransitionGraphs
         System.out.println("Got graph: " + graphs._graphs);
         return graphs._graphs.get(fromstate);
     }
+
+    public static void cleanup()
+        throws CtxException
+    {
+        TRANSITIONS = null;
+    }
 }
 

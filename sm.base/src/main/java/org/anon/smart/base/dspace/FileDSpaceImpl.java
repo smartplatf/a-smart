@@ -52,7 +52,7 @@ public class FileDSpaceImpl extends TransactDSpaceImpl {
 
 	public FileDSpaceImpl(String name, String file) throws CtxException {
 		super(name, file);
-		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+		//Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 		// TODO Auto-generated constructor stub
 	}
 

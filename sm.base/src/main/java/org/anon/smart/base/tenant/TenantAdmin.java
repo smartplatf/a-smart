@@ -120,7 +120,18 @@ public class TenantAdmin implements RelatedObject, java.io.Serializable
                     shell.commitInternalObjects(model, objs);
                 }
             }
+            //can remove it as soon as committed, since it is available in cache henceforth
+            cleanup();
         }
+    }
+
+    public void cleanup()
+    {
+        if (_defaultTenantObjects != null)
+            _defaultTenantObjects.clear();
+
+        _defaultTenantObjects = null;
+        _newTenant = null;
     }
 }
 

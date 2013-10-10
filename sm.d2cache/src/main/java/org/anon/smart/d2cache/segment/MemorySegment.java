@@ -87,6 +87,8 @@ public class MemorySegment implements CSegment {
     {
         if (_store != null)
             _store.close();
+
+        _store = null;
     }
 
 }

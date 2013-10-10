@@ -291,6 +291,8 @@ public class DeploymentShell implements SmartShell, FlowConstants
     public void cleanup()
         throws CtxException
     {
+        _tenant = null;
+        _loader = null;
     }
 }
 

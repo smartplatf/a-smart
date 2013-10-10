@@ -61,5 +61,9 @@ public class SmartSecurityManager extends SecurityManager
     {
     }
 
+    public ThreadGroup getThreadGroup()
+    {
+        return new ThreadGroup("unnamed"); //default to some std threadgroup
+    }
 }
 

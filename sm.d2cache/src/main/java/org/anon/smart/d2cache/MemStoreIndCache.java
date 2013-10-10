@@ -79,6 +79,8 @@ public class MemStoreIndCache extends AbstractD2Cache {
 		// TODO Auto-generated method stub
         for (int i = 0; i < _segments.length; i++)
             _segments[i].cleanup();
+
+        _segments = null;
 	}
 
 

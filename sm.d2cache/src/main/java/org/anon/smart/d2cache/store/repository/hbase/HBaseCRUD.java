@@ -118,6 +118,20 @@ public class HBaseCRUD implements Constants
     	
     }
 
+    private void closeTable(HTable table)
+    {
+        try
+        {
+            if (table != null)
+                table.close();
+        }
+        catch (Exception e)
+        {
+            //ignore for now.
+            System.out.println(e.getMessage());
+        }
+    }
+
 	Map<String, byte[]> oneRecord(String tableName, Object rowKey) 
         throws CtxException
     {
@@ -134,6 +148,7 @@ public class HBaseCRUD implements Constants
         }
         catch(Exception ex)
         {
+            closeTable(table);
             return ret;
         }
 
@@ -151,6 +166,10 @@ public class HBaseCRUD implements Constants
         catch (Exception e)
         {
             except().rt(e, new CtxException.Context("Exception", e.getMessage()));
+        }
+        finally
+        {
+            closeTable(table);
         }
 
         return ret;
@@ -178,6 +197,10 @@ public class HBaseCRUD implements Constants
         {
             return false;
         }
+        finally
+        {
+            closeTable(table);
+        }
         
 	        
 	}
@@ -185,10 +208,11 @@ public class HBaseCRUD implements Constants
 	ResultScanner listAll(String tableName, long size, Scan s)
 		throws CtxException 
 	{
+        HTable table = null;
 	    try
 	    {
             System.out.println("Searching in table: " + tableName);
-	        HTable table = new HTable(_config, tableName);
+	        table = new HTable(_config, tableName);
             /*if (size > 0)
                 s.setMaxResultSize((long)size);*/
         
@@ -204,6 +228,10 @@ public class HBaseCRUD implements Constants
 	    {
 	        except().te(this, "Exception in Listing from table:"+tableName);
 	    }
+        finally
+        {
+            closeTable(table);
+        }
 	    
 	    return null;
 	}
@@ -230,11 +258,23 @@ public class HBaseCRUD implements Constants
     void putRecords(String tableName, List<Put> puts)
         throws Exception
     {
-        HTable table = new HTable(_config, tableName);
+        HTable table = null;
+        try
+        {
+        table = new HTable(_config, tableName);
         table.put(puts);
         
         /* adding ROWIDs */
         insertRowIDs(tableName, puts);
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+        finally
+        {
+            closeTable(table);
+        }
     }
 
     /**
@@ -251,34 +291,46 @@ public class HBaseCRUD implements Constants
         //TODO Delet this if ... rowID table will not be present for those tables created before this patch  
         if(!tableExists(rowIDTable))
             return;
-        HTable table = new HTable(_config, rowIDTable);
-        /* get rowCount */
-        Get g = new Get(Bytes.toBytes("Count"));
-        long val = 0;
-        Result r = table.get(g);
-        
-        if(r != null)
+        HTable table = null;
+        try
         {
-            KeyValue kv  = r.getColumnLatest(Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes("value"));
-            if(kv != null)
-                val = Bytes.toLong(kv.getValue());
-        }
-        List<Put> rowIDPuts = new ArrayList<Put>(puts.size());
-        for(Put put : puts)
-        {
-            //If this record is for related object(for user keys) skip the rowID
-            if(isRelatedPut(put))
-                continue;
-            val++;
-            Put p = new Put(Bytes.toBytes(val));
-            p.add(Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes(ACTUAL_KEY),put.getRow());
-            rowIDPuts.add(p);
+            table = new HTable(_config, rowIDTable);
+            /* get rowCount */
+            Get g = new Get(Bytes.toBytes("Count"));
+            long val = 0;
+            Result r = table.get(g);
             
+            if(r != null)
+            {
+                KeyValue kv  = r.getColumnLatest(Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes("value"));
+                if(kv != null)
+                    val = Bytes.toLong(kv.getValue());
+            }
+            List<Put> rowIDPuts = new ArrayList<Put>(puts.size());
+            for(Put put : puts)
+            {
+                //If this record is for related object(for user keys) skip the rowID
+                if(isRelatedPut(put))
+                    continue;
+                val++;
+                Put p = new Put(Bytes.toBytes(val));
+                p.add(Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes(ACTUAL_KEY),put.getRow());
+                rowIDPuts.add(p);
+                
+            }
+            table.put(rowIDPuts);
+            
+            /* now update rowCount */
+            table.incrementColumnValue(Bytes.toBytes("Count"), Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes("value"), rowIDPuts.size());
         }
-        table.put(rowIDPuts);
-        
-        /* now update rowCount */
-        table.incrementColumnValue(Bytes.toBytes("Count"), Bytes.toBytes(SYNTHETIC_COL_FAMILY), Bytes.toBytes("value"), rowIDPuts.size());
+        catch (Exception e)
+        {
+            throw e;
+        }
+        finally
+        {
+            closeTable(table);
+        }
         
     }
     private boolean isRelatedPut(Put put)
@@ -311,9 +363,10 @@ public class HBaseCRUD implements Constants
         int listingsPerPage, int pageNum)
         throws CtxException
     {
+        HTable table = null;
         try
         {
-            HTable table = new HTable(_config, tableName);
+            table = new HTable(_config, tableName);
             Slider slider = SliderManager.instance().getSlider(table, group, sortBy);
             byte[] sr = getStartRow(tableName, listingsPerPage, pageNum);
             Iterator keyIter = slider.getKeys(listingsPerPage, pageNum, sr);
@@ -328,6 +381,10 @@ public class HBaseCRUD implements Constants
         {
             ex.printStackTrace();
             except().te(this, "Exception in Listing from table:"+tableName);
+        }
+        finally
+        {
+            closeTable(table);
         }
         
         return null;

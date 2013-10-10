@@ -170,7 +170,7 @@ public class TenantsHosted extends ApplicationSingleton implements TenantConstan
                 t.cleanup();
         }
         
-        SmartTenant ts = tenantFor(PLATFORMOWNER);
+        SmartTenant ts = tenantFor(PLATFORMOWNER, true);
         if (ts != null)
             ts.cleanup();
         _tenantSpace.cleanup();

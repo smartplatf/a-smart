@@ -26,45 +26,39 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.tenant.shell.ShellContext
+ * File:                org.anon.smart.secure.channel.distill.storage.SecureStorageStage
  * Author:              rsankar
  * Revision:            1.0
- * Date:                16-01-2013
+ * Date:                29-09-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A context for the shell
+ * A storage stage that removes session from the threadlocal
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.tenant.shell;
+package org.anon.smart.secure.channel.distill.storage;
 
+import org.anon.smart.channels.distill.Isotope;
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
-
-import static org.anon.utilities.loader.RelatedUtils.*;
-import static org.anon.utilities.services.ServiceLocator.*;
+import org.anon.smart.smcore.channel.distill.storage.StorageStage;
+import org.anon.smart.secure.session.SessionDirector;
 
 import org.anon.utilities.exception.CtxException;
 
-public class ShellContext
+public class SecureStorageStage extends StorageStage
 {
-    private CrossLinkSmartTenant _tenant;
-    private String _name;
-
-    public ShellContext()
-        throws CtxException
+    public SecureStorageStage()
     {
-        Object related = getRelatedObject(this);
-        assertion().assertNotNull(related, "The shell object context cannot be null.");
-        _tenant = new CrossLinkSmartTenant(related);
-        _name = _tenant.getName();
+        super();
     }
 
-    public String name() { return _name; }
-
-    public CrossLinkSmartTenant tenant() { return _tenant; }
-    public void cleanup() { _tenant = null; }
+    protected void cleanup(CrossLinkSmartTenant tenant)
+        throws CtxException
+    {
+        SessionDirector.removeSessionFrom(tenant);
+    }
 }
 

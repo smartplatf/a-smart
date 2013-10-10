@@ -105,7 +105,7 @@ public class SolrRecord extends AbstractStoreRecord implements Constants
                 {
                     for (String key : _exist.keySet())
                     {
-                        if (!key.equals(ID_COLUMN))
+                        if ((!key.equals(ID_COLUMN)) && (!key.equals("_version_")))
                             _document.addField(key, _exist.get(key));
                     }
                     System.out.println("Got a document for the key: " + _idKey + "::" + _document);

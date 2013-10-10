@@ -225,6 +225,17 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 		}
 		if (_deploymentShell != null)
 			_deploymentShell.cleanup();
+
+        //dereference so gc can collect all the objects.
+        if (_loader != null)
+        {
+            _loader.cleanup();
+            _loader.setRelatedTo(null);
+            _loader = null;
+        }
+        _deploymentShell = null;
+        _runtimeShell = null;
+        _data = null;
 	}
 
 	public void enableFlow(Object amodel, Artefact[] artefacts, Deployment d)

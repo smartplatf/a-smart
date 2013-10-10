@@ -121,6 +121,7 @@ public class HttpUploadServerHandler extends SimpleChannelUpstreamHandler {
 		System.out.println("instinct :: " + _instinct);
 		tmpUploadDir = System.getProperty("java.io.tmpdir");		
 		System.out.println("tmpUploadDir :: " + tmpUploadDir);
+        DiskFileUpload.baseDirectory = tmpUploadDir;
 		_upReader = upRdr;
 		_dwnReader = dwnRdr;
 		_channelID = channelID;

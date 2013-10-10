@@ -56,9 +56,11 @@ import org.anon.smart.channels.shell.ExternalConfig;
 import org.anon.smart.smcore.stt.STTService;
 import org.anon.smart.smcore.transition.TransitionService;
 import org.anon.smart.deployment.MacroDeployer;
+import org.anon.smart.smcore.transition.plugin.PluginManager;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
 
+import org.anon.utilities.objservices.ObjectServiceLocator;
 import org.anon.utilities.anatomy.AModule;
 import org.anon.utilities.anatomy.ModuleContext;
 import org.anon.utilities.anatomy.StartConfig;
@@ -134,6 +136,17 @@ public class SMCoreModule extends AModule implements FlowConstants
         shell.stopAllChannels();
 
         TenantsHosted.cleanup();
+    }
+
+    public void cleanup()
+        throws CtxException
+    {
+        System.out.println("Cleaning up SMCORE.");
+        TransitionService.cleanup();
+        SMCoreContext ctx = (SMCoreContext)context();
+        ctx.cleanup();
+        PluginManager.releasePlugins();
+        ObjectServiceLocator.releaseAll();
     }
 }
 

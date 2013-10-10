@@ -71,7 +71,7 @@ public class MonitorModule extends AModule implements FlowConstants
     protected void setup()
         throws CtxException
     {
-        MonitorSTTService.initialize();
+        //MonitorSTTService.initialize();
         PluginManager.registerPlugin(new MonitorPlugin());
     }
 
@@ -84,6 +84,7 @@ public class MonitorModule extends AModule implements FlowConstants
     public void start(StartConfig cfg)
         throws CtxException
     {
+        MonitorSTTService.initialize();
         if (!(cfg instanceof SMCoreConfig))
             return;
 

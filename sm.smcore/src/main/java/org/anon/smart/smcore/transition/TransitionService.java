@@ -100,5 +100,11 @@ public class TransitionService implements TConstants
         TransitionContext tctx = new TransitionContext(rdata, rtshell.transitionExecutor(), graph, source);
         return tctx;
     }
+
+    public static void cleanup()
+        throws CtxException
+    {
+        TransitionGraphs.cleanup();
+    }
 }
 

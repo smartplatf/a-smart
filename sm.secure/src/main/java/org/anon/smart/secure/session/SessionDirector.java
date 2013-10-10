@@ -86,6 +86,12 @@ public class SessionDirector
         return (Session)sess;
     }
 
+    public static void removeSession()
+        throws CtxException
+    {
+        threads().addToContextLocals(SESSION_STORE_NAME, null);
+    }
+
     public static void setupContext(Object session)
         throws CtxException
     {
@@ -100,6 +106,13 @@ public class SessionDirector
         if (obj != null)
             cany.invoke("setupContext", new Class[] { Object.class }, new Object[] { obj });
         return obj;
+    }
+
+    public static void removeSessionFrom(CrossLinkSmartTenant tenant)
+        throws CtxException
+    {
+        CrossLinkAny cany = new CrossLinkAny(SessionDirector.class.getName(), tenant.getRelatedLoader());
+        cany.invoke("removeSession");
     }
 
     public static Session currentSession()

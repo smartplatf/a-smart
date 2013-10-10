@@ -128,5 +128,12 @@ public class SMCoreContext implements SmartModuleContext
     {
         return new String[] { "AdminSmartFlow", "AllFlows" };
     }
+
+    public void cleanup()
+        throws CtxException
+    {
+        _truthCache.cleanUp();
+        _truthCache = null;
+    }
 }
 

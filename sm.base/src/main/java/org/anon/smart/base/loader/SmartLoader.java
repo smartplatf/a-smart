@@ -54,6 +54,12 @@ public class SmartLoader extends RelatedLoader
     {
         addForceLoadSuper("org.anon.smart.base.stt.*");
         addForceLoadSuper("org.anon.smart.base.loader.*");
+        addForceLoadSuper("org.anon.smart.d2cache.store.index.solr.SolrContainerSingleton");
+        addForceLoadSuper("org.anon.smart.base.stt.tl.*");
+        addForceLoadSuper("org.anon.smart.smcore.stt.tl.*");
+        addForceLoadSuper("org.anon.smart.secure.stt.tl.*");
+        addForceLoadSuper("org.anon.smart.monitor.stt.tl.*");
+        addForceLoadSuper("org.anon.smart.secure.sdomain.SmartSecurityManager");
         //addForceLoadSuper("org.anon.smart.base.annot.*");
     }
 
