@@ -54,6 +54,7 @@ import org.anon.smart.base.loader.LoaderVars;
 import org.anon.smart.base.flow.FlowConstants;
 import org.anon.smart.secure.stt.Constants;
 import org.anon.smart.secure.sdomain.CrossLinkKlassProtector;
+import org.anon.smart.secure.sdomain.KlassProtector;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
@@ -188,7 +189,7 @@ public class SmartSecureLoader extends SmartLoader
     protected void initializeDomain(ProtectionDomain domain, Class cls)
         throws CtxException
     {
-        if ((domain != null) && (domain.getClassLoader() != null))
+        if ((domain != null) && (domain.getClass() != null) && (domain.getClass().getName().equals(KlassProtector.class.getName())))
         {
             CrossLinkKlassProtector protect = new CrossLinkKlassProtector(domain);
             if (protect.isAssignable())

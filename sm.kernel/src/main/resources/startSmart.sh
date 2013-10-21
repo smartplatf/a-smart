@@ -8,7 +8,7 @@ then
     export SMART_PATH=$HOME/.m2/repository/
 #    export SMART_LIB_PATH=$SMART_PATH/lib
     export SMART_LIB_PATH=$SMART_PATH/
-    export SMART_VERSION=2.0-SNAPSHOT
+    export SMART_VERSION=2.1-SNAPSHOT
 fi
 
 if [ -f setupEnv.sh ];

@@ -38,6 +38,8 @@ then
     exit
 fi
 
+SMARTVER=2.0
+
 if [ ! -f $1 ];
 then
     mkdir -p $1
@@ -138,19 +140,19 @@ wget_url http://repo1.maven.org/maven2/javax/mail/mail/1.4/mail-1.4.jar lib/java
 
 
 echo "[Copying smart jars **************************************************************]"
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.atomicity/1.1/sm.atomicity-1.1.jar?raw=true lib/org/anon/smart/sm.atomicity/1.1/sm.atomicity-1.1.jar    
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.base/1.1/sm.base-1.1.jar?raw=true lib/org/anon/smart/sm.base/1.1/sm.base-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.channels/1.1/sm.channels-1.1.jar?raw=true lib/org/anon/smart/sm.channels/1.1/sm.channels-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.codegen/1.1/sm.codegen-1.1.jar?raw=true lib/org/anon/smart/sm.codegen/1.1/sm.codegen-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.d2cache/1.1/sm.d2cache-1.1.jar?raw=true lib/org/anon/smart/sm.d2cache/1.1/sm.d2cache-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.deployment/1.1/sm.deployment-1.1.jar?raw=true lib/org/anon/smart/sm.deployment/1.1/sm.deployment-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.generator/1.1/sm.generator-1.1.jar?raw=true lib/org/anon/smart/sm.generator/1.1/sm.generator-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.kernel/1.1/sm.kernel-1.1.jar?raw=true lib/org/anon/smart/sm.kernel/1.1/sm.kernel-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.monitor/1.1/sm.monitor-1.1.jar?raw=true lib/org/anon/smart/sm.monitor/1.1/sm.monitor-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.secure/1.1/sm.secure-1.1.jar?raw=true lib/org/anon/smart/sm.secure/1.1/sm.secure-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.smcore/1.1/sm.smcore-1.1.jar?raw=true lib/org/anon/smart/sm.smcore/1.1/sm.smcore-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.template/1.1/sm.template-1.1.jar?raw=true lib/org/anon/smart/sm.template/1.1/sm.template-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/utilities/utilities/1.1/utilities-1.1.jar?raw=true lib/org/anon/utilities/utilities/1.1/utilities-1.1.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.atomicity/$SMARTVER/sm.atomicity-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.atomicity/$SMARTVER/sm.atomicity-$SMARTVER.jar    
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.base/$SMARTVER/sm.base-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.base/$SMARTVER/sm.base-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.channels/$SMARTVER/sm.channels-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.channels/$SMARTVER/sm.channels-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.codegen/$SMARTVER/sm.codegen-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.codegen/$SMARTVER/sm.codegen-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.d2cache/$SMARTVER/sm.d2cache-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.d2cache/$SMARTVER/sm.d2cache-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.deployment/$SMARTVER/sm.deployment-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.deployment/$SMARTVER/sm.deployment-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.generator/$SMARTVER/sm.generator-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.generator/$SMARTVER/sm.generator-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.kernel/$SMARTVER/sm.kernel-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.kernel/$SMARTVER/sm.kernel-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.monitor/$SMARTVER/sm.monitor-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.monitor/$SMARTVER/sm.monitor-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.secure/$SMARTVER/sm.secure-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.secure/$SMARTVER/sm.secure-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.smcore/$SMARTVER/sm.smcore-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.smcore/$SMARTVER/sm.smcore-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.template/$SMARTVER/sm.template-$SMARTVER.jar?raw=true lib/org/anon/smart/sm.template/$SMARTVER/sm.template-$SMARTVER.jar
+wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/utilities/utilities/$SMARTVER/utilities-$SMARTVER.jar?raw=true lib/org/anon/utilities/utilities/$SMARTVER/utilities-$SMARTVER.jar
 
 echo "[Copying FX flow jars **************************************************************]"
 wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/fixchg/fx.catalogue/1.0/fx.catalogue-1.0.jar?raw=true lib/org/anon/fixchg/fx.catalogue/1.0/fx.catalogue-1.0.jar
@@ -174,7 +176,7 @@ mkdir config
 echo "[Setting up environment ********]"
 echo "export SMART_PATH=$1" > setupEnv.sh
 echo "export SMART_LIB_PATH=$1/lib" >> setupEnv.sh
-echo "export SMART_VERSION=1.1" >> setupEnv.sh
+echo "export SMART_VERSION=$SMARTVER" >> setupEnv.sh
 echo "export JAVA_HOME=$3" >> setupEnv.sh
 chmod +x setupEnv.sh
 echo "[Setting up environment completed with creating setupEnv ********]"
