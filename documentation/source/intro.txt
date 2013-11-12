@@ -1,0 +1,40 @@
+Introduction to SMART
+=====================
+
+Difference between Cloud Application and Server Applications
+------------------------------------------------------------
+
+The major difference between a Cloud Application and a Server Application is that a single running instance of the application can serve more than one customer in a cloud application while it typically serves only one customer in a Server Application. Most of the differences between cloud and server application arise due to this.
+
++---------------------------------+--------------------------------------------------+
+| Cloud Application               | Server Application                               |
++==============+==================+==================================================+
+| Single running instance of the  | A single running instance of the application     |
+| of the application should be    | typically serves only one customer. To serve     |
+| able to serve a number of       | multiple customers, the architecture has to be   |
+| customers.                      | changed.                                         |
++--------------+----------+-------+---+----------------------------------------------+
+| Since the same instance of the  | Since multiple instances of the application      |
+| application serves multiple     | are used for serving multiple customers,         |
+| customers, the application      | customization can be implemented as compile time |
+| should be highly customizable at| customization.                                   |
+| runtime.                        |                                                  |
++--------------+----------+-------+---+----------------------------------------------+
+| Since the same instance of the  | Since multiple instances of the application      |
+| application serves multiple     | are used for serving multiple customers,         |
+| customers, isolation of data and| isolation is inherent in the implementation and  |
+| runtime environment between     | no extra effort is required here.                |
+| different customers is required.|                                                  |
++--------------+----------+-------+---+----------------------------------------------+
+| Since the running instance is   | Since running instance is installed for a single |
+| available on the web easily     | customer, no such online on-boarding can be      |
+| features such as customer online| provided.                                        |
+| signup can be provided          |                                                  |
++--------------+----------+-------+---+----------------------------------------------+
+| Since the same instance of the  | Since multiple instances of the application      |
+| application serves multiple     | are used for serving multiple customers,         |
+| customers, the licensing for    | licensing can be implemented as modular code that|
+| features in the application has | can be installed or not based on licensed.       |
+| to be at runtime.               |                                                  |
++--------------+----------+-------+---+----------------------------------------------+
+

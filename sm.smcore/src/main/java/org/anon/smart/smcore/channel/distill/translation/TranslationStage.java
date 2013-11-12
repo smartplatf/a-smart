@@ -232,6 +232,15 @@ public class TranslationStage implements Distillation
 		
 		String  flow = fd.deployedName(); 
         System.out.println("Getting deployment for flow: " + flow);
+        Field dest = AnnotationUtils.destinations(event.getClass());
+        if (dest != null)
+        {
+            dest.setAccessible(true);
+            Object val = reflect().getAnyFieldValue(event.getClass(), event, dest.getName());
+            assertion().assertNotNull(val, "Destination value for " + dest.getName() + " is NULL in INTERNAL event.");
+            flow = AnnotationUtils.flowFor(val.getClass());
+            System.out.println("Got destination field as: " + dest + ":" + flow);
+        }
 		for(Field f : flds)
 		{
 			f.setAccessible(true);

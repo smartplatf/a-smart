@@ -50,5 +50,8 @@ public interface HTTPClientChannel extends SmartClientChannel
 {
     public void post(String uri, PData[] data)
         throws CtxException;
+
+    public void get(String uri)
+        throws CtxException;
 }
 

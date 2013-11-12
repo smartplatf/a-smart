@@ -107,7 +107,7 @@ public class CRUDManager
 
         SuccessCreated created = new SuccessCreated("Object for: " + type + " created.");
     }
-    
+
     public void updatePrimeData(SmartPrimeData obj, UpdatePrime event)
     	throws CtxException
   	{

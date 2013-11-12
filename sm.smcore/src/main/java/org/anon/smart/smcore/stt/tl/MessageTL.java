@@ -46,10 +46,19 @@ import java.util.List;
 
 import org.anon.smart.base.annot.MessageAnnotate;
 import org.anon.smart.base.stt.tl.BaseTL;
+import org.anon.smart.base.stt.tl.AttributeTL;
 
 import org.anon.utilities.exception.CtxException;
 
-public class MessageTL extends BaseTL {
+public class MessageTL extends BaseTL 
+{
+
+    private List<AttributeTL> attributes;
+
+    public MessageTL()
+    {
+        super();
+    }
 
 	@Override
     public Class[] getAnnotations(String name)

@@ -1,0 +1,21 @@
+Metrics in SMART
+================
+
+Count of Events
+---------------
+
+Count of Prime Objects Created
+------------------------------
+
+Count of Data Objects Created
+-----------------------------
+
+Count of state transitions
+--------------------------
+
+Time of count
+-------------
+Weekly
+Monthly
+Daily
+

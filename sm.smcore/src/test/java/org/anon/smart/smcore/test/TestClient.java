@@ -177,5 +177,32 @@ public class TestClient
 
         return null;
     }
+
+    public String get(int port, String server, String uri, boolean wait)
+        throws Exception
+    {
+        String ret = "";
+        JSON jret = null;
+        ResponseCollector collect = new ResponseCollector(wait);
+        Rectifier rr = new Rectifier();
+        rr.addStep(collect);
+        HTTPConfig ccfg = new HTTPConfig(port, false);
+        ccfg.setClient();
+        ccfg.setServer(server);
+        ccfg.setRectifierInstinct(rr, new TestDataFactory());
+        HTTPClientChannel cchnl = (HTTPClientChannel)_shell.addChannel(ccfg);
+        cchnl.connect();
+        cchnl.get(uri);
+        if (wait)
+        {
+            collect.waitForResponse();
+            ret = collect.getResponse();
+            cchnl.disconnect();
+            System.out.println("Got: " + ret);
+            return ret;
+        }
+
+        return "";
+    }
 }
 

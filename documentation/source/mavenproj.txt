@@ -1,0 +1,132 @@
+MAVEN Integration
+=================
+
+.. _smart-maven-setup:
+
+Maven setup to use archetypes and plugins
+-----------------------------------------
+
+SMART provides archetypes and plugins to make development for SMART easy. These generate standard projects and configuration files required for SMART and thereby speeding up development time. To use these with maven, setup maven to use the SMART repositories that are hosted in github. 
+
+* Modify conf/settings.xml in maven or in user's settings.xml to contain the following profile::
+
+    <profile>
+      <id>smart-profile</id>
+      <repositories>
+        <repository>
+          <id>githubsmart</id>
+          <name>Repository for smart project generation</name>
+          <url>http://raw.github.com/smartplatf/smart-releases/master/snapshots/</url>
+          <layout>default</layout>
+        </repository>
+        <repository>
+          <id>githubsmartrelease</id>
+          <name>Repository for smart project generation</name>
+          <url>http://raw.github.com/smartplatf/smart-releases/master/releases/</url>
+          <layout>default</layout>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+            <pluginRepository>
+                <id>smartsnapshots</id>
+                <name>Maven Plugin Snapshots</name>
+                <url>http://raw.github.com/smartplatf/smart-releases/master/snapshots/</url>
+                <releases>
+                    <enabled>true</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </pluginRepository>
+            <pluginRepository>
+                <id>smartreleases</id>
+                <name>Maven Plugin Snapshots</name>
+                <url>http://raw.github.com/smartplatf/smart-releases/master/releases/</url>
+                <releases>
+                    <enabled>true</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+* Activate this profile by adding the below to the settings.xml::
+
+    <activeProfiles>
+        <activeProfile>smart-profile</activeProfile>
+    </activeProfiles>
+
+simple-archetype
+----------------
+
+The simple-archetype creates the simplest project for SMART with a single data class. This creates the "MessageFlow" code which is present in the "Basic Demo" of SMART. It creates a soa (SMART Object Annotations) file, for the flow and a soa file for the class requested. For eg., running this command::
+
+    mvn archetype:generate \
+      -DarchetypeGroupId=org.smart.archetypes \
+      -DarchetypeArtifactId=simple-archetype \
+      -DarchetypeVersion=1.0-SNAPSHOT \
+      -DgroupId=org.smart.demo.message \
+      -DartifactId=message \
+      -Dclassname=Message 
+
+generates the following code structure::
+
+    pom.xml
+    src
+       test
+         java
+           org/smart/demo/message/MessageTest.java
+       main
+         java
+           org/smart/demo/message/Message.java -- The Data Class
+         resources
+           js/Message.js -- A standard js for accessing the data
+           MessageFlow.soa -- Annotations for this Flow
+           org/smart/demo/message/Message.soa -- Annotations for this class
+
+The Message java is generated with a single member variable with the same name as the artifact Id and this is setup as the key of the data. To modify this, modify both the Message.java and the Message.soa files appropriately. Add any extra member variables to the data class directly.
+
+quick-start-archetype
+---------------------
+
+The quick-archetype create a project with all the artefacts that are present in SMART, the data, the event and a transition class. It generates the minimum required soa (SMART Object Annotations) for each of these classes and includes them into the Flow soa file. For eg., running this command::
+
+    mvn archetype:generate \
+    -DarchetypeGroupId=org.smart.archetypes \
+    -DarchetypeArtifactId=quickstart-archetype \
+    -DarchetypeVersion=1.0-SNAPSHOT \
+    -DgroupId=org.smart.demo.contact \
+    -DartifactId=contact \
+    -Ddata=Contact \
+    -Devent=Enquire \
+    -Dtransition=ContactManager
+
+generates the following code structure::
+
+    pom.xml
+    src
+      main
+        java
+          org/smart/demo/contact
+            Contact.java
+            ContactManager.java
+            Enquire.java
+        resources
+          ContactFlow.soa
+          js
+            Contact.js
+          org/smart/demo/contact
+            ContactManager.soa
+            Contact.soa
+      test
+         java
+           org/smart/demo/contact/ContactTest.java
+
+This generates three classes, data, event and transition. The data still has the member variable named as the artifact Id and this is the key for the data. The event has no soa and takes on all the default values. The transition has one method that is an empty method and is setup for the event to be raised on the data when the data is in active state.
+
+Use this as the starting point to modify the code appropriately. The code can be compiled and deployed as is, but the Enquire event will do nothing and send no responses back.
+
+
+

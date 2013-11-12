@@ -57,6 +57,7 @@ import org.anon.smart.smcore.stt.STTService;
 import org.anon.smart.smcore.transition.TransitionService;
 import org.anon.smart.deployment.MacroDeployer;
 import org.anon.smart.smcore.transition.plugin.PluginManager;
+import org.anon.smart.smcore.timer.TimerPlugin;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
 
@@ -82,6 +83,7 @@ public class SMCoreModule extends AModule implements FlowConstants
         FlowService.initialize();
         STTService.initialize();
         TransitionService.initialize();
+        PluginManager.registerPlugin(new TimerPlugin());
     }
 
     public Repeatable repeatMe(RepeaterVariants vars)

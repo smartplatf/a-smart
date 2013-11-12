@@ -46,16 +46,27 @@ public class Identity implements java.io.Serializable
     private String _smartUser;
     private String _identity;
     private SCredential _credential;
+    private String _randomCode;
 
     public Identity(String user, String iden, SCredential cred)
     {
         _smartUser = user;
         _identity = iden;
         _credential = cred;
+        _randomCode = "Nothing";
     }
 
     public String getSmartUser() { return _smartUser; }
     public String getIdentity() { return _identity; }
     public SCredential getCredential() { return _credential; }
+    public void setRandomCode(String cde)
+    {
+        _randomCode = cde;
+    }
+
+    public String getRandomCode()
+    {
+        return _randomCode;
+    }
 }
 

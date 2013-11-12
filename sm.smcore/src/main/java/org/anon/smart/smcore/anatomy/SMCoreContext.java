@@ -50,6 +50,7 @@ import org.anon.smart.base.anatomy.SmartModuleContext;
 import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.data.SmartDataTruth;
 import org.anon.smart.smcore.data.TruthCreator;
+import org.anon.smart.smcore.channel.client.pool.ClientObjectCreator;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
@@ -134,6 +135,7 @@ public class SMCoreContext implements SmartModuleContext
     {
         _truthCache.cleanUp();
         _truthCache = null;
+        ClientObjectCreator.cleanup();
     }
 }
 

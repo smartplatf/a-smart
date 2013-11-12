@@ -1,0 +1,11 @@
+Tutorials
+=========
+
+Creating basic project
+----------------------
+This tutorial helps create the first project with SMART
+
+Creating project with events
+----------------------------
+Learn to create events and process it with standard processinng
+

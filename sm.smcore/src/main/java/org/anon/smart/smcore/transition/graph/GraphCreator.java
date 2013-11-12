@@ -204,8 +204,9 @@ public class GraphCreator implements TConstants
                 {
                     String one = check.get(k);
                     if (key.equals(one) || ((keyextra != null) && (keyextra.equals(one))) || 
-                            ((key.startsWith(ANY)) && (one.endsWith(key.substring(key.indexOf('|')+1, key.length())))))
+                            ((one.startsWith(ANY)) && (one.endsWith(key.substring(key.indexOf('|')+1, key.length())))))
                         isfor = true;
+                    System.out.println("one: " + one + ":" + key + ":" + isfor + ":" + keyextra + ":" + key.substring(key.indexOf('|')+1, key.length()));
                 }
             }
 

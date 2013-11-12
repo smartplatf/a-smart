@@ -1,0 +1,4 @@
+smartcom.js - JQuery library
+============================
+
+

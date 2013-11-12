@@ -9,4 +9,6 @@ services:
       method:   sendEmailService
     - name:     sendWithAttachment
       method:   sendWithAttachment
+    - name:     sendSMS
+      method:   sendSMS
 

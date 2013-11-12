@@ -5,6 +5,7 @@ primeData:
     - org.anon.smart.smcore.inbuilt.data.SmartFileObject
 config:
     - org.anon.smart.smcore.inbuilt.config.EmailConfig
+    - org.anon.smart.smcore.inbuilt.config.SMSConfig
 events:
     - org.anon.smart.smcore.inbuilt.events.SearchEvent
     - org.anon.smart.smcore.inbuilt.events.LookupEvent
@@ -22,6 +23,7 @@ events:
     - org.anon.smart.smcore.inbuilt.events.CheckExistence
     - org.anon.smart.smcore.inbuilt.events.GetListings
     - org.anon.smart.smcore.inbuilt.events.ChangeStateEvent
+    - org.anon.smart.smcore.inbuilt.events.TimedEvent
 transitions:
     - org.anon.smart.smcore.inbuilt.transition.SearchManager
     - org.anon.smart.smcore.inbuilt.transition.CRUDManager
@@ -85,4 +87,6 @@ features:
         - org.anon.smart.smcore.inbuilt.responses.CheckExistenceResponse
         - org.anon.smart.smcore.inbuilt.events.GetListings
         - org.anon.smart.smcore.inbuilt.config.EmailConfig
+        - org.anon.smart.smcore.inbuilt.config.SMSConfig
         - org.anon.smart.smcore.inbuilt.events.ChangeStateEvent
+        - org.anon.smart.smcore.inbuilt.events.TimedEvent

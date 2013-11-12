@@ -48,6 +48,7 @@ $mylink = $($scriptdir + "mylink.exe")
 $installlib = $($install + "\lib\")
 $configdir = $($install + "\config\")
 $libdir = "lib\"
+$smartver = "2.0"
 
 Write-Output "[Creating directories]"
 createdir $install
@@ -125,19 +126,20 @@ wget_url "http://repo1.maven.org/maven2/javax/mail/mail/1.4/mail-1.4.jar" $($ins
 
 
 Write-Output "[Copying smart jars **************************************************************]"
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.atomicity/1.1/sm.atomicity-1.1.jar?raw=true lib/org/anon/smart/sm.atomicity/1.1/sm.atomicity-1.1.jar    
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.base/1.1/sm.base-1.1.jar?raw=true lib/org/anon/smart/sm.base/1.1/sm.base-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.channels/1.1/sm.channels-1.1.jar?raw=true lib/org/anon/smart/sm.channels/1.1/sm.channels-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.codegen/1.1/sm.codegen-1.1.jar?raw=true lib/org/anon/smart/sm.codegen/1.1/sm.codegen-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.d2cache/1.1/sm.d2cache-1.1.jar?raw=true lib/org/anon/smart/sm.d2cache/1.1/sm.d2cache-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.deployment/1.1/sm.deployment-1.1.jar?raw=true lib/org/anon/smart/sm.deployment/1.1/sm.deployment-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.generator/1.1/sm.generator-1.1.jar?raw=true lib/org/anon/smart/sm.generator/1.1/sm.generator-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.kernel/1.1/sm.kernel-1.1.jar?raw=true lib/org/anon/smart/sm.kernel/1.1/sm.kernel-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.monitor/1.1/sm.monitor-1.1.jar?raw=true lib/org/anon/smart/sm.monitor/1.1/sm.monitor-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.secure/1.1/sm.secure-1.1.jar?raw=true lib/org/anon/smart/sm.secure/1.1/sm.secure-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.smcore/1.1/sm.smcore-1.1.jar?raw=true lib/org/anon/smart/sm.smcore/1.1/sm.smcore-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.template/1.1/sm.template-1.1.jar?raw=true lib/org/anon/smart/sm.template/1.1/sm.template-1.1.jar
-wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/utilities/utilities/1.1/utilities-1.1.jar?raw=true lib/org/anon/utilities/utilities/1.1/utilities-1.1.jar
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.atomicity/" + $smartver + "/sm.atomicity-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.atomicity/" + $smartver + "/sm.atomicity-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.base/" + $smartver + "/sm.base-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.base/" + $smartver + "/sm.base-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.channels/" + $smartver + "/sm.channels-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.channels/" + $smartver + "/sm.channels-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.codegen/" + $smartver + "/sm.codegen-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.codegen/" + $smartver + "/sm.codegen-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.d2cache/" + $smartver + "/sm.d2cache-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.d2cache/" + $smartver + "/sm.d2cache-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.deployment/" + $smartver + "/sm.deployment-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.deployment/" + $smartver + "/sm.deployment-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.generator/" + $smartver + "/sm.generator-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.generator/" + $smartver + "/sm.generator-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.kernel/" + $smartver + "/sm.kernel-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.kernel/" + $smartver + "/sm.kernel-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.monitor/" + $smartver + "/sm.monitor-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.monitor/" + $smartver + "/sm.monitor-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.secure/" + $smartver + "/sm.secure-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.secure/" + $smartver + "/sm.secure-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.smcore/" + $smartver + "/sm.smcore-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.smcore/" + $smartver + "/sm.smcore-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/smart/sm.template/" + $smartver + "/sm.template-" + $smartver + ".jar?raw=true") $("lib/org/anon/smart/sm.template/" + $smartver + "/sm.template-" + $smartver + ".jar")
+wget_url $("https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/utilities/utilities/" + $smartver + "/utilities-" + $smartver + ".jar?raw=true") $("lib/org/anon/utilities/utilities/" + $smartver + "/utilities-" + $smartver + ".jar")
+
 
 Write-Output "[Copying FX flow jars **************************************************************]"
 wget_url https://github.com/smartplatf/smart-releases/blob/master/releases/org/anon/fixchg/fx.catalogue/1.0/fx.catalogue-1.0.jar?raw=true lib/org/anon/fixchg/fx.catalogue/1.0/fx.catalogue-1.0.jar
@@ -151,7 +153,7 @@ Write-Output "[Setting up soflink to lib for secure server path dependency *****
 Write-Output "[Setting up environment ********]"
 Add-Content setupEnv.bat $("set SMART_PATH=/" + $install + "\")
 Add-Content setupEnv.bat $("set SMART_LIB_PATH=" + $installlib)
-Add-Content setupEnv.bat "set SMART_VERSION=1.1"
+Add-Content setupEnv.bat $("set SMART_VERSION=" + $smartver)
 
 Write-Output "[Setting up environment completed with creating setupEnv ********]"
 

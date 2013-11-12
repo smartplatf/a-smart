@@ -43,6 +43,11 @@ package org.anon.smart.smcore.channel.distill.alteration;
 
 import java.util.Map;
 import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.anon.smart.smcore.channel.distill.sanitization.SearchedData;
 
@@ -91,8 +96,51 @@ public class CreateEventVisitor extends CreatorFromMap
                 }
             }
         }
+        else if ((ctx.field() != null) && (type().isAssignable(ctx.fieldType(), Map.class))) //if Map, then it means we r assigning directly
+        {
+            //need to sanitize the map?
+            Map map = getContextMap(ctx);
+            Object val = map.get(ctx.field().getName());
+            Map m = refactorJSONArray((Map)val);
+            if (m != null)
+            {
+                ctx.modify(m);
+                return null;
+            }
+        }
 
         return super.visit(ctx);
+    }
+
+    private Map refactorJSONArray(Map vals)
+    {
+        if (vals == null)
+            return vals;
+
+        Map ret = new HashMap();
+        for (Object k : vals.keySet())
+        {
+            System.out.println("refactor: " + vals.get(k) + ":" + (vals.get(k) instanceof JSONArray) + ":" + k + ":" + vals.get(k).getClass().getName());
+            if (vals.get(k) instanceof JSONArray)
+            {
+                ArrayList lst = new ArrayList();
+                lst.addAll((JSONArray)vals.get(k));
+                ret.put(k, lst);
+                System.out.println("Changing the values for: " + k + ":" + lst + ":"+ ret.get(k).getClass().getName() + ":" + lst.getClass().getName());
+            }
+            else if (vals.get(k) instanceof JSONObject)
+            {
+                Map m = new HashMap();
+                m.putAll((JSONObject)vals.get(k));
+                ret.put(k, m);
+                System.out.println("Changing the values for: " + k + ":" + m + ":"+ ret.get(k).getClass().getName());
+                refactorJSONArray((Map)vals.get(k));
+            }
+            else
+                ret.put(k, vals.get(k));
+        }
+
+        return ret;
     }
 }
 

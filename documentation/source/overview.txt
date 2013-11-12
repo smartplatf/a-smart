@@ -1,0 +1,75 @@
+SMART and Cloud Applications
+============================
+
+
+.. _cloud-apps:
+
+Cloud Applications
+------------------
+
+Application architectures have evolved from standalone monolithic architecture via client-server architecture to a server-based MVC architecture. This has been triggered by the evolution of infrastructure available for serving the application. With the rise of internet and intranet, the client-server architecture morphed into a MVC architecture that isolated the UI, model and controller. 
+
+The internet technology is now evolving into a cloud infrastructure where infinite or near infinite processing power is available to applications. The architecture of applications has to evolve again to take advantage of this processing power. As applications evolve to take advantage of this, a number of side requirements are automatically introduced that has to be addressed by applications. We call an application that takes advantage of the cloud infrastructure and hence improves upon its functionality appropriately, as a "Cloud Application". 
+
+Cloud Application Implementation Requirements
+---------------------------------------------
+
+Existing platforms are designed and provided to develop Server Applications and not Cloud Applications. Hence a gap exists between the cloud infrastructure provided by Iaas and the capability of server applications to take advantage of this. Architectures need to be changed and frameworks need to be built for this cloud infrastructure, so that products need not write customized code to take advantage of it. 
+
+Moreover, Cloud Applications cannot be considered as just another product delivery channel for server applications. It has to be a business decision whose impact trickles down all the way to product feature development. To deliver a product as a Cloud Application a number of concerns have to be addressed. Major concerns are:
+
+* How much customization can be done for each customer?
+
+   * Can the tenet of "One size fits all" be applied?
+   * What is the architecture for customization? 
+   * Too many "flags" and "if clauses" mean, un-wieldy code and huge maintenance.
+   * Can just the UI be customized without touching the basic business models?
+
+* How to on-board customers? 
+   
+   * Should it be self-onboarding or concious manual effort to add a customer. 
+   * Self-onboarding reduces operational costs, but requires a very robust architecture.
+   * Concious on-boarding increases cost, and removes the advantage of Saas.
+
+* Should one running instance host multiple customers or a multiple instances installed for each customer?
+
+   * One instance hosting multiple customers gives an optimal usage of resources while multiple instances waste resources
+   * But one instance hosting multiple customers mean, one customer problem affects other customer problems
+   * Multiple instances for each customer means huge operating costs.
+
+* How isolated is one customer data from another customer?
+
+   * Should a single database table hold all the customers data? Or should multiple tables be created for each customer?
+   * What is the security to isolate customer data and execution?
+
+
+What is SMART?
+--------------
+
+SMART is an open-source, next-generation application container built ground up for :ref:`cloud-apps`. It bridges the gap between "server application development" and "cloud application development" to take advantage of the cloud infrastructure provided. It redefines the architecture of applications developed from just an MVC architecture to an MVC based Plug and play architecture that allows cloud applications to easily address the licensing and customization concerns. It provides frameworks to enable applications to provide total isolation between customers by providing a multi-tenant runtime environment. Along with this it provides various other frameworks that enable fast development of cloud applications.
+
+Principles in SMART
+-------------------
+
+.. admonition:: Plug and Play Architecture :ref:`plug-play`
+
+     SMART's integrated container executes modules called "Lightweight flows". "Lightweight flows" are pieces of functionally complete features of the product. They can be assembled to work together at runtime as different pieces of a zigzaw puzzle. The same piece can be assembled with different pieces to achieve customization. This Plug & Play model enables SMART to provide a highly customizable framework.
+
+.. admonition:: Finite State Machine based Transaction Model :ref:`fsm-reference`
+
+     Business data flows, through a sequence of transitions from a start state to an end state on occurrence of business events. This can be modeled in SMART's finite state machine based atomic transaction model. This gives SMART the ability to understand business transactions and provide relevant management and monitoring capabilities.
+
+.. admonition:: True Multi-Tenancy :ref:`multi-tenancy`
+
+    SMART provides a truly isolated runtime environment for multiple customers. A runtime environment in SMART means; customer data, enabled customer flows and flow execution environment. SMART uses underlying technology concepts to provide true multi-tenancy. It uses java's class loader isolation to isolate execution environments and database.s tables to isolate customer data.
+
+
+.. admonition:: Feature based Licensing
+
+     SMART's feature based licensing framework gives a high level of control over what features are offered to customers. Product features can be grouped at the lowest level of data, events and transitions. License and roles are defined based on these features groups.
+
+.. admonition:: No Lock in
+
+     SMART's uses stereotyping to run product code in the SMART container. This allows SMART to keep product code independent of SMART related API. Coding for SMART uses standard Java technologies that can be adapted to run on any application server container.
+
+

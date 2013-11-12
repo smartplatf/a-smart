@@ -1,0 +1,6 @@
+Configuration in SMART
+======================
+
+Configure Event
+---------------
+

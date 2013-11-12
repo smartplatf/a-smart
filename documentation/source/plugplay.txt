@@ -1,0 +1,66 @@
+.. _plug-play:
+
+Plug and Play Architecture (PnP architecture)
+=============================================
+
+Modular architecture is a design technique where functionality of a program is separated into independent, interchangeable modules, such that each module contains everything necessary to execute one aspect of the desired functionality. Typically, in modular architecture separation is done based on technical aspects. For eg., a module is created for database interaction, or a module is created for logging and so on. In a modular architecture you can easily replace or add components without affecting the rest of the application.
+
+Defining the PnP architecture
+-----------------------------
+
+The Plug and Play architecture extends the techniques of modular architecture to business functions. Modules created, need not be confined to technical aspects. Independent business functions can be identified and separated into modules. For eg., a module can be created to encompass all functions related to Order, while another can be created to encompass all functions related to Quote. These ``independent modules implementing business functions`` are called ``Flows``.
+
+An application, in this architecture, is defined as a collection of flows working together. The same advantage of modular architecture applies here, i.e., you can replace, add or remove flows without affecting the rest of the application. An added advantage to extending modules to business functions, is that the flows can be combined in different paths to get different business functionality.
+
+Further, extending this architecture to be able to add, remove or replace modules at ``runtime`` rather than tying them together at compile time gives us the flexibility to combine flows at runtime. The beauty of this extension of the architecture is that ``it gives us the flexibility to create a set of loosely coupled flows that can be bound together at runtime as opposed to creating one tightly integrated application that is rigid and not malleable``.
+
+Understanding PnP using an example
+----------------------------------
+
+Let us consider a set of loosely coupled flows coded as in the diagram.
+
+.. image:: _static/pnp-architecture.png
+     :scale: 50%
+
+There are 5 flows coded and deployed. Each flow exposes an output and accepts a set of inputs. 
+
+For eg., the "Product Listing" flow encapsulates the following business functions
+
+* Create products manually by admin
+* Import products by admin
+* Provide services to view, search and list products
+* Expose an output, "Product" data that can be linked to other flows
+
+Another eg., is the Cart Flow. This encapsulates the following business functions
+
+* Create a new cart
+* Add Items to the cart
+* Check out the cart
+* Expose an output, "Cart" data that can be linked to other flows
+* Accept an input, "Cart Item" that can be linked to the output from other flows
+
+We can tie together the "Product" data output exposed by the "Product Listing" flow to the "Cart Item" input of the cart flow. This is not tightly coupled at compile time and is left as an open gate. At runtime the gate can be closed or left open as required by the customer. 
+
+From the diagram we see that we have 5 gates that can be closed. Leading us to create different applications at runtime by closing the correct gates. For eg., we can just enable "Product Listing" for a customer which provides just the basic features of product listing. Gates 4 and 6 can be closed to create an application with the features 
+
+* Create, list products
+* Add products to a cart
+* Send an enquiry for the products added to the cart
+
+In another variation instead of gates 4 and 6, gate 7 can be closed. The application now has the features
+
+* Create, list products
+* Send an enquiry for single products
+
+By plugging the "inputs" of flows with different "outputs" from other flows, varied applications can be created. This is called a plug and play architecture.
+
+Need for plug and play architecture
+-----------------------------------
+
+:ref:`cloud-apps` cannot be created with "One size fits all" tenet. To break this tenet we need a highly customizable environment where features can be varied based on one customer requirement without affecting other customers serviced by the same application. The plug and play architecture provides this flexibility to the Cloud applications.
+
+PnP architecture in SMART
+--------------------------
+
+SMART is designed using the PnP architecture. Flows can be deployed with unresolved inputs. These inputs are resolved only when they are enabled for a tenant. All data and transition services are exposed as outputs of the flow and be used to plug the inputs.
+

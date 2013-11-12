@@ -1,0 +1,21 @@
+Administer SMART
+=================
+
+TenantAdmin
+-----------
+
+FlowAdmin
+---------
+
+AdminSmartFlow
+--------------
+
+Deploy a new Flow
+-----------------
+
+Create a New Tenant
+-------------------
+
+Enable a Flow for a tenant
+--------------------------
+

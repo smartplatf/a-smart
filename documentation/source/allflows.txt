@@ -1,0 +1,15 @@
+Events and Transitions available for All Flows
+==============================================
+
+.. _standard-events:
+
+Create Prime
+------------
+
+List all
+--------
+
+Search
+------
+
+

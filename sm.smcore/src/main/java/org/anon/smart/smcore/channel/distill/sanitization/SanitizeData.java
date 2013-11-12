@@ -84,6 +84,7 @@ public class SanitizeData implements ChannelConstants
     public void sanitizePData(PData data, SearchedData populate)
         throws CtxException
     {
+        System.out.println("data is: " + (data instanceof MessagePData) + ":" + data);
     	if(data instanceof MessagePData)
     	{
     		sanitizePDataForMessage(data, populate);
@@ -181,6 +182,15 @@ public class SanitizeData implements ChannelConstants
         populate.setupTenant(tenant);
 		//CrossLinkFlowDeployment dep = tenant.deploymentShell().deploymentFor(flow);
         String nm = AnnotationUtils.objectName(mpData.event());
+        java.lang.reflect.Field dest = AnnotationUtils.destinations(mpData.event().getClass());
+        if (dest != null)
+        {
+            dest.setAccessible(true);
+            Object val = reflect().getAnyFieldValue(mpData.event().getClass(), mpData.event(), dest.getName());
+            assertion().assertNotNull(val, "Destination value for " + dest.getName() + " is NULL in INTERNAL event.");
+            nm = AnnotationUtils.objectName(val);
+            System.out.println("Got destination field as: " + dest + ":" + nm + ":" + val.getClass() + ":");
+        }
 		List<CrossLinkFlowDeployment> deps =  tenant.deploymentShell().flowForType(nm);
         assertion().assertTrue(deps.size() > 0, "Cannot find deployment for: " + nm);
         CrossLinkFlowDeployment dep = deps.get(0);

@@ -1,0 +1,21 @@
+Test Client to test any SMART Flow
+==================================
+
+.. _test-client:
+
+Connecting to SMART
+-------------------
+
+Posting to the Server
+---------------------
+
+Posting Standard Events
+-----------------------
+
+Deploy and Enable Flows
+-----------------------
+
+Viewing List Results
+--------------------
+
+

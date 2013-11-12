@@ -41,6 +41,7 @@
 
 package org.anon.smart.smcore.inbuilt.transition;
 
+import java.util.Map;
 import java.util.List;
 import java.util.Properties;
 import javax.mail.BodyPart;
@@ -60,11 +61,16 @@ import javax.activation.FileDataSource;
 
 import org.anon.smart.smcore.data.ConfigData;
 import org.anon.smart.smcore.inbuilt.config.EmailConfig;
+import org.anon.smart.smcore.inbuilt.config.SMSConfig;
 import org.anon.smart.smcore.config.ConfigService;
 import org.anon.smart.smcore.inbuilt.responses.SuccessUpdated;
+import org.anon.smart.smcore.channel.client.pool.ClientConfig;
+import org.anon.smart.smcore.channel.client.pool.ClientObjectCreator;
+import org.anon.smart.smcore.channel.client.pool.HTTPClientObject;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
+import org.anon.utilities.pool.Pool;
 import org.anon.utilities.exception.CtxException;
 
 public class TransitionServices
@@ -178,6 +184,30 @@ public class TransitionServices
         {
             except().rt(err, new CtxException.Context("Exception", err.getMessage()));
         }
+    }
+
+    public void sendSMS(Map values)
+        throws CtxException
+    {
+        Class cls = SMSConfig.class;
+        Class<? extends ConfigData> ccls = (Class<? extends ConfigData>)cls;
+        Object cfg = ConfigService.configFor("SMS", ccls);
+        SMSConfig scfg = (SMSConfig)cfg;
+        assertion().assertNotNull(scfg, "Please setup an SMS config for key SMS before calling this service");
+        System.out.println("Got an SMSConfiguration: " + scfg + ":"+ scfg.getPort());
+        ClientConfig ccfg = new ClientConfig("SMSPool", scfg.getServer(), scfg.getPort(), 0, "string");
+        Pool p = ClientObjectCreator.getPool(ccfg);
+        HTTPClientObject hclient = (HTTPClientObject)p.lockone();
+
+        String formatter = scfg.getMessageFormatter();
+        scfg.addUser(values);
+        scfg.addPassword(values);
+        String post = hclient.getFormatted(values, formatter);
+
+        String uri = scfg.getSendURI();
+        uri = uri + "?" + post;
+        hclient.getData(uri, true);
+        p.unlockone(hclient);
     }
 }
 

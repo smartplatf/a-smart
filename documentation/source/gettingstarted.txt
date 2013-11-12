@@ -1,0 +1,22 @@
+Getting Started with SMART
+==========================
+These documents help you learn about and get started using SMART.
+
+.. toctree::
+   :maxdepth: 3
+
+   firstproject
+   explainfirst
+   demo
+   
+Learn about SMART
+=================
+
+.. toctree::
+   :maxdepth: 3
+
+   plugplay
+   tenant
+   concepts
+   develop
+

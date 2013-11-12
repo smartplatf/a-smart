@@ -118,6 +118,8 @@ public class TestCRUDEvents
         resp = clnt.post("ExceptionEvent", "{'ErrorObject':{'___smart_action___':'lookup', '___smart_value___':'throwexception'}, 'test':'ErrorObject2'}");
         assertTrue(resp != null);
 
+        Thread.sleep(2500); //waiting for state expiry to complete
+
         utils.stopServer();
     }
 }

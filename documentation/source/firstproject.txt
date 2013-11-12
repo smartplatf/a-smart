@@ -1,0 +1,101 @@
+Hello World in SMART
+=========================
+
+SMART Flows are modular packages of java classes described by a 'SMART object Annotation' file or simply called "soa files". The modular packages of code are packaged into a jar file and deployed into SMART. Java packages developed for SMART does not depend on any SMART libraries. They can be developed independent of SMART using any IDE of choice. SMART provides standardized maven artefacts to get you started.
+
+This quickstart guide shows how to create a "Hello World" flow, deploy, enable and test it in SMART. 
+
+Preparation
+-----------
+* Download and install SMART as per :ref:`install-smart`
+* Start SMART as per :ref:`start-smart`
+* Install and setup maven for the SMART repository as per :ref:`smart-maven-setup`
+  
+Create and compile the Project
+------------------------------
+
+* Use the SMART maven archetype simple-archetype to create a simple SMART project::
+
+   mvn archetype:generate \
+      -DarchetypeGroupId=org.smart.archetypes \
+      -DarchetypeArtifactId=simple-archetype \
+      -DarchetypeVersion=1.0-SNAPSHOT \
+      -DgroupId=org.smart.demo.message \
+      -DartifactId=message \
+      -Dclassname=Message
+
+* Run the maven command to compile and install the jar in the local repository::
+
+    mvn clean compile install
+
+Deploy and Enable for a Tenant
+-----------------------------------
+
+* Use the SMART maven plugin to deploy the packaged jar to SMART. To do this:
+
+   * Modify pom.xml of the project generated to have the following
+
+    .. code:: xml
+
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.smart.plugin</groupId>
+                    <artifactId>smart-maven-plugin</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                    <configuration>
+                        <flowsoa>MessageFlow.soa</flowsoa>
+                        <flow>MessageFlow</flow>
+                        <tenant>smarttest</tenant>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+
+   * Run the SMART plugin command to deploy::
+     
+         mvn smart:deploy
+
+   * This setup deploys into the server running at http://localhost:9081. If the server has to be changed,  add the server and port configuration to the build.
+
+* Use the SMART maven plugin to create a tenant and enable the deployed flow for the tenant. 
+    
+    * By default SMART works with tenants. Checkout "Learn More about SMART" for details.
+    * Run the maven command to create a test tenant and deploy::
+    
+          mvn smart:enable
+
+    * This creates a tenant called smarttest as setup in the pom.xml and enables MessageFlow for it.
+
+Test the Flow
+-------------
+
+SMART provides a generic test client that can be used for testing any flows. The test client is a html page that uses JQuery AJAX to call the flows in SMART. We will use this to test the "Hello World" Flow. This is installed in <smartinstall dir>/testclient. Check more details at "ref"`test-client`
+
+* Open the file FlowTest.html in a browser. For eg., ::
+    
+    file:///C:/tstsmart/smartinstall/testclient/FlowTest.html
+
+* Enter the server details and click "Connect To SMART".
+
+   .. image:: _static/client-connect.png
+       :scale: 50%
+
+* The client lists all the available flows for testing. "MessageFlow" that we just deployed is also present here. Use the "MessageFlow".
+
+   .. image:: _static/post-flow.png
+       :scale: 50%
+
+* On selecting "MessageFlow", the client shows a list of events that are available. These are standard events provided by SMART out-of-the-box. 
+
+* Use "CreatePrime" in the events. This lists the standard fields required to post the event. Enter the group as "Message". Add the "message" field and enter "Hello World!!!" for the value. Click on "Post to SMART" to create. This posts a JSON data to SMART to create the Message data that we had in the Flow. The result is shown in the status section below.
+
+   .. image:: _static/post-data.png
+       :scale: 25%
+
+* Use "ListAllEvent" and provide the group as "Message" and size as 10. Click Post To SMART to list back "Hello World!!!" that you just created.
+
+   .. image:: _static/post-result.png
+       :scale: 50%
+
+

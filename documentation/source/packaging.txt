@@ -1,0 +1,12 @@
+Packing a Flow for SMART
+========================
+
+Flow Annotations file
+---------------------
+
+Data Annotations file
+---------------------
+
+Transition Annotation file
+--------------------------
+

@@ -84,8 +84,18 @@ public class HTTPClient extends NettyClientChannel implements HTTPClientChannel
         throws CtxException
     {
         NettyResponseReader rrdr = (NettyResponseReader)_reader;
+        rrdr.resetGet();
         rrdr.setURI(uri);
         super.post(post);
+    }
+
+    public void get(String uri)
+        throws CtxException
+    {
+        NettyResponseReader rrdr = (NettyResponseReader)_reader;
+        rrdr.setGet();
+        rrdr.setURI(uri);
+        super.post(null);
     }
 }
 

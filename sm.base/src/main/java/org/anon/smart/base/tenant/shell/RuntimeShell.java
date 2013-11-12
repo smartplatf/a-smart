@@ -61,6 +61,8 @@ import static org.anon.smart.base.utils.AnnotationUtils.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import static org.anon.utilities.services.ServiceLocator.*;
 
+import org.anon.utilities.scheduler.Scheduler;
+import org.anon.utilities.scheduler.ScheduleTask;
 import org.anon.utilities.pool.Pool;
 import org.anon.utilities.pool.PoolEntity;
 import org.anon.utilities.fsm.FiniteStateMachine;
@@ -71,6 +73,7 @@ public class RuntimeShell implements SmartShell, TenantConstants
     private transient ShellContext _context;
     private transient Map<Class, Pool> _transitionPool;
     private ExecutorService _transitionExecutor;
+    private Scheduler _scheduler;
 
     public RuntimeShell()
         throws CtxException
@@ -84,6 +87,7 @@ public class RuntimeShell implements SmartShell, TenantConstants
         _context = new ShellContext();
         _transitionPool = new ConcurrentHashMap<Class, Pool>();
         _transitionExecutor = anatomy().jvmEnv().executorFor("Transition", _context.name());
+        _scheduler = new Scheduler();
     }
 
     public void cleanup()
@@ -93,6 +97,11 @@ public class RuntimeShell implements SmartShell, TenantConstants
             _transitionExecutor.shutdownNow();
 
         _transitionExecutor = null;
+
+        if (_scheduler != null)
+            _scheduler.shutdown();
+
+        _scheduler = null;
 
         if (_context != null)
             _context.cleanup();
@@ -279,6 +288,18 @@ public class RuntimeShell implements SmartShell, TenantConstants
     {
         DataShell shell = (DataShell)_context.tenant().dataShellFor(spacemodel);
         return shell.getListings(spacemodel, group, sortBy, listingsPerPage, pageNum);
+    }
+
+    public void scheduleTask(ScheduleTask task)
+        throws CtxException
+    {
+        _scheduler.schedule(task);
+    }
+
+    public void unscheduleTask(ScheduleTask task)
+        throws CtxException
+    {
+        _scheduler.unschedule(task);
     }
 }
 

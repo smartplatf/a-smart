@@ -53,7 +53,7 @@ public class StateTL extends BaseTL
     private boolean startState;
     private String parentState;
     private List<ChildStateTL> childStates;
-    private String timeout;
+    private int timeout = -1;
 
     public StateTL()
     {
@@ -62,7 +62,7 @@ public class StateTL extends BaseTL
     //public boolean isStartState() { return ((startState != null) && (startState.equals("yes"))); }
     //public boolean isEndState() { return ((endState != null) && (endState.equals("yes"))); }
     public String getParentState() { return parentState; }
-    public int getTimeOut() { return ((timeout != null) ? Integer.parseInt(timeout) : -1); }
+    public int getTimeOut() { return timeout; }
     public List<ChildStateTL> getChildren() { return childStates; }
 
     @Override

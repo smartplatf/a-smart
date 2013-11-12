@@ -1,0 +1,131 @@
+The Hello World in depth
+=============================
+
+The "Hello World" Flow is very simple. It stores messages and retrieves them. All Flows in SMART can be used as RESTful JSON API. They can be called from the UI using standard JSON AJAX. The Hello World sample uses JQuery AJAX to call these APIs. 
+
+The "Hello World" Flow comprises of a single POJO class which is Serializable and a "SMART Object Annotations" file that describes this POJO to SMART. It also includes another "SMART Object Annotation" file that describes the packaged jar file to SMART.
+
+Notice, none of these are dependant on SMART libraries and can be compiled independent of SMART.
+
+The Data - Java POJO
+--------------------
+
+We will start by looking at the "Message.java" POJO. 
+
+.. code:: java
+
+       public class Message implements java.io.Serializable
+       {
+           private String message;
+
+           public Message()
+           {
+           }
+
+           public String getMessage() { return message; }
+       }
+
++--------------+---------------------------------------------------------------------+
+| Line         | Note                                                                |
++==============+=====================================================================+
+| 3            |  Declares a single member variable where Hello World can be stored. |
++--------------+----------+-----------+----------------------------------------------+
+| 9            |  The accessor for this Member variable is declared and used inside  |
+|              |  the logic of the Flow, not required for SMART.                     |
++--------------+----------+-----------+----------------------------------------------+
+
+When an object of type "Message" is created, SMART automatically saves this into the database in a table of the format <tenant>_MessageFlow_Message with column message which contains "Hello World!!". SMART provides a Finite State Machine for all data objects out of the box. By default SMART has two states for all objects "active" and "inactive". When the Message object is created, it is in the "active" state.
+
+The Annotations - soa files
+---------------------------
+
+Next, we describe the package jar (Message.jar) to SMART. For this we write a "SMART Object Annotation" or "soa" file. We create this in MessageFlow.soa file and package it within the Message.jar. Note that the name need not match the jar or the file name, we have maintained it that way to ensure standards.
+
+.. code:: yaml
+
+     name:   MessageFlow
+     defaultEnable: all
+     primeData:
+         - org.smart.demo.message.Message
+     features:
+         - name: all
+           artefacts:
+               - org.smart.demo.message.Message
+
+
++--------------+---------------------------------------------------------------------+
+| Line         | Note                                                                |
++==============+=====================================================================+
+| 1            | Gives a name by which the objects in this jar can be referenced.    |
+|              | This is called a Flow Name in SMART. This is used in the URI to     |
+|              | correctly identify the API being referenced. Here it is called      |
+|              | MessageFlow.                                                        |
++--------------+---------------------------------------------------------------------+
+| 3-4          |  Here we declare the single object that we created as a prime object|
+|              |  which can accept SMART events. We will be using standard events    |
+|              |  that are available by default to all prime objects which involve   |
+|              |  the standard CRUD actions.                                         |
++--------------+---------------------------------------------------------------------+
+| 5-8          |  Here we include the object into a featured bucketed as all.        |
+|              |  This will be used to enable the appropriate features of this flow  |
+|              |  for a tenant.                                                      |
++--------------+---------------------------------------------------------------------+
+
+We also describe the data object to SMART. For this we write another soa file which is in the same package as the POJO. So we have the following the package org.smart.demo.message and it is called Message.soa. Note, here the package and the name are important.
+
+.. code:: yaml
+
+        name:   Message
+        type:   PrimeData
+        flow:   MessageFlow
+        attributes:
+            - attribute:    message
+              type:         key
+        states:
+            - name:         active
+              startState:   true
+            - name:         inactive
+              endState:     true
+        security:
+            - name:     msgaccess
+              type:     unauthenticated
+              access:   read
+              parm:     ListAllEvent
+            - name:     roleaccess
+              type:     smartrole
+              access:   execute
+
+Here we will just describe the important pieces. More information of this can be found at :ref:`soa-reference`
+
++--------------+---------------------------------------------------------------------+
+| Line         | Note                                                                |
++==============+=====================================================================+
+| 1            | This recognizes the data. This is used everywhere where this data   |
+|              | has to be referenced. This has to be unique across the flow.        |
+|              |                                                                     |
++--------------+----------+-----------+----------------------------------------------+
+| 4-6          | This identifies the attribute in the POJO that recognizes any       |
+|              | instance of this data and has to be unique. This is the key that    |
+|              | will be used to lookup this object once created.                    |
++--------------+----------+-----------+----------------------------------------------+
+| 7-11         | This declares the different states that this object can be in. This |
+|              | allows different events to occur only at specific states.           |
+|              | Refer to :ref:`fsm-reference` for more information.                 |
++--------------+----------+-----------+----------------------------------------------+
+| 11-19        | Defines the security of this object. By default all objects are     |
+|              | secured by role access, only if the logged in user has access to    |
+|              | the object, the event will be executed. Refer to :ref:`security`    |
+|              | for more information.                                               |
++--------------+----------+-----------+----------------------------------------------+
+
+These files are packaged into a jar file and deployed in SMART. 
+
+The Events - Inbuilt Events
+---------------------------
+
+Events are the glue between the UI and the service. They define the JSON structure in which UI has to talk to the service. They also define the URI using which the UI can talk to the service. Check out :ref:`posting-event` for more information. 
+
+SMART provides out of box events that can be used by all flows. The CreatePrime event is used to create data objects and ListAllEvent is used to retrieve all the active data present of a given type. Check out :ref:`standard-events` 
+
+The "Hello World" Flow uses the CreatePrime event to create the Message and the ListAllEvent to retrieve the message.
+

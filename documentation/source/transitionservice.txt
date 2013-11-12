@@ -1,0 +1,38 @@
+Transitions in SMART
+====================
+
+Parameters to transitions
+-------------------------
+
+Implicit Parameters
+^^^^^^^^^^^^^^^^^^^
+
+Explicit Parameters
+^^^^^^^^^^^^^^^^^^^
+
+Sequencing
+----------
+
+
+State Transitions
+-----------------
+
+Pooling
+-------
+
+
+Atomicity
+---------
+
+Exceptions
+----------
+
+
+Transition Services
+-------------------
+
+
+Inbuilt Services
+----------------
+
+

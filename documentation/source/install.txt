@@ -1,0 +1,124 @@
+Installing SMART
+================
+
+.. _install-smart:
+
+Setup in Linux
+--------------
+
+SMART uses hbase to store the data and solr to index the data for searching. The installation scripts of SMART install automatically hbase, hadoop and solr. But the modifications required to install hadoop has to be done before installing SMART. 
+
+Pre-setup required for hadoop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Run these steps as the root user.
+
+* Edit the /etc/hosts file and add the name hadoop as an alias for the ip address.::
+
+   192.168.1.4    hadoop
+   127.0.0.1 localhost
+   127.0.0.1 platform-dev-debian
+
+* Create a user for running SMART. This step is optional::
+
+   useradd -m -d /home/smartuser smartuser
+   passwd smartuser - enter the password to setup the password.
+
+* Login as the user where SMART has to be setup.
+* setup JAVA_HOME environment variable to the correct java home path
+
+Default Installation
+^^^^^^^^^^^^^^^^^^^^
+
+* Run the command::
+
+   curl http://fixchg.com/installweb.sh | sh
+
+This will install SMART with the default parameters and startup SMART. SMART is started on port 9081. Test that SMART has started correctly by accessing the URL http://server:9081. This should show the message::
+
+   You have reached the channel of SMART Platform.Happy coding.
+
+Manual Installation
+^^^^^^^^^^^^^^^^^^^
+
+If you do not want to use the default parameters and want to have control over how SMART is installed, you can use the below steps to install SMART.
+
+* mkdir <installation directory for SMART> (Default is smartinstall)
+* mkdir <scripts directory> (Default is scripts)
+* Download setupsmart.tar from ::
+
+   https://github.com/Rajeshinf/p-smart/blob/master/sm.kernel/src/main/resources/setupsmart.tar
+
+* cd scripts; tar xvf ../setupsmart.tar
+* ./setupSmart.sh /home/smartuser/smartinstall/ <jdk home directory with a / at the end> <eth0/eth1 or which eth to use for listening>
+
+This will download and install the required jars in the smartinstall directory. If an error occurs during installation, you can re-run the script with the same parameters and it will download from where it left off. If a partial jar was downloaded, then delete the jar and re-run the script.
+
+Install as a Service
+^^^^^^^^^^^^^^^^^^^^
+
+SMART can be installed as a service to be started up when a machine is rebooted. 
+
+* Ensure SMART is installed using one of the above set of steps and working.
+* Setup smartuser (Or user with which SMART is installed) can login without password.
+
+  * ssh-keygen -t rsa
+  * cd .ssh
+  * cat id_rsa.pub >> authorized_keys
+
+* Run the next set of steps as root user
+* ln -s <SMART install path>/runsmart.sh /usr/bin/runsmart.sh
+* cp <SMART install path>/smart /etc/init.d/smart
+* Edit /etc/init.d/smart
+* Edit the USER variable - set it as the user used to run SMART
+* Edit the SMART_INSTALL path -  set it to the installation path of SMART
+* update-rc.d smart defaults 91
+
+To stop SMART from running at reboot
+* update-rc.d -f smart remove
+
+UnInstall SMART
+^^^^^^^^^^^^^^^
+
+All files related to SMART is contained in the smartinstall and the scripts directory.
+
+* Remove SMART from the service if setup as service.
+* rm /usr/bin/runsmart.sh
+* rm /etc/init.d/smart
+* Remove the smartinstall and scripts directory
+
+Troubleshooting
+^^^^^^^^^^^^^^^
+
+1. I have done all the steps in the installation, my server is not running.
+
+   There can be various reasons for this. The most common reason is that the hadoop database server has not yet come up when SMART server was run.  To ensure hadoop is running, try to access http://server:60010, if this page comes up, then hadoop is running. Restart the smart server.
+
+2. SMART installation stopped in the middle of a download, how can I recover. 
+
+   Note down the file which did not download. Remove the partially downloaded file from the directory indicated in the output. Rerun the installation.  SMART scripts are written to ignore downloaded files and hence will continue from where it left off.
+
+3. SMART cannot connect to hadoop. Hadoop is running.
+
+   This happens if the entry in /etc/hosts is not correctly entered. Please note, the hadoop should be the first entry and occur before the localhost entry. In debian the server has to be restarted for this to take effect. Ubuntu this is not required.
+
+Setup in Windows
+----------------
+
+The setup script in windows uses powershell. It requires
+* Powershell 3 or greater
+* The Execution Policy should be ByPass. Check out `Execution Policy <http://technet.microsoft.com/en-us/library/dd347628.aspx>`_
+
+Installation
+^^^^^^^^^^^^
+
+* Start Powershell in administrative mode
+* mkdir <installation directory> (Default is smartinstall)
+* cd smartinstall
+* Setup JAVA_HOME environment variable to java home and ensure java is in the path.
+* Run the command::
+
+   Invoke-RestMethod http://fixchg.com/installweb.ps1 -OutFile installweb.ps1;./installweb.ps1
+
+Windows does not store into a database currently and has to be setup each time. The windows installation is only used for development and not production.
+

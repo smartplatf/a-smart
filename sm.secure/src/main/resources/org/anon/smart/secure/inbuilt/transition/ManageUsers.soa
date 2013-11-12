@@ -30,3 +30,7 @@ services:
       method:   addIdentityService
     - name:     addRolesToUserService
       method:   addRolesToUserService
+    - name:     setupResetPassword
+      method:   setupResetPassword
+    - name:     resetPassword
+      method:   resetPassword

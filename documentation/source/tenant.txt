@@ -1,0 +1,9 @@
+.. _multi-tenancy:
+
+Multi-Tenancy in SMART
+======================
+
+What is multi-tenancy?
+----------------------
+
+Multi-tenancy is a term used when one running instance of a product serves multiple customers. 

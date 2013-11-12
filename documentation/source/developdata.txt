@@ -1,0 +1,30 @@
+Data Objects in SMART
+=====================
+
+Prime Data
+----------
+
+Secondary Data
+--------------
+
+States of Data
+--------------
+
+Persistence of Data
+-------------------
+
+Indexing of Data
+----------------
+
+Caching of Data
+---------------
+
+Owner and Security of Data
+--------------------------
+
+Data Tagging
+------------
+
+Data Linking
+------------
+

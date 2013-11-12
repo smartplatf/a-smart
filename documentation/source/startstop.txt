@@ -1,0 +1,99 @@
+Starting and Stopping SMART
+============================
+
+.. _start-smart:
+
+Start SMART
+-----------
+
+SMART can be started in secure mode or in non-secure mode. In non-secure mode the roles and users will not be checked. 
+
+* To start SMART in secure mode run::
+
+   ./startSmart.sh SecureServer true
+
+* To start SMART in non-secure mode run::
+
+   ./startSmart.sh Server true
+
+* Use startSmart.bat in windows
+* You can start SMART in secure mode using the command::
+   
+   ./runsmart.sh start
+
+
+Stop SMART
+----------
+
+* To stop SMART kill the process id present in smartkernel.pid file::
+
+   kill <pid>
+
+* SMART can also be stopped using the runsmart.sh::
+   
+   ./runsmart.sh stop
+
+* SMART can also be stopped using the /etc/init.d/smart stop command if installed as service.
+
+Restart SMART
+-------------
+
+* To restart SMART run::
+
+   ./runsmart.sh restart
+
+Stop and start hadoop/hbase
+---------------------------
+
+* The scripts to start and stop hadoop is present under the <smartinstall>/hadoop directory.
+* To stop hadoop run the command::
+   
+   ./stopdb.sh
+
+* To start hadoop run the command::
+
+   ./startupdb.sh
+
+Clean up and start afresh SMART
+-------------------------------
+
+Please NOTE, DO NOT DO THIS ON A PRODUCTION SYSTEM. This clears out all the data stored. To clean up the data for SMART and start a fresh instance, you need to do the following
+
+* Clean the data of hadoop 
+* Clean the data in solr.
+* Remove the configuration stored to auto-deploy
+
+Clean the data of hadoop
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+* The data in hbase is stored in the directory <smartinstall>/hadoop/hadoop-0.20.2-cdh3u5/hadoop
+* Stop the database using the ./stopdb.sh script
+* Delete hadoop data directory
+* run the command to create the namenode as::
+   
+   ./hadoop-0.20.2-cdh3u5/bin/hadoop namenode -format
+
+* This creates a fresh clean datastore
+
+Clean the data in solr
+^^^^^^^^^^^^^^^^^^^^^^
+
+SMART uses Embedded Solr and hence is restarted when SMART is restarted.
+
+* Solr data is stored under <smartinstall>/solr-datastore
+* Remove all the directories inside the solr-datastore other than empty and core0
+* Edit solr.xml and remove all the entries other than empty and core0
+
+Remove the configuration stored for auto-deploy
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Remove the file <smartinstall>/config/deployed
+
+SMART Logs
+----------
+
+SMART logs are present in <smartinstall>/nohup.out and solr logs are present in <smartinstall>/logs/smart.logs
+
+Hadoop and hbase logs are present under <smartinstall>/hadoop/hadoop-0.20.2-cdh3u5/logs and <smartinstall>/hadoop/hbase-0.90.6-cdh3u5/logs/
+
+

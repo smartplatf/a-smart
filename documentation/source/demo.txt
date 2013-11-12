@@ -1,0 +1,62 @@
+Sample Flows
+============
+
+A set of running examples can be tried online at our `SMART Demo Website <http://demo.smart-platform.com/>`_. The source code for the running samples can be checked out from `github repository <http://github.com/smartplatf/a-smartdemo/tree/master/demos>`_
+
+Demo Page Parts
+---------------
+
+The Demo has a READ ME page that describes in detail how the demo pages are structured. Briefly each demo has the following sections:
+* The top section is a live working section that can be used to try out the demo
+
+    * The left  section has the UI that allows interaction with the user
+    * The right section is a scrolling data that shows the communication protocol between the server and the client. 
+    * Any event posted in the left section reflects with the request and response in the right section.
+
+* The bottom tabs has three sections
+
+    * The setup has the data that has to be posted to any new SMART server to try out the demo code.
+    * The Code tab has an online view into the code that is written for the demo
+    * The Documentation tab describes the events that have been used for the demo
+
+The demo and samples demonstrate the following features in SMART.
+
+Basic Demo
+----------
+
+This demo, demonstrates the simplest usage of SMART and brings out the basic features in SMART. It uses Data, Events and Transitions. Check out :ref:`concepts-basic` for more details. This demo gives an understanding of 
+
+* Creating a Flow for SMART, deploying it in SMART and Enabling for a tenant
+* Creating of data, storage of data, state transitions of data
+* Creating Events and invoking them from the UI using AJAX
+* Creating transitions and transitioning a data from one state to another.
+* Writing a client js using the standard SMART provided smartcom.js
+
+Role Based Demo
+---------------
+
+This demo, demonstrates the security features in SMART. SMART provides out of the box user and role creation. Roles in SMART are a collection of features from various Flows called by a name. Check out :ref:`security` for more information. This demo gives an understanding of
+
+* Creating feature buckets in a flow
+* Creating a role as a collection of features
+* Giving permissions for the features (Read, Write, Execute)
+* Creating users with given roles
+* Authenticating as users
+* Only available features can be accessed by the user logged in. Any other access gives a "Access Denied" error.
+
+Multi-Tenancy Demo
+------------------
+
+This demo, demonstrates the multi-tenancy feature in SMART. All Flows deployed in SMART has to be enabled for a tenant to be usable. SMART provides a zero-effort true multi-tenancy where from the storage of data to the execution of transitions, there is a total isolation of runtime environment. Check out :ref:`multi-tenancy` for more details. This demo gives an understanding of
+
+* Enable the same Flow for multiple tenants
+* Simple Customization of the same flow for differnt tenants
+
+Plug and Play Demo
+------------------
+
+SMART provides a plug and play architecture. The Plug and Play architecture allows different flows to be plugged into each other at runtime to achieve drastically different business logic for different tenants without having wieldy "if" clauses in the code. Same code can be taken and plugged in different data objects, or differnt services to achieve the variety in functionality. This demo, demonstrates this feature of SMART. It gives an understanding of
+
+* How to create flows that can be plugged into other flows
+* How to link flows together when they are enabled for a tenant
+

@@ -51,6 +51,9 @@ import org.anon.smart.base.annot.SmartDataAnnotate;
 import org.anon.smart.base.annot.PrimeDataAnnotate;
 import org.anon.smart.base.annot.KeyAnnotate;
 import org.anon.smart.base.annot.Synthetic;
+import org.anon.smart.base.annot.StatesAnnotate;
+import org.anon.smart.base.annot.StateAnnotate;
+import org.anon.smart.base.annot.DestinationAnnotate;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 
@@ -196,6 +199,28 @@ public class AnnotationUtils
         return null;
     }
 
+    public static int timeoutFor(Class cls, String sname)
+        throws CtxException
+    {
+        assertion().assertNotNull(cls, "Cannot find the timeout for a null class");
+        StatesAnnotate states = (StatesAnnotate)reflect().getAnyAnnotation(cls, StatesAnnotate.class.getName());
+        assertion().assertNotNull(states, "Cannot find time out for a class with no states defined.");
+        StateAnnotate[] state = states.states();
+        assertion().assertNotNull(state, "Cannot find time out for a class with no states defined.");
+        int timeout = -1;
+        for (int i = 0; i < state.length; i++)
+        {
+            if (state[i].name().equals(sname))
+            {
+                System.out.println("Checking timeout for: " + sname + ":" + state[i].timeout());
+                timeout = state[i].timeout();
+                break;
+            }
+        }
+
+        return timeout;
+    }
+
     public static Class[] keyTypes(Class cls)
         throws CtxException
     {
@@ -210,6 +235,18 @@ public class AnnotationUtils
                 ret[i] = flds[i].getType();
         }
         return ret;
+    }
+
+    public static Field destinations(Class cls)
+        throws CtxException
+    {
+        assertion().assertNotNull(cls, "Cannot find the destination for null class");
+        Field[] flds = reflect().getAnnotatedFields(cls, DestinationAnnotate.class);
+        if ((flds != null) && (flds.length > 0))
+        {
+            return flds[0];
+        }
+        return null;
     }
 
     public static boolean isConfig(Class cls)

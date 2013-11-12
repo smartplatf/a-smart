@@ -94,7 +94,7 @@ public class TransitionService implements TConstants
         assertion().assertNotNull(state, "Cannot find the state of the object: " + dataName + " to execute event: " + eventName);
         String fromstate = state.stateName();
         Graph graph = TransitionGraphs.getGraph(flow, dataName, eventName, extra, fromstate);
-        assertion().assertNotNull(graph, "No transitions found for: " + dataName + ":" + eventName + ":" + fromstate);
+        assertion().assertNotNull(graph, "No transitions found for: " + dataName + ":" + eventName + ":" + fromstate + ":" + flow);
         CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
         RuntimeShell rtshell = (RuntimeShell)tenant.runtimeShell();
         TransitionContext tctx = new TransitionContext(rdata, rtshell.transitionExecutor(), graph, source);

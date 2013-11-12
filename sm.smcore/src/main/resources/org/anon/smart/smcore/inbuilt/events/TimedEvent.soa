@@ -1,0 +1,7 @@
+name:       TimedEvent
+type:       Message
+flow:       AllFlows
+attributes:
+    - attribute: destination
+      type: destination
+

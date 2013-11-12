@@ -1,0 +1,10 @@
+Defining Configuration in SMART
+===============================
+
+Immutable Objects
+-----------------
+
+Updating a Configuration
+------------------------
+
+

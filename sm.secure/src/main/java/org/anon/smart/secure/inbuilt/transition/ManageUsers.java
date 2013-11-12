@@ -100,6 +100,23 @@ public class ManageUsers
         SecurityResponse resp = new SecurityResponse("Changed the password for: " + pwd.getIdentity());
     }
 
+    public void setupResetPassword(Identity identity, String randomCode)
+        throws CtxException
+    {
+        assertion().assertTrue((identity.getCredential() instanceof Password), "Cannot change password for identities other than the ones in SMART.");
+        identity.setRandomCode(randomCode);
+    }
+
+    public void resetPassword(Identity identity, String randomCode, String credential)
+        throws CtxException
+    {
+        assertion().assertTrue((identity.getCredential() instanceof Password), "Cannot change password for identities other than the ones in SMART.");
+        assertion().assertTrue(((identity.getRandomCode() != null) && (!identity.getRandomCode().equals(randomCode))), "Random Code does not match for reset.");
+        Password currpwd = (Password)identity.getCredential();
+        currpwd.change(credential);
+        SecurityResponse resp = new SecurityResponse("Changed the password for: " + identity.getIdentity());
+    }
+
     public void createUserService(String userid, String name, List<String> roles)
         throws CtxException
     {

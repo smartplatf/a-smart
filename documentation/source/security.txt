@@ -1,0 +1,22 @@
+Security in SMART
+=================
+
+.. _security:
+
+Features and Roles
+------------------
+
+
+Users and Identity
+------------------
+
+Owner
+-----
+
+Authenticate and get SessionId
+------------------------------
+
+Change Password
+---------------
+
+

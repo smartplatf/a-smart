@@ -25,6 +25,7 @@ function setupconn(fsmart, cb)
 {
     smartconfig.server = $('#server').val();
     smartconfig.port = $('#port').val();
+    smartconfig.smartPort = $('#port').val();
     smartconfig.uploadPort = 9021;
     smartconfig.tenant = $('#tenant').val();
     smartconfig.userSession = $('#sessionid').val();

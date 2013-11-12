@@ -1,0 +1,7 @@
+Events and Responses in SMART
+=============================
+
+Communication protocol
+----------------------
+
+

@@ -1,0 +1,18 @@
+Reference of SOA file
+=====================
+
+.. _soa-reference:
+
+Data annotations
+----------------
+
+
+Event annotations
+-----------------
+
+Transition annotations
+----------------------
+
+Security annotations
+--------------------
+

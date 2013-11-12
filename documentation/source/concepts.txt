@@ -1,0 +1,52 @@
+Understanding SMART concepts
+============================
+
+
+
+.. _concepts-basic:
+
+Basic Concepts
+--------------
+
+Flow
+^^^^
+
+Prime Data
+^^^^^^^^^^
+
+Event
+^^^^^
+
+Messages
+^^^^^^^^
+
+Transition
+^^^^^^^^^^
+
+Transition Service
+^^^^^^^^^^^^^^^^^^
+
+Responses
+^^^^^^^^^
+
+Channels
+--------
+
+Uploading Files
+---------------
+
+
+Links and need links
+--------------------
+
+SMART Object Annotations
+------------------------
+
+Stereotyping and Code Independence
+----------------------------------
+
+.. _fsm-reference:
+
+Finite State Machine
+--------------------
+

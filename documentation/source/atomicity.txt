@@ -1,0 +1,16 @@
+Atomicity in SMART
+==================
+
+Commit and Rollback
+-------------------
+
+Optimistic Locking
+------------------
+
+Dirty Field detection and commit
+--------------------------------
+
+Parallelism and atomicity
+-------------------------
+
+
