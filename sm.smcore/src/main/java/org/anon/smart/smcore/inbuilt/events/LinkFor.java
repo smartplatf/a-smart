@@ -55,11 +55,23 @@ public class LinkFor implements java.io.Serializable
     LinkFor(String f, String a)
     {
         String[] s = f.split("\\.");
-        flow = s[0];
-        name = s[1];
+        String add = "";
+        flow = "";
+        for (int i = 0; i < (s.length - 1); i++)
+        {
+            flow += add + s[i];
+            add = ".";
+        }
+        name = s[s.length - 1];
         s = a.split("\\.");
-        object = s[0];
-        attribute = s[1];
+        add = "";
+        object = "";
+        for (int i = 0; i < (s.length - 1); i++)
+        {
+            object += add + s[i];
+            add = ".";
+        }
+        attribute = s[s.length - 1];
     }
 
     public String getFlow() { return flow; }
@@ -69,7 +81,24 @@ public class LinkFor implements java.io.Serializable
     public String getName() { return name; }
     public String getTo() 
     { 
-        return flow + "." + object + "." + attribute; 
+        String ret = "";
+        String add = "";
+        if ((flow != null) && (flow.length() > 0))
+        {
+            ret = flow;
+            add = ".";
+        }
+
+        if ((object != null) && (object.length() > 0))
+        {
+            ret += add + object;
+            add = ".";
+        }
+
+        if ((attribute != null) && (attribute.length() > 0))
+            ret += add + attribute;
+
+        return ret;
     }
 }
 

@@ -98,10 +98,26 @@ public class CrossLinkLink extends CrossLinker
         return new CrossLinkLinkObject(obj);
     }
 
+    public CrossLinkLinkObject getViaFlowObject()
+        throws CtxException
+    {
+        Object obj = linkMethod("getViaFlowObject");
+        if (obj != null)
+            return new CrossLinkLinkObject(obj);
+
+        return null;
+    }
+
     public String getVia()
         throws CtxException
     {
         return (String)linkMethod("getVia");
+    }
+
+    public String getViaFlow()
+        throws CtxException
+    {
+        return (String)linkMethod("getViaFlow");
     }
 
     public boolean isInternal()
@@ -115,7 +131,10 @@ public class CrossLinkLink extends CrossLinker
         throws CtxException
     {
         Object obj = linkMethod("getViaObject");
-        return new CrossLinkLinkObject(obj);
+        if (obj != null)
+            return new CrossLinkLinkObject(obj);
+
+        return null;
     }
 }
 

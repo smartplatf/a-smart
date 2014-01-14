@@ -97,7 +97,7 @@ public class MicroArtefacts
         }
     }
 
-    public Artefact[] deployArtefacts(Artefact[] arts, Map<String, String> links)
+    public Artefact[] deployArtefacts(Artefact[] arts, Map<String, List<String>> links)
         throws CtxException
     {
         if (arts == null)

@@ -103,7 +103,7 @@ public class DeploymentShell implements SmartShell, FlowConstants
         }
     }
 
-    public FlowDeployment enableForMe(String name, String[] features, Map<String, String> linked)
+    public FlowDeployment enableForMe(String name, String[] features, Map<String, List<String>> linked)
         throws CtxException
     {
         //this has to be run from the same classloader as the tenant which will be
@@ -118,7 +118,13 @@ public class DeploymentShell implements SmartShell, FlowConstants
         {
             assertion().assertTrue(((linked != null) && (linked.size() >= deploy.getStrictNeedLinks())), "The deployment cannot be enabled without links provided");
             for (String n : linked.keySet())
-                deploy.setupLinkFor(n, linked.get(n));
+            {
+                List<String> lnks = linked.get(n);
+                for (int j = 0; (lnks != null) && (j < lnks.size()); j++)
+                {
+                    deploy.setupLinkFor(n, lnks.get(j));
+                }
+            }
         }
 
         assertion().assertTrue((deploy.getStrictNeedLinks() <= 0), "Not all links are provided. Need links for: " + deploy.getNeedLinkNames());
@@ -135,7 +141,7 @@ public class DeploymentShell implements SmartShell, FlowConstants
         return deploy;
     }
 
-    public FlowDeployment addLinksFor(String name, Map<String, String> linked)
+    public FlowDeployment addLinksFor(String name, Map<String, List<String>> linked)
         throws CtxException
     {
         FlowDeployment deploy = _licensed.assistant().deploymentFor(name);
@@ -144,7 +150,13 @@ public class DeploymentShell implements SmartShell, FlowConstants
         {
             assertion().assertTrue(((linked != null) && (linked.size() >= deploy.getNeedLinks())), "The deployment cannot be enabled without links provided");
             for (String n : linked.keySet())
-                deploy.setupLinkFor(n, linked.get(n));
+            {
+                List<String> lnks = linked.get(n);
+                for (int j = 0; (lnks != null) && (j < lnks.size()); j++)
+                {
+                    deploy.setupLinkFor(n, lnks.get(j));
+                }
+            }
         }
 
         _tenant.registerLinks(name, linked);

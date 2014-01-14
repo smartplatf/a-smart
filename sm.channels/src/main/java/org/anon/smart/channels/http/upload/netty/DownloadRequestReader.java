@@ -43,6 +43,8 @@ package org.anon.smart.channels.http.upload.netty;
 import static org.anon.utilities.services.ServiceLocator.io;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CACHE_CONTROL;
+import static org.jboss.netty.handler.codec.http.HttpHeaders.Values.MAX_AGE;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.OK;
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -124,6 +126,7 @@ public class DownloadRequestReader extends NettyRequestReader {
 		        HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
 		        response.setHeader(CONTENT_LENGTH, up.size());
 		        response.setHeader(CONTENT_TYPE, up.fileType());
+		        response.setHeader(CACHE_CONTROL, MAX_AGE + "=" + 31536000);
 		
 		        _route.send(response);
 		

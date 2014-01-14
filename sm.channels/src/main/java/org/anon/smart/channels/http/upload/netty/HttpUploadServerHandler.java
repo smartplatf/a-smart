@@ -161,6 +161,7 @@ public class HttpUploadServerHandler extends SimpleChannelUpstreamHandler {
                 Object send = _upReader.transmitDefault();
                 NettyRoute route = new NettyRoute(e.getChannel(), _channelID);
                 route.send(send);
+                System.out.println("Have to send.. " + send);
                 return;
             }
 

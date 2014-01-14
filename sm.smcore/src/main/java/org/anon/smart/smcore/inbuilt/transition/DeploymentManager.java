@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.lang.annotation.Annotation;
 
 import org.anon.smart.base.tenant.CrossLinkSmartTenant;
@@ -69,11 +70,14 @@ import org.anon.smart.smcore.inbuilt.responses.SuccessCreated;
 import org.anon.smart.smcore.inbuilt.responses.DeploymentList;
 import org.anon.smart.smcore.annot.ServiceAnnotate;
 import org.anon.smart.smcore.annot.ServicesAnnotate;
+import org.anon.smart.smcore.annot.MethodAnnotate;
 import org.anon.smart.smcore.transition.TConstants;
+import org.anon.smart.smcore.transition.parms.NeedsLinkDataProbe;
 
 import static org.anon.utilities.services.ServiceLocator.*;
 import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
+import org.anon.utilities.gconcurrent.execute.PDescriptor;
 import org.anon.utilities.crosslink.CrossLinkAny;
 import org.anon.utilities.loader.RelatedLoader;
 import org.anon.utilities.exception.CtxException;
@@ -143,6 +147,57 @@ public class DeploymentManager implements FlowConstants, TConstants
                 }
             }
         }
+
+        addParamLinks(cls, deps);
+    }
+
+    private void addParamLinks(Class cls, List<String> deps)
+        throws CtxException
+    {
+        //check methods for param needslink
+        Method[] mthds = reflect().getAnnotatedMethods(cls, MethodAnnotate.class.getName());
+        System.out.println("Methods with MethodAnnotate: " + mthds.length);
+        for (int i = 0; (mthds != null) && (i < mthds.length); i++)
+        {
+            System.out.println("Methods with MethodAnnotate: " + mthds[i].getName() + ":");
+            Annotation[] annots = mthds[i].getDeclaredAnnotations();
+            Annotation annot = null;
+            Class mannot = null;
+            for (int j = 0; (annots != null) && (j < annots.length); j++)
+            {
+                if (annots[j].annotationType().getName().equals(MethodAnnotate.class.getName()))
+                {
+                    annot = annots[j];
+                    mannot = annots[j].annotationType();
+                    break;
+                }
+            }
+            assertion().assertNotNull(annot, "Cannot find annotation for method");
+            System.out.println("Methods with MethodAnnotate: " + mthds[i].getName() + ":" + annot);
+            String parms = null;
+            try
+            {
+                parms = (String)mannot.getDeclaredMethod("parms").invoke(annot);
+            }
+            catch (Exception e)
+            {
+                //ignoring for now??
+                e.printStackTrace();
+            }
+            if (parms != null)
+            {
+                System.out.println("Method with parms: " + mthds[i].getName() + ":" + parms);
+                List<PDescriptor> desc = PDescriptor.parseParamDesc(parms);
+                for (int j = 0; (desc != null) && (j < desc.size()); j++)
+                {
+                    PDescriptor one = desc.get(j);
+                    if (one.ptype().myProbe().getClass().equals(NeedsLinkDataProbe.class))
+                    {
+                        deps.add(one.attribute());
+                    }
+                }
+            }
+        }
     }
 
     public DeploymentList retrieveDeployments(ListDeployments lst)
@@ -201,17 +256,20 @@ public class DeploymentManager implements FlowConstants, TConstants
 
                         //get all the mashups required for transitions also
                         List<String> trans = dep.getDeploymentFor(TRANSITIONTYPE);
-                        for (String t : trans)
+                        if (trans != null)
                         {
-                            try
+                            for (String t : trans)
                             {
-                                Class cls = (Class)fsuite.invoke("clazzFor", lst.getFlow(), t);
-                                if (cls != null)
-                                    addLinksIfPresent(cls, deps);
-                            }
-                            catch (Exception e)
-                            {
-                                e.printStackTrace();
+                                try
+                                {
+                                    Class cls = (Class)fsuite.invoke("clazzFor", lst.getFlow(), t);
+                                    if (cls != null)
+                                        addLinksIfPresent(cls, deps);
+                                }
+                                catch (Exception e)
+                                {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }

@@ -51,8 +51,10 @@ import org.anon.smart.kernel.config.SmartConfig;
 import org.anon.smart.kernel.config.ChannelConfig;
 import org.anon.smart.monitor.anatomy.MonitorStartConfig;
 import org.anon.smart.smcore.channel.server.EventServerConfig;
+import org.anon.smart.smcore.channel.server.CustomServerConfig;
 import org.anon.smart.smcore.channel.server.UploadServerConfig;
 import org.anon.smart.secure.channel.server.SecureEventServerConfig;
+import org.anon.smart.secure.channel.server.SecureCustomServerConfig;
 import org.anon.smart.secure.channel.server.SecureUploadServerConfig;
 import org.anon.smart.secure.anatomy.SecureConfig;
 
@@ -88,6 +90,7 @@ public class SmartModuleConfig implements SMCoreConfig, SecureConfig, MonitorSta
         boolean https = (cfg.getProtocol().equals("https"));
         int[] ports = cfg.getPortRange();
         int port = SCShell.getNextAvailablePort(ports);
+        String translator = cfg.getTranslator();
         
         if (type.equals("event"))
             ccfg = new EventServerConfig(port, https);
@@ -98,6 +101,10 @@ public class SmartModuleConfig implements SMCoreConfig, SecureConfig, MonitorSta
             ccfg = new SecureEventServerConfig(port, https);
         else if (type.equals("secureupload"))
             ccfg = new SecureUploadServerConfig(port, https);
+        else if (type.equals("custom"))
+            ccfg = new CustomServerConfig(port, https, translator);
+        else if (type.equals("securecustom"))
+            ccfg = new SecureCustomServerConfig(port, https, translator);
         return ccfg;
     }
 

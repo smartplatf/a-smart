@@ -151,7 +151,7 @@ public class SuiteAssistant<T extends Deployment>
         return null;
     }
 
-    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features, Map<String, String> links)
+    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features, Map<String, List<String>> links)
         throws CtxException
     {
         return _suite.enableFor(ldeploy, dep, features, links);

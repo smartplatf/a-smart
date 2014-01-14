@@ -42,6 +42,7 @@
 package org.anon.smart.secure.anatomy;
 
 import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
 
 import org.anon.smart.base.flow.FlowConstants;
@@ -102,7 +103,7 @@ public class SecureModule extends AModule implements FlowConstants
             SmartTenant powner = TenantsHosted.platformOwner();
             //enable before committing, else the space will not be present
             for (String flow : features.keySet())
-                powner.deploymentShell().enableForMe(flow, features.get(flow), new HashMap<String, String>());
+                powner.deploymentShell().enableForMe(flow, features.get(flow), new HashMap<String, List<String>>());
 
             TransitionService.setupDefaultRolesAndUsers(powner);
             System.out.println("STARTED SECURE MODULE");

@@ -46,6 +46,20 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.anon.smart.smcore.test.TestClient;
+import net.sf.json.JSONSerializer;
+import net.sf.json.JSON;
+
+import static org.junit.Assert.*;
+
+import org.anon.smart.channels.shell.SCShell;
+import org.anon.smart.channels.distill.Rectifier;
+import org.anon.smart.channels.http.HTTPConfig;
+import org.anon.smart.channels.http.HTTPClientChannel;
+import org.anon.smart.channels.data.PData;
+import org.anon.smart.channels.data.ContentData;
+import org.anon.smart.smcore.test.channel.TestPData;
+import org.anon.smart.smcore.test.channel.TestDataFactory;
+import org.anon.smart.smcore.test.ResponseCollector;
 
 public class TestClientChannel
 {
@@ -53,8 +67,38 @@ public class TestClientChannel
     public void testTestClientChannel()
         throws Exception
     {
-        TestClient clnt = new TestClient(80, "netty.io", "errortenant", "ErrorCases", "ErrorCases.soa");
+        //TestClient clnt = new TestClient(80, "netty.io", "errortenant", "ErrorCases", "ErrorCases.soa");
         //clnt.get(80, "dndopen.dove-sms.com", "/TransSMS/SMSAPI.jsp?username=RENTONGO&password=RentalSMS&sendername=INFOIN&mobileno=919902530998&message=Hello", true);
+        get(443, "maps.googleapis.com", "/maps/api/place/autocomplete/json?sensor=false&key=AIzaSyD92tOLezBxK8oXtkeIX1LGeqbJfUJ3Y3k&input=nagar", true);
+    }
+
+    public String get(int port, String server, String uri, boolean wait)
+        throws Exception
+    {
+        String ret = "";
+        JSON jret = null;
+        ResponseCollector collect = new ResponseCollector(wait);
+        Rectifier rr = new Rectifier();
+        rr.addStep(collect);
+        HTTPConfig ccfg = new HTTPConfig(port, true);
+        ccfg.setKeyStore("SunX509", "changeit", "cacerts.cer");
+        ccfg.setClient();
+        ccfg.setServer(server);
+        ccfg.setRectifierInstinct(rr, new TestDataFactory());
+        SCShell shell = new SCShell();
+        HTTPClientChannel cchnl = (HTTPClientChannel)shell.addChannel(ccfg);
+        cchnl.connect();
+        cchnl.get(uri);
+        if (wait)
+        {
+            collect.waitForResponse();
+            ret = collect.getResponse();
+            cchnl.disconnect();
+            System.out.println("Got: " + ret);
+            return ret;
+        }
+
+        return "";
     }
 }
 

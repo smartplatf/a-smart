@@ -61,6 +61,7 @@ import org.anon.smart.smcore.transition.graph.TransitionGraphExecutor;
 import org.anon.smart.smcore.transition.parms.TransitionProbeParms;
 import org.anon.smart.smcore.transition.atomicity.TAtomicity;
 import org.anon.smart.smcore.transition.plugin.PluginManager;
+import org.anon.smart.smcore.data.datalinks.DataLinker;
 
 import org.anon.utilities.cthreads.CThreadContext;
 import org.anon.utilities.exception.CtxException;
@@ -82,11 +83,13 @@ public class TransitionContext extends AbstractGraphContext implements CThreadCo
     private MessageSource _source;
     private SmartDataED _primeED;
     private String _flow;
+    private DataLinker _linker;
 
     public TransitionContext(Object data, ExecutorService service, Graph graph, MessageSource src)
         throws CtxException
     {
         super(graph, service);
+        _linker = new DataLinker();
         _rData = new CrossLinkEventRData(data);
         _event = _rData.event();
         _prime = _event.smart___primeData();
@@ -151,5 +154,6 @@ public class TransitionContext extends AbstractGraphContext implements CThreadCo
     }
 
     public TTransaction transaction() { return _transaction; }
+    public DataLinker getLinker() { return _linker; }
 }
 

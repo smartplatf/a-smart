@@ -83,6 +83,8 @@ public class ClientConfig
     {
         if ((format == null) || (format.length() <= 0) || (format.equals("form")))
             return "org.anon.smart.smcore.channel.client.FormFormat";
+        else if (format.equals("json"))
+            return "org.anon.smart.smcore.channel.client.JSONFormat";
 
         return format;
     }

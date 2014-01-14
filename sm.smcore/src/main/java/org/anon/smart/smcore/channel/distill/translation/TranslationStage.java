@@ -88,6 +88,11 @@ public class TranslationStage implements Distillation
         _type = t;
     }
 
+    TranslationStage()
+    {
+        _type = translator.json; //custom send back is always json, need to check if this has to change
+    }
+
     public void setRectifier(Rectifier parent)
     {
         _myRectifier = parent;

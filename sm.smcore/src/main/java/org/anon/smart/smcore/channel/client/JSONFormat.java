@@ -26,32 +26,54 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.deployment.DSuite
+ * File:                org.anon.smart.smcore.channel.client.JSONFormat
  * Author:              rsankar
  * Revision:            1.0
- * Date:                19-01-2013
+ * Date:                15-11-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A deployment suite implementation
+ * A formatter for JSON format post
  *
  * ************************************************************
  * */
 
-package org.anon.smart.deployment;
+package org.anon.smart.smcore.channel.client;
 
 import java.util.Map;
-import java.util.List;
+import java.util.HashMap;
+import java.io.ByteArrayOutputStream;
 
-import org.anon.utilities.exception.CtxException;
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
+import static org.anon.utilities.objservices.ConvertService.*;
 
-public interface DSuite<T extends Deployment>
+public class JSONFormat
 {
-    public MicroArtefacts artefacts(String dep);
-    public MicroArtefacts artefactsCreate(String dep);
-    public MacroDeployments<T> deployments();
-    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features, Map<String, List<String>> links)
-        throws CtxException;
+    private Object _values;
+
+    public JSONFormat(Object values)
+    {
+        _values = values;
+        if (values == null)
+            _values = new HashMap();
+    }
+
+    public String toString()
+    {
+        String ret = "";
+        try
+        {
+            ByteArrayOutputStream ostr = new ByteArrayOutputStream();
+            convert().writeObject(_values, ostr, translator.json);
+            ret = ostr.toString();
+            ostr.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return ret;
+    }
 }
 

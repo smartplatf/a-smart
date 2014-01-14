@@ -42,6 +42,7 @@
 package org.anon.smart.monitor.anatomy;
 
 import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
 
 import org.anon.smart.base.flow.FlowConstants;
@@ -98,7 +99,7 @@ public class MonitorModule extends AModule implements FlowConstants
             SmartTenant powner = TenantsHosted.platformOwner();
             //enable before committing, else the space will not be present
             for (String flow : features.keySet())
-                powner.deploymentShell().enableForMe(flow, features.get(flow), new HashMap<String, String>());
+                powner.deploymentShell().enableForMe(flow, features.get(flow), new HashMap<String, List<String>>());
 
             System.out.println("STARTED MONITOR MODULE");
         }

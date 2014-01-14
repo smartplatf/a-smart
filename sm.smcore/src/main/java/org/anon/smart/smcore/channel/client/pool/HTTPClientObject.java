@@ -80,6 +80,8 @@ public class HTTPClientObject implements PoolEntity
         _httpconfig = new HTTPConfig(cfg.getPort(), cfg.useSecure());
         _httpconfig.setClient();
         _httpconfig.setServer(_config.getServer());
+        //checking if this will work after that will fix
+        _httpconfig.setKeyStore("SunX509", "changeit", "cacerts.cer"); //this is bundled with out server and hence does not change
         Rectifier rectify = new Rectifier();
         _respHandler = new GenericResponseHandler();
         rectify.addStep(_respHandler);
@@ -164,6 +166,16 @@ public class HTTPClientObject implements PoolEntity
         String formatter = _config.getFormatter(format);
         CrossLinkAny cl = new CrossLinkAny(formatter, this.getClass().getClassLoader());
         Object obj = cl.create(new Class[] { Map.class }, new Object[] { map });
+        assertion().assertNotNull(obj, "Cannot create a formatter of type " + formatter);
+        return obj.toString();
+    }
+
+    public String getObjectFormatted(Object val, String format)
+        throws CtxException
+    {
+        String formatter = _config.getFormatter(format);
+        CrossLinkAny cl = new CrossLinkAny(formatter, this.getClass().getClassLoader());
+        Object obj = cl.create(new Class[] { Object.class }, new Object[] { val });
         assertion().assertNotNull(obj, "Cannot create a formatter of type " + formatter);
         return obj.toString();
     }

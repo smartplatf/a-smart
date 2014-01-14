@@ -6,6 +6,7 @@ primeData:
 config:
     - org.anon.smart.smcore.inbuilt.config.EmailConfig
     - org.anon.smart.smcore.inbuilt.config.SMSConfig
+    - org.anon.smart.smcore.inbuilt.config.GoogleAppConfig
 events:
     - org.anon.smart.smcore.inbuilt.events.SearchEvent
     - org.anon.smart.smcore.inbuilt.events.LookupEvent
@@ -34,6 +35,7 @@ transitions:
     - org.anon.smart.smcore.inbuilt.transition.JavaScriptManager
     - org.anon.smart.smcore.inbuilt.transition.TemplateMetaManager
     - org.anon.smart.smcore.inbuilt.transition.TransitionServices
+    - org.anon.smart.smcore.inbuilt.transition.GoogleMapServices
 responses:
     - org.anon.smart.smcore.inbuilt.responses.SearchResponse
     - org.anon.smart.smcore.inbuilt.responses.LookupResponse
@@ -74,6 +76,7 @@ features:
         - org.anon.smart.smcore.inbuilt.transition.JavaScriptManager
         - org.anon.smart.smcore.inbuilt.transition.TemplateMetaManager
         - org.anon.smart.smcore.inbuilt.transition.TransitionServices
+        - org.anon.smart.smcore.inbuilt.transition.GoogleMapServices
         - org.anon.smart.smcore.inbuilt.responses.SearchResponse
         - org.anon.smart.smcore.inbuilt.responses.LookupResponse
         - org.anon.smart.smcore.inbuilt.responses.ListAllResponse
@@ -88,5 +91,6 @@ features:
         - org.anon.smart.smcore.inbuilt.events.GetListings
         - org.anon.smart.smcore.inbuilt.config.EmailConfig
         - org.anon.smart.smcore.inbuilt.config.SMSConfig
+        - org.anon.smart.smcore.inbuilt.config.GoogleAppConfig
         - org.anon.smart.smcore.inbuilt.events.ChangeStateEvent
         - org.anon.smart.smcore.inbuilt.events.TimedEvent

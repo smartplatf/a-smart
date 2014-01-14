@@ -122,7 +122,7 @@ public class TestModule extends AModule
             for (int t = 0; (tenants != null) && (t < tenants.length); t++)
             {
                 System.out.println("Enabling deployments for: " +  dep.deployedName() + ":" + tenants[t].getName());
-                tenants[t].deploymentShell().enableForMe(dep.deployedName(), fnames, new HashMap<String, String>());
+                tenants[t].deploymentShell().enableForMe(dep.deployedName(), fnames, new HashMap<String, List<String>>());
             }
         }
 

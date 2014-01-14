@@ -75,6 +75,7 @@ public class NettyResponseReader implements HTTPMessageReader
 {
     private String _uri;
     private boolean _get;
+    private String _host;
 
     public NettyResponseReader(String uri)
     {
@@ -95,6 +96,11 @@ public class NettyResponseReader implements HTTPMessageReader
     public void setURI(String uri)
     {
         _uri = uri;
+    }
+
+    public void setHost(String h)
+    {
+        _host = h;
     }
 
     public String getURI(Object msg)
@@ -132,9 +138,11 @@ public class NettyResponseReader implements HTTPMessageReader
         if (_get)
         {
             request = new DefaultHttpRequest(HTTP_1_1, GET, _uri);
-            request.setHeader(HttpHeaders.Names.HOST, "smart");
-            request.setHeader(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.CLOSE);
+            request.setHeader(HttpHeaders.Names.USER_AGENT, "smart");
+            request.setHeader(HttpHeaders.Names.HOST, _host);
+            //request.setHeader(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.CLOSE);
             request.setHeader(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
+            request.setHeader(HttpHeaders.Names.ACCEPT, "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
         }
         else
         {
@@ -158,6 +166,8 @@ public class NettyResponseReader implements HTTPMessageReader
             request.setHeader(CONTENT_TYPE, contentType);
             request.setHeader("Access-Control-Allow-Origin", "*");
             request.setHeader(CONTENT_LENGTH, request.getContent().readableBytes());
+            request.setHeader(HttpHeaders.Names.HOST, _host);
+            request.setHeader(HttpHeaders.Names.USER_AGENT, "smart");
 
             for (String nm : headers.keySet())
                 request.setHeader(nm, headers.get(nm));

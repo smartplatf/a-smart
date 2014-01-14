@@ -284,7 +284,7 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 
 	private void enableFlows() throws CtxException {
 		Map<String, List<String>> flowFeatureMap = new HashMap<String, List<String>>();
-        Map<String, Map<String, String>> links = new HashMap<String, Map<String, String>>();
+        Map<String, Map<String, List<String>>> links = new HashMap<String, Map<String, List<String>>>();
 		
 		for(FeatureName feature: _enabledFeatureList)
 		{
@@ -306,14 +306,19 @@ public class SmartTenant implements RelatedObject, TenantConstants,
             if ((feature.getLinks() != null) && (feature.getLinks().length() > 0))
             {
                 String[] alllnks = feature.getLinks().split(";");
-                Map<String, String> lnks = links.get(flowName);
+                Map<String, List<String>> lnks = links.get(flowName);
                 if (lnks == null)
-                    lnks = new HashMap<String, String>();
+                    lnks = new HashMap<String, List<String>>();
                 for (int i = 0; (alllnks != null) && (i < alllnks.length); i++)
                 {
                     String[] vals = alllnks[i].split("\\" + LINK_SEPARATOR);
                     assertion().assertTrue((vals.length == 2), "Not stored correctly: " + alllnks[i]);
-                    lnks.put(vals[0], vals[1]);
+                    List<String> onelnk = lnks.get(vals[0]);
+                    if (onelnk == null)
+                        onelnk = new ArrayList<String>();
+
+                    onelnk.add(vals[1]);
+                    lnks.put(vals[0], onelnk);
                 }
                 links.put(flowName, lnks);
             }
@@ -325,15 +330,15 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 		{
 			//System.out.println("Enabling:"+me.getKey()+"::"+me.getValue());
             //TODO: need to check how to reenable the links
-            Map<String, String> lnks = links.get(me.getKey());
+            Map<String, List<String>> lnks = links.get(me.getKey());
             if (lnks == null)
-                lnks = new HashMap<String, String>();
+                lnks = new HashMap<String, List<String>>();
 			_deploymentShell.enableForMe(me.getKey(), me.getValue().toArray(new String[0]), lnks);
 		}
 		
 	}
 
-	public void registerEnabledFlow(String name, String[] features, Map<String, String> lnks) {
+	public void registerEnabledFlow(String name, String[] features, Map<String, List<String>> lnks) {
 		for(String feature : features)
         {
             FeatureName nm = new FeatureName(name+FLOW_FEATURE_SEPARATOR+feature);
@@ -346,7 +351,7 @@ public class SmartTenant implements RelatedObject, TenantConstants,
         System.out.println("Currently enabled flows are: " + _enabledFeatureList);
 	}
 
-    public void registerLinks(String name, Map<String, String> lnks)
+    public void registerLinks(String name, Map<String, List<String>> lnks)
     {
         for (int i = 0; i < _enabledFeatureList.size(); i++)
         {
@@ -388,16 +393,19 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 			_name = name;
 		}
 
-        void addLink(Map<String, String> lnks)
+        void addLink(Map<String, List<String>> lnks)
         {
             for(String nm : lnks.keySet())
             {
-                String val = lnks.get(nm);
-                String lnk = nm + LINK_SEPARATOR + val;
-                if ((_links == null) || (_links.length() <= 0))
-                    _links = lnk;
-                else
-                    _links = _links + ";" + lnk;
+                List<String> val = lnks.get(nm);
+                for (int i = 0; (val != null) && (i < val.size()); i++)
+                {
+                    String lnk = nm + LINK_SEPARATOR + val.get(i);
+                    if ((_links == null) || (_links.length() <= 0))
+                        _links = lnk;
+                    else
+                        _links = _links + ";" + lnk;
+                }
             }
         }
 

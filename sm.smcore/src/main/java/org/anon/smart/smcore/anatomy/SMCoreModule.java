@@ -42,6 +42,7 @@
 package org.anon.smart.smcore.anatomy;
 
 import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
 
 import org.anon.smart.base.flow.FlowService;
@@ -117,7 +118,7 @@ public class SMCoreModule extends AModule implements FlowConstants
             SmartTenant powner = TenantsHosted.platformOwner();
             //enable before committing, else the space will not be present
             for (String flow : features.keySet())
-                powner.deploymentShell().enableForMe(flow, features.get(flow), new HashMap<String, String>());
+                powner.deploymentShell().enableForMe(flow, features.get(flow), new HashMap<String, List<String>>());
             TenantAdmin tadmin = new TenantAdmin(powner.getName(), powner);
             powner.setAdmin(tadmin);
             Object admin = powner.getAdmin();

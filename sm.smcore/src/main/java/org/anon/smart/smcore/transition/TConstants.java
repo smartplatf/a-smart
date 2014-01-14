@@ -53,5 +53,6 @@ public interface TConstants
 
     public static final String NEEDSSERVICE = "needsService";
     public static final String NOTMAPPED = "notMapped";
+    public static final String NEEDSLINK = "needslink";
 }
 

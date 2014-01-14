@@ -58,7 +58,7 @@ public class Artefact implements Deployable
     private ArtefactType _type;
     private String[] _keys;
 
-    private Map<String, String> _links;
+    private Map<String, List<String>> _links;
 
     private Artefact(Class clazz, ArtefactType type)
         throws CtxException
@@ -81,7 +81,7 @@ public class Artefact implements Deployable
         return new String[] { key };
     }
 
-    private void expandMe(String key, Map<String, String> links, List<String> k, boolean add)
+    private void expandMe(String key, Map<String, List<String>> links, List<String> k, boolean add)
     {
         if (key.indexOf("needslink") >= 0)
         {
@@ -94,10 +94,14 @@ public class Artefact implements Deployable
                 System.out.println("Checking: " + keyparts[j] + ":" + links.get(keyparts[j]));
                 if ((keyparts[j].indexOf("needslink") >= 0) && (links.containsKey(keyparts[j])))
                 {
-                    System.out.println("Got: " + keyparts[j] + ":" + links.get(keyparts[j]));
-                    if (add) _links.put(keyparts[j], links.get(keyparts[j]));
-                    String[] lparts = links.get(keyparts[j]).split("\\.");
-                    String use = links.get(keyparts[j]);
+                    List<String> part = links.get(keyparts[j]);
+                    String part1 = "";
+                    if ((part != null) && (part.size() > 0))
+                        part1 = part.get(0);
+                    System.out.println("Got: " + keyparts[j] + ":" + part1);
+                    if (add) _links.put(keyparts[j], part);
+                    String[] lparts = part1.split("\\.");
+                    String use = part1;
                     if (lparts.length >= 2)
                         use = lparts[1];
                     val = use.split(",");
@@ -119,14 +123,14 @@ public class Artefact implements Deployable
         }
     }
 
-    private Artefact(Artefact art, Map<String, String> links)
+    private Artefact(Artefact art, Map<String, List<String>> links)
     {
         _name = art._name;
         _clazz = art._clazz;
         _type = art._type;
 
         List<String> k = new ArrayList<String>();
-        _links = new HashMap<String, String>();
+        _links = new HashMap<String, List<String>>();
         for (int i = 0; i < art._keys.length; i++)
         {
             if (art._keys[i].indexOf("needslink") >= 0)
@@ -186,7 +190,7 @@ public class Artefact implements Deployable
         return ret;
     }
 
-    public static Artefact[] artefactsFor(Artefact[] arts, Map<String, String> links)
+    public static Artefact[] artefactsFor(Artefact[] arts, Map<String, List<String>> links)
         throws CtxException
     {
         if (arts == null)

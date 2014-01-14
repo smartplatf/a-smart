@@ -1,0 +1,16 @@
+name:       GoogleMapServices
+type:       Transition
+flow:       AllFlows
+foreach:    FlowAdmin|Any
+services:
+    - name:     autocomplete
+      method:   autocomplete
+    - name:     details
+      method:   details
+    - name:     nearbysearch
+      method:   nearbysearch
+    - name:     addPlace
+      method:   addPlace
+    - name:     removePlace
+      method:   removePlace
+

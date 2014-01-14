@@ -105,7 +105,7 @@ public class SmartTenantManager
         //stenant.deploymentShell().enableForMe("AdminSmartFlow", new String[] { "all" }, new HashMap<String, String>());
         //stenant.deploymentShell().enableForMe("AllFlows", new String[] { "all" }, new HashMap<String, String>());
         for (int i = 0; i < stdenable.size(); i++)
-            stenant.deploymentShell().enableForMe(stdenable.get(i), new String[] { "all" }, new HashMap<String, String>());
+            stenant.deploymentShell().enableForMe(stdenable.get(i), new String[] { "all" }, new HashMap<String, List<String>>());
         TenantAdmin admin = new TenantAdmin(tenant.tenantName(), stenant);
 
         String flow = tenant.getEnableFlow();
@@ -113,7 +113,7 @@ public class SmartTenantManager
         if ((flow != null) && (flow.length() > 0) && (features != null))
         {
             System.out.println("Typing to enable flow for: " + flow + ":" + features);
-            stenant.deploymentShell().enableForMe(flow, features.toArray(new String[0]), new HashMap<String, String>());
+            stenant.deploymentShell().enableForMe(flow, features.toArray(new String[0]), new HashMap<String, List<String>>());
         }
 
         ClassLoader ldr = stenant.getRelatedLoader();
@@ -166,11 +166,17 @@ public class SmartTenantManager
         if ((flow != null) && (flow.length() > 0) && (features != null))
         {
             System.out.println("Trying to enable flow for: " + flow + ":" + features);
-            Map<String, String> linked = new HashMap<String, String>();
+            Map<String, List<String>> linked = new HashMap<String, List<String>>();
             if (enable.getLinks() != null)
             {
                 for (LinkFor l : enable.getLinks())
-                    linked.put(l.getName(), l.getTo());
+                {
+                    List<String> to = linked.get(l.getName());
+                    if (to == null)
+                        to = new ArrayList<String>();
+                    to.add(l.getTo());
+                    linked.put(l.getName(), to);
+                }
             }
             stenant.deploymentShell().enableForMe(flow, features.toArray(new String[0]), linked);
         }
@@ -201,11 +207,18 @@ public class SmartTenantManager
         String flow = lnk.getEnableFlow();
         if ((flow != null) && (flow.length() > 0))
         {
-            Map<String, String> linked = new HashMap<String, String>();
+            Map<String, List<String>> linked = new HashMap<String, List<String>>();
             if (lnk.getLinks() != null)
             {
                 for (LinkFor l : lnk.getLinks())
-                    linked.put(l.getName(), l.getTo());
+                {
+                    List<String> to = linked.get(l.getName());
+                    if (to == null)
+                        to = new ArrayList<String>();
+
+                    to.add(l.getTo());
+                    linked.put(l.getName(), to);
+                }
             }
             System.out.println("Trying to add links flow for: " + flow + ":" + linked);
             stenant.deploymentShell().addLinksFor(flow, linked);

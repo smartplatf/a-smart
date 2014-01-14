@@ -26,32 +26,46 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.deployment.DSuite
+ * File:                org.anon.smart.smcore.inbuilt.transition.GoogleAddPlace
  * Author:              rsankar
  * Revision:            1.0
- * Date:                19-01-2013
+ * Date:                15-11-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A deployment suite implementation
+ * An add place object to be posted
  *
  * ************************************************************
  * */
 
-package org.anon.smart.deployment;
+package org.anon.smart.smcore.inbuilt.transition;
 
-import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 
-import org.anon.utilities.exception.CtxException;
-
-public interface DSuite<T extends Deployment>
+public class GoogleAddPlace implements java.io.Serializable
 {
-    public MicroArtefacts artefacts(String dep);
-    public MicroArtefacts artefactsCreate(String dep);
-    public MacroDeployments<T> deployments();
-    public Artefact[] enableFor(LicensedDeploymentSuite<T> ldeploy, String dep, String[] features, Map<String, List<String>> links)
-        throws CtxException;
+    class Location implements java.io.Serializable
+    {
+        double lat;
+        double lng;
+    }
+
+    private Location location;
+    private int accuracy;
+    private String name;
+    private List<String> types;
+
+    public GoogleAddPlace(double l1, double l2, String nm, int acc, String type)
+    {
+        location = new Location();
+        location.lat = l1;
+        location.lng = l2;
+        accuracy = acc;
+        name = nm;
+        types = new ArrayList<String>();
+        types.add(type);
+    }
 }
 

@@ -382,6 +382,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
         List<Link> lnks = new ArrayList<Link>();
         for (Link l : links)
         {
+            System.out.println("Checking links: " + l);
             if (l.getFromObject().linkFor(flow, name))
                 lnks.add(l);
         }
@@ -389,13 +390,44 @@ public class FlowDeployment extends Deployment implements FlowConstants
         return lnks;
     }
 
+    private boolean needLinks(String name)
+    {
+        boolean nl = _needLinks.containsKey(name);
+        if (!nl)
+        {
+            for (int i = 0; (!nl) && (needlinks != null) && (i < needlinks.size()); i++)
+            {
+                Link l = needlinks.get(i);
+                nl = (l.getName().equals(name));
+            }
+        }
+
+        return nl;
+    }
+
+    private Link getInternalLink(String name)
+    {
+        for (int i = 0; (needlinks != null) && (i < needlinks.size()); i++)
+        {
+            Link l = needlinks.get(i);
+            return l;
+        }
+
+        return null;
+    }
+
     public void setupLinkFor(String name, String to)
         throws CtxException
     {
-        if (_needLinks.containsKey(name))
+        if (needLinks(name))
         {
             Link lnk = _needLinks.get(name);
-            _needLinks.remove(name);
+            if (lnk == null)
+            {
+                lnk = new Link(getInternalLink(name));
+            }
+            else
+                _needLinks.remove(name);
             lnk.setTo(to, deployedName(), true);
             links.add(lnk); //add it to the links so we can use it.
         }

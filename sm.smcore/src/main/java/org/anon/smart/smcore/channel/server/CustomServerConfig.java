@@ -26,39 +26,46 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.channel.client.JSONResponse
+ * File:                org.anon.smart.smcore.channel.server.CustomServerConfig
  * Author:              rsankar
  * Revision:            1.0
- * Date:                28-10-2013
+ * Date:                29-12-2013
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A json response object
+ * A configuration for custom channels
  *
  * ************************************************************
  * */
 
-package org.anon.smart.smcore.channel.client;
+package org.anon.smart.smcore.channel.server;
 
-import java.util.Map;
-import java.io.InputStream;
+import org.anon.smart.channels.http.HTTPConfig;
+import org.anon.smart.channels.http.HTTPDataFactory;
+import org.anon.smart.channels.distill.Rectifier;
+import org.anon.smart.smcore.channel.distill.translation.CustomTranslationStage;
+import org.anon.smart.smcore.channel.distill.sanitization.SanitizationStage;
+import org.anon.smart.smcore.channel.distill.alteration.AlterationStage;
+import org.anon.smart.smcore.channel.distill.storage.StorageStage;
 
 import org.anon.utilities.exception.CtxException;
 
-import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import static org.anon.utilities.objservices.ConvertService.*;
 
-public class JSONResponse
+public class CustomServerConfig extends HTTPConfig
 {
-    private Map<String, Object> response;
-
-    public JSONResponse(InputStream str)
+    public CustomServerConfig(int port, boolean secure, String translate)
         throws CtxException
     {
-        response = convert().readObject(str, Map.class, translator.json);
+        super(port, secure);
+        Rectifier rectifier = new Rectifier();
+        rectifier.addStep(new CustomTranslationStage(translate));
+        rectifier.addStep(new SanitizationStage());
+        rectifier.addStep(new AlterationStage());
+        rectifier.addStep(new StorageStage());
+        rectifier.setupErrorHandler(new EventErrorHandler());
+        setRectifierInstinct(rectifier, new EventDataFactory());
     }
-
-    public Map<String, Object> getResponse() { return response; }
 }
 

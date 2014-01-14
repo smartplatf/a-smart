@@ -150,7 +150,8 @@ public class SmartDataTruth implements TruthData
         //In this scenario the prime object from which it is linked is locked, hence we 
         //need not lock the linkeddata. TODO: if this is not true, then the data has to
         //be locked.
-        DataLinker linker = new DataLinker();
+        //DataLinker linker = new DataLinker();
+        DataLinker linker = ctx.getLinker();
         linker.createLinks(ctx, (SmartDataED)edata, _truthData, _isNew);
 
         //ctx.transaction().addToTransaction(_truthData);
