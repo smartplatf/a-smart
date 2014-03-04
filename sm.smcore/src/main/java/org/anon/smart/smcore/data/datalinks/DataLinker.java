@@ -131,7 +131,7 @@ public class DataLinker
             flow = fflow;
         }
 
-        System.out.println("Got for: " + pcls + ":" + lnks + ":" + flow + ":" + tflow + ":" + fflow);
+        System.out.println("Got for: " + pcls + ":" + lnks + ":" + flow + ":" + tflow + ":" + fflow + ":" + fname + ":" + tname);
 
         for (int i = 0; (lnks != null) && (i < lnks.size()); i++)
         {
@@ -144,7 +144,8 @@ public class DataLinker
             String attr = null;
             if (fobj.getFlow().equals(fflow) && fobj.getObject().equals(fname))
                 attr = fobj.getField();
-            else if (tobj.getFlow().equals(fflow) && fobj.getObject().equals(tname))
+            //else if (tobj.getFlow().equals(fflow) && fobj.getObject().equals(tname))
+            else if (tobj.getFlow().equals(fflow) && (tobj.getObject().equals(fname)) && fobj.getFlow().equals(tflow) && fobj.getObject().equals(tname))
                 attr = tobj.getField();
             if (attr != null)
             {

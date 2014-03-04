@@ -222,6 +222,25 @@ public class TranslationStage implements Distillation
             except().rt(e, new CtxException.Context("Exception", e.getMessage()));
         }
     }
+
+    private void addDestination(Object fldVal, Map map, String clsName)
+        throws CtxException
+    {
+        Map dataObj = new HashMap();
+        Object key = null;
+        if (fldVal instanceof java.lang.String)
+        {
+            key = fldVal;
+        }
+        else
+        {
+            CrossLinkSmartPrimeData dspaceObj = new CrossLinkSmartPrimeData(fldVal);
+            key = dspaceObj.smart___keys().get(1);
+        }
+        dataObj.put("___smart_action___", "lookup");
+        dataObj.put("___smart_value___", key); //TODO passing User key instead of smart_id
+        map.put(clsName, dataObj);
+    }
     
     private Map<String, Object> objectToMapForInternalMessage(Object event) 
     	throws CtxException
@@ -238,6 +257,7 @@ public class TranslationStage implements Distillation
 		String  flow = fd.deployedName(); 
         System.out.println("Getting deployment for flow: " + flow);
         Field dest = AnnotationUtils.destinations(event.getClass());
+        boolean addeddest = false;
         if (dest != null)
         {
             dest.setAccessible(true);
@@ -245,6 +265,20 @@ public class TranslationStage implements Distillation
             assertion().assertNotNull(val, "Destination value for " + dest.getName() + " is NULL in INTERNAL event.");
             flow = AnnotationUtils.flowFor(val.getClass());
             System.out.println("Got destination field as: " + dest + ":" + flow);
+            String clsName = AnnotationUtils.crossClassName(dest.getType());
+            addDestination(val, map, clsName);
+            addeddest = true;
+        }
+        else
+        {
+            boolean postadmin = AnnotationUtils.postflowadmin(event.getClass());
+            if (postadmin)
+            {
+                //need to find how to set this here??
+                System.out.println("Need to post to flow admin here.");
+                addDestination(flow, map, "FlowAdmin");
+                addeddest = true;
+            }
         }
 		for(Field f : flds)
 		{
@@ -260,17 +294,20 @@ public class TranslationStage implements Distillation
             String clsName = AnnotationUtils.crossClassName(fType);
 			if(clsName != null)
 				dCls = dshell.dataClass(flow, clsName);
+
 			
-			if(dCls != null) // FLD IS DATA CLASS
+			if ((!addeddest) && (dCls != null)) // FLD IS DATA CLASS
 			{
 				assertion().assertNotNull(fldVal, "Data field "+ f.getName() +" is NULL in internal event");
 				
 				//assertion().assertTrue((fldVal instanceof DSpaceObject), "Fld value is not DSpaceObject"); 
-				Map dataObj = new HashMap();
+				/*Map dataObj = new HashMap();
 				CrossLinkSmartPrimeData dspaceObj = new CrossLinkSmartPrimeData(fldVal);
 	    		dataObj.put("___smart_action___", "lookup");
 	    		dataObj.put("___smart_value___", dspaceObj.smart___keys().get(1)); //TODO passing User key instead of smart_id
-	    		map.put(clsName, dataObj);
+	    		map.put(clsName, dataObj);*/
+                addDestination(fldVal, map, clsName);
+                addeddest = true;
 			}
 			else if((fldVal != null) && (!(f.getName().startsWith("___smart"))))
 			{

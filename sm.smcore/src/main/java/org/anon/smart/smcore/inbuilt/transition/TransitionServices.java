@@ -60,6 +60,7 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 
 import org.anon.smart.smcore.data.ConfigData;
+import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.inbuilt.config.EmailConfig;
 import org.anon.smart.smcore.inbuilt.config.SMSConfig;
 import org.anon.smart.smcore.config.ConfigService;
@@ -84,6 +85,39 @@ public class TransitionServices
     {
         System.out.println("This transition does not need to do anything. It will just change state.");
         new SuccessUpdated("Updated state");
+    }
+
+    public void changeObjectState(SmartData obj, String[] from, String to, String forcecheck)
+        throws CtxException
+    {
+        System.out.println("Changing State for obj " + obj + ":" + from + to);
+        if ((obj != null) && (from != null) && (to != null))
+        {
+            assertion().assertNotNull(obj.utilities___currentState(), "Object current state is null. Cannot change state?");
+            assertion().assertNotNull(obj.utilities___currentState().stateName(), "Object current state name is null. Cannot change state?");
+            assertion().assertNotNull(from, "No From state provided.");
+            assertion().assertTrue((from.length > 0), "No From state provided.");
+            boolean inreqdstate = false;
+            String sName = obj.utilities___currentState().stateName();
+            String states = "";
+            for (int i = 0; (!inreqdstate) && (i < from.length); i++)
+            {
+                states += "," + from[i];
+                if (from[i].equals(sName))
+                    inreqdstate = true;
+            }
+
+            if ((forcecheck == null) || (forcecheck.length() <= 0))
+                forcecheck = "true";
+
+            boolean chk = Boolean.parseBoolean(forcecheck);
+            if (chk)
+                assertion().assertTrue(inreqdstate, "Object is not in any of the from states provided. " + obj.utilities___currentState().stateName() + ":" + states);
+
+            if (inreqdstate)
+                obj.smart___transition(to);
+        }
+        System.out.println("Changed State");
     }
 
     public void sendEmailService(String to, String subject, String msg)

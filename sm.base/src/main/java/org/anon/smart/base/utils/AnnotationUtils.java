@@ -47,6 +47,7 @@ import java.lang.reflect.Field;
 import org.anon.smart.base.annot.BaseAnnotate;
 import org.anon.smart.base.annot.ConfigAnnotate;
 import org.anon.smart.base.annot.EventAnnotate;
+import org.anon.smart.base.annot.MessageAnnotate;
 import org.anon.smart.base.annot.SmartDataAnnotate;
 import org.anon.smart.base.annot.PrimeDataAnnotate;
 import org.anon.smart.base.annot.KeyAnnotate;
@@ -197,6 +198,28 @@ public class AnnotationUtils
             return annot.filter();
 
         return null;
+    }
+
+    public static String crosspostFor(Class cls)
+        throws CtxException
+    {
+        assertion().assertNotNull(cls, "Cannot find the filter for a null class");
+        MessageAnnotate annot = (MessageAnnotate)reflect().getAnnotation(cls, MessageAnnotate.class);
+        if (annot != null)
+            return annot.crosspost();
+
+        return null;
+    }
+
+    public static boolean postflowadmin(Class cls)
+        throws CtxException
+    {
+        assertion().assertNotNull(cls, "Cannot find the filter for a null class");
+        MessageAnnotate annot = (MessageAnnotate)reflect().getAnnotation(cls, MessageAnnotate.class);
+        if (annot != null)
+            return annot.postflowadmin();
+
+        return false;
     }
 
     public static int timeoutFor(Class cls, String sname)

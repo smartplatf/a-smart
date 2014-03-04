@@ -54,7 +54,10 @@ import org.anon.smart.smcore.channel.internal.MessageConfig;
 import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.events.SmartEventResponse;
 import org.anon.smart.smcore.transition.atomicity.AtomicityConstants;
+import org.anon.smart.smcore.anatomy.CoreContext;
 import org.anon.utilities.exception.CtxException;
+
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 public class SmartMessageObject implements EmpiricalData, TruthData, AtomicityConstants {
 
@@ -91,15 +94,18 @@ public class SmartMessageObject implements EmpiricalData, TruthData, AtomicityCo
 	@Override
 	public boolean accept(UUID txnid, EmpiricalData edata) throws CtxException {
 		System.out.println("------------------------- ACCEPTING MESSAGE ---------");
-		_mc = new MessageConfig(_message);
+		//_mc = new MessageConfig(_message);
+        CoreContext ctx = (CoreContext)anatomy().overriddenContext(this.getClass());
+        _mc = (MessageConfig)ctx.getMessageConfig(_message);
 		System.out.println("------------------------- ACCEPTED MESSAGE ---------"+_mc+"::"+ this);
 		
-		return true;
+		return (_mc != null);
 	}
 
 	@Override
 	public void discard(UUID txnid, EmpiricalData edata) throws CtxException {
 		// TODO Auto-generated method stub
+        System.out.println("Discarded??");
 		
 	}
 
@@ -110,7 +116,7 @@ public class SmartMessageObject implements EmpiricalData, TruthData, AtomicityCo
 			_mc.postMessage();
 		else
 			System.out.println("---------------------WHY _MC IS NULLL? WHY WHY WHY");
-		return true;
+		return (_mc != null);
 	}
 
 	@Override

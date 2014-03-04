@@ -94,20 +94,25 @@ public class DefaultTemplate implements SearchTemplate
         Object odep = cldrt.invoke("getDeploying");
         CrossLinkAny cl = new CrossLinkAny(odep);
         String dtype = (String)cl.invoke("getDataType", clsname);
-        assertion().assertNotNull(dtype, "Cannot find the type for: " + clsname);
-        String name = (String)cl.invoke("deployedName");
-        String[] parms = (String[])cl.invoke("getParmsFor", dtype, clsname);
-        Class<? extends BaseTL> cls = TemplateReader.getTemplateMapping(dtype);
-        System.out.println("searchFor for: " + clsname + ":" + dtype + ":" + name + ":" + parms.length + ":" + cls);
-        if (cls != null)
+        //assertion().assertNotNull(dtype, "Cannot find the type for: " + clsname);
+        if (dtype != null)
         {
-            CrossLinkAny clbtl = new CrossLinkAny(cls.getName());
-            ret = (BaseTL)clbtl.invoke("defaultFor", new Class[] { String.class, String.class, String.class, String[].class }, 
-                    new Object[] { clsname, dtype, name, parms });
+            String name = (String)cl.invoke("deployedName");
+            String[] parms = (String[])cl.invoke("getParmsFor", dtype, clsname);
+            Class<? extends BaseTL> cls = TemplateReader.getTemplateMapping(dtype);
+            System.out.println("searchFor for: " + clsname + ":" + dtype + ":" + name + ":" + parms.length + ":" + cls);
+            if (cls != null)
+            {
+                CrossLinkAny clbtl = new CrossLinkAny(cls.getName());
+                ret = (BaseTL)clbtl.invoke("defaultFor", new Class[] { String.class, String.class, String.class, String[].class }, 
+                        new Object[] { clsname, dtype, name, parms });
+            }
+
+
+            return new BaseTL[] { ret };
         }
-
-
-        return new BaseTL[] { ret };
+        
+        return null;
     }
 
     public Repeatable repeatMe(RepeaterVariants vars)

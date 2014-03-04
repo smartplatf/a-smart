@@ -94,12 +94,16 @@ public class DeploymentManager implements FlowConstants, TConstants
         System.out.println("Deploying... " + deploy.getJar() + ":" + deploy.getFlowSoa());
         assertion().assertTrue(owner.isPlatformOwner(), "Cannot deploy on a tenant that is not the owner of the platform");
         assertion().assertNotNull(deploy.getJar(), "Cannot deploy a null jar.");
-        File f = new File(deploy.getJar());
-        assertion().assertTrue(f.exists(), "Cannot deploy a file not present on the server.");
+        String[] jars = deploy.getJar().split(",");
+        for (int i = 0; i < jars.length; i++)
+        {
+            File f = new File(jars[i]);
+            assertion().assertTrue(f.exists(), "Cannot deploy a file not present on the server.");
+        }
         assertion().assertNotNull(deploy.getFlowSoa(), "Cannot deploy a null flow.");
         //RelatedLoader ldr = (RelatedLoader)this.getClass().getClassLoader();
         //ldr.addJar(deploy.getJar());
-        MacroDeployer.deployFile(FLOW, deploy.getFlowSoa(), new String[] { deploy.getJar() });
+        MacroDeployer.deployFile(FLOW, deploy.getFlowSoa(), jars);
         //TODO: if there is an error, this does not do anything
         SuccessCreated resp = new SuccessCreated(deploy.getJar());
     }

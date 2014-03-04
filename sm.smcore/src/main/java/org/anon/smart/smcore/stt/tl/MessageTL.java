@@ -54,6 +54,8 @@ public class MessageTL extends BaseTL
 {
 
     private List<AttributeTL> attributes;
+    private String crosspost;
+    private boolean postflowadmin = false;
 
     public MessageTL()
     {

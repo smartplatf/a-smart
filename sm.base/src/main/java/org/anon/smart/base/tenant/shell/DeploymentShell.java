@@ -220,6 +220,20 @@ public class DeploymentShell implements SmartShell, FlowConstants
             cls.addAll(extrats);
         }
 
+        //add from the processedBy also
+        FlowDeployment deploy = deploymentFor(dep);
+        List<String> processedBy = deploy.getProcessedBy();
+        for (int i = 0; (processedBy != null) && (i < processedBy.size()); i++)
+        {
+            FlowDeployment d = deploymentFor(processedBy.get(i));
+            if (d != null)
+            {
+                List<Class> dcls = transitionsFor(processedBy.get(i), prime, event, extra);
+                if (dcls != null)
+                    cls.addAll(dcls);
+            }
+        }
+
         return cls;
     }
 

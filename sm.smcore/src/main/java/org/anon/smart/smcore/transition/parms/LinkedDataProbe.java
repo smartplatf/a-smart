@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.lang.reflect.Type;
+import java.lang.reflect.ParameterizedType;
 
 import org.anon.smart.atomicity.EmpiricalData;
 import org.anon.smart.smcore.data.SmartData;
@@ -92,6 +93,8 @@ public class LinkedDataProbe implements AtomicityConstants, PProbe
             }
         }
 
+        System.out.println("Got: " + ret + ":" + type().isAssignable(cls, Collection.class) + ":" + cls);
+
         //return the empirical data
         if (type().isAssignable(cls, Collection.class)) //if it is a collection just pass what we have.
             return ret;
@@ -110,10 +113,22 @@ public class LinkedDataProbe implements AtomicityConstants, PProbe
     private SmartPrimeData getPrimeData(String[] lnks, ProbeParms parms, String attribute)
         throws CtxException
     {
-        ParamType t = ParamType.valueOf(lnks[0]);
-        assertion().assertNotNull(t, "Cannot find the provided param type. " + lnks[0]);
+        String ptype = "";
+        String pstr = "(";
+        if ((lnks != null) && (lnks.length > 0))
+        {
+            ptype = lnks[0];
+            pstr = "(" + lnks[0] + "." + attribute + ")";
+        }
+        else
+        {
+            ptype = attribute;
+            pstr = "(" + attribute + ")";
+        }
+
+        ParamType t = ParamType.valueOf(ptype);
+        assertion().assertNotNull(t, "Cannot find the provided param type. " + ptype);
         //for now the assumption is that there is only one parameter
-        String pstr = "(" + lnks[0] + "." + attribute + ")";
         List<PDescriptor> desc = PDescriptor.parseParamDesc(pstr);
         PProbe p = t.myProbe();
         SmartPrimeData val = (SmartPrimeData)p.valueFor(parms, null, desc.get(0));
@@ -123,7 +138,7 @@ public class LinkedDataProbe implements AtomicityConstants, PProbe
     public Object valueFor(Class cls, Type type, ProbeParms parms, PDescriptor desc)
         throws CtxException
     {
-        if ((desc != null) && (desc.links().length > 0))
+        if (desc != null) //&& (desc.links().length > 0)
         {
             SmartPrimeData prime = getPrimeData(desc.links(), parms, desc.attribute());
 
@@ -189,7 +204,7 @@ public class LinkedDataProbe implements AtomicityConstants, PProbe
         throws CtxException
     {
         System.out.println("Current in valueFor: " + parms + ":" + type + ":" + desc + ":" + desc.links() + ":" + desc.attribute());
-        if ((desc != null) && (desc.links().length > 0))
+        if (desc != null) //&& (desc.links().length > 0))
         {
             SmartPrimeData prime = getPrimeData(desc.links(), parms, desc.attribute());
 
@@ -197,7 +212,13 @@ public class LinkedDataProbe implements AtomicityConstants, PProbe
                 return null;
 
             System.out.println("Value for prime as: " + prime);
-            return getLinkedData(null, type, prime);
+            Class cls = prime.getClass();
+            if (!(type instanceof ParameterizedType))
+                cls = (Class)type;
+            else
+                cls = (Class)(((ParameterizedType)type).getRawType());
+
+            return getLinkedData(cls, type, prime);
         }
         return null;
     }

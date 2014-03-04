@@ -68,15 +68,15 @@ public class MessageConfig implements InternalConfig {
 
 	private Rectifier _rectifier;
 	private Distillate _alteredMessage;
-	public MessageConfig(SmartEvent message) throws CtxException
+	public MessageConfig(SmartEvent message) 
+        throws CtxException
 	{
 		System.out.println("Created MessageConfig............");
 		_rectifier = new Rectifier();
-		_rectifier.addStep(new TranslationStage(translator.json));
-        _rectifier.addStep(new SanitizationStage());
-        _rectifier.addStep(new AlterationStage());
+        addSteps(_rectifier);
         //_rectifier.addStep(new StorageStage());
-        _rectifier.setupErrorHandler(new EventErrorHandler());
+        MessageErrorHandler ehandler = new MessageErrorHandler();
+        _rectifier.setupErrorHandler(ehandler);
         
         InternalMessageDataFactory fact = new InternalMessageDataFactory();
         DScope scope = fact.createDScope(message);
@@ -85,9 +85,22 @@ public class MessageConfig implements InternalConfig {
         List<ExecutionUnit> exec = new ArrayList<ExecutionUnit>();
         exec.add(unit);
         execute().synch(exec);
+        ehandler.throwException(); //throw exception if it is present
         _alteredMessage = unit.finalDistillate();
         
 	}
+
+    protected void addSteps(Rectifier rectifier)
+    {
+		rectifier.addStep(new TranslationStage(translator.json));
+        rectifier.addStep(new SanitizationStage());
+        rectifier.addStep(new AlterationStage());
+    }
+
+    protected void addLastSteps(Rectifier rectifier)
+    {
+		rectifier.addStep(new StorageStage());
+    }
 	
 	@Override
 	public SCType scType() {
@@ -109,7 +122,8 @@ public class MessageConfig implements InternalConfig {
 	
 	public void postMessage() throws CtxException {
 		Rectifier rect = new Rectifier();
-		rect.addStep(new StorageStage());
+		//rect.addStep(new StorageStage());
+        addLastSteps(rect);
 		RectifierUnit unit = new RectifierUnit(rect, _alteredMessage, true);
 		List<ExecutionUnit> exec = new ArrayList<ExecutionUnit>();
         exec.add(unit);

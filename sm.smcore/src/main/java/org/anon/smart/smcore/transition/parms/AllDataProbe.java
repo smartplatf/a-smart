@@ -26,15 +26,15 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.transition.parms.SearchDataProbe
+ * File:                org.anon.smart.smcore.transition.parms.AllDataProbe
  * Author:              rsankar
  * Revision:            1.0
- * Date:                20-09-2013
+ * Date:                25-02-2014
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * A probe that searches for a given data
+ * A probe that retrieves all the data as a list
  *
  * ************************************************************
  * */
@@ -64,34 +64,12 @@ import org.anon.utilities.gconcurrent.execute.ProbeParms;
 import org.anon.utilities.gconcurrent.execute.PProbe;
 import org.anon.utilities.exception.CtxException;
 
-public class SearchDataProbe implements AtomicityConstants, PProbe
+//Use with caution. This will retrieve all the data which can become
+//non-performant
+public class AllDataProbe implements AtomicityConstants, PProbe
 {
-    public SearchDataProbe()
+    public AllDataProbe()
     {
-    }
-
-    private Object getKeyFor(String[] lnks, ProbeParms parms, String attribute)
-        throws CtxException
-    {
-        if (lnks.length == 2)
-            return attribute; //assume it is a constant and  use it
-
-        System.out.println("Got links: " + lnks.length);
-        for (int i = 0; i < lnks.length; i++)
-            System.out.println(":" + lnks[i]);
-        Object val = null;
-        if (lnks.length > 2)
-        {
-            ParamType t = ParamType.valueOf(lnks[2]);
-            assertion().assertNotNull(t, "Cannot find the provided param type. " + lnks[2]);
-            String pstr = "(" + lnks[2] + "." + attribute + ")";
-            List<PDescriptor> desc = PDescriptor.parseParamDesc(pstr);
-            PProbe p = t.myProbe();
-            val = p.valueFor(parms, null, desc.get(0));
-            System.out.println("Getting the value for: " + pstr + ":" + p + ":" + val);
-        }
-
-        return val;
     }
 
     public Object valueFor(Class cls, Type t, ProbeParms parms, PDescriptor desc)
@@ -103,43 +81,32 @@ public class SearchDataProbe implements AtomicityConstants, PProbe
             String[] links = desc.links();
             String flow = links[0];
             assertion().assertNotNull(flow, "Need to provide the type of object to search");
-            assertion().assertTrue((links.length >= 2), "Need to provide an object to search");
-            String type = links[1];
+            //assertion().assertTrue((links.length >= 2), "Need to provide an object to search");
+            String type = desc.attribute();
+            if (links.length > 1)
+                type = links[1];
 
-            Object key = getKeyFor(links, parms, desc.attribute());
-            System.out.println("The key got for: " + links.length + ":" + parms + ":" + key + ":" + flow + ":" + type);
-            if (key != null)
-            {
-                if (key instanceof List)
-                {
-                    List vals = new ArrayList();
-                    List lkey = (List)key;
-                    for (int i = 0; i < lkey.size(); i++)
-                    {
-                        Object data = getSmartData(flow, type, lkey.get(i), rshell);
-                        vals.add(data);
-                    }
-                    return vals;
-                }
-                else
-                {
-                    return getSmartData(flow, type, key, rshell);
-                }
-            }
+            System.out.println("The key got for: " + links.length + ":" + parms + ":" + ":" + flow + ":" + type);
+            return getSmartData(flow, type, rshell);
         }
         return null;
     }
 
-    private Object getSmartData(String flow, String type, Object key, RuntimeShell rshell)
+    private Object getSmartData(String flow, String type, RuntimeShell rshell)
         throws CtxException
     {
-        SmartData data = (SmartData)rshell.lookupFor(flow, type, key);
-        System.out.println("The key got for: " + ":" + key + ":" + flow + ":" + type);
+        List<Object> data = rshell.listAll(flow, type, Integer.MAX_VALUE, type);
+        System.out.println("The key got for: " + ":" + ":" + flow + ":" + type);
         TransitionContext ctx = (TransitionContext)threads().threadContext();
         if ((ctx != null) && (data != null))
         {
-            SmartDataED ed = ctx.atomicity().includeData(data);
-            return ed.empirical();
+            List<Object> ret = new ArrayList<Object>();
+            for (int i = 0; i < data.size(); i++)
+            {
+                SmartDataED ed = ctx.atomicity().includeData((SmartData)data.get(i));
+                ret.add(ed.empirical());
+            }
+            return ret;
         }
 
         return null;

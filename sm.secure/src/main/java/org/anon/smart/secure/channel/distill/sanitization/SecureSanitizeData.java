@@ -69,7 +69,12 @@ public class SecureSanitizeData extends SanitizeData
     {
         super.sanitizePData(data, populate);
         if (data instanceof MessagePData)
+        {
+            SecureSearchedData spopulate = (SecureSearchedData)populate;
+            MessagePData mpdata = (MessagePData)data;
+            spopulate.setupSearchContext(mpdata.eventName(), mpdata.flow());
             return;
+        }
 
         //search for session.
         EventPData epdata = (EventPData)data;

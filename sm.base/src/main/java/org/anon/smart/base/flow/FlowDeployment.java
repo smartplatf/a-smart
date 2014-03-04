@@ -72,6 +72,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
     private List<Key> keys;
     private List<Link> links;
     private List<Link> needlinks;
+    private List<String> processedBy;
 
     private Map<String, String> _classToName;
     private Map<String, String> _nameToClass;
@@ -102,6 +103,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
         links = new ArrayList<Link>();
         fileStore = "";
         needlinks = new ArrayList<Link>();
+        processedBy = new ArrayList<String>();
         _internalData = new ArrayList<String>();
         _classToName = new HashMap<String, String>();
         _nameToClass = new HashMap<String, String>();
@@ -149,6 +151,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
         config = new ArrayList<String>();
         links = new ArrayList<Link>();
         needlinks = new ArrayList<Link>();
+        processedBy = new ArrayList<String>();
 
         copy(dep.primeData, primeData);
         copy(dep.data, data);
@@ -160,6 +163,7 @@ public class FlowDeployment extends Deployment implements FlowConstants
         copy(dep.links, links);
         copy(dep.config, config);
         copy(dep.needlinks, needlinks);
+        copy(dep.processedBy, processedBy);
 
         for (String p : primeData)
         {
@@ -508,6 +512,11 @@ public class FlowDeployment extends Deployment implements FlowConstants
         }
 
         return ret.toArray(new String[0]);
+    }
+
+    public List<String> getProcessedBy()
+    {
+        return processedBy;
     }
 }
 

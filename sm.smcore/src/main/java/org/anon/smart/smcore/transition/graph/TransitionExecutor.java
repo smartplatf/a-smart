@@ -69,11 +69,20 @@ public class TransitionExecutor extends ExecuteGraphNode
     protected boolean successOrFailure(Object ret)
         throws CtxException
     {
-        TransitionNodeDetails det = (TransitionNodeDetails)_grtNode.details();
-        TransitionContext ctx = (TransitionContext)_context;
-        //TODO: this is under the assumption that the parameter passed is the prime data
-        //when a related data is introduced this needs to be changed
-        ctx.modifyToState(det.to());
+        //for now the assumption is if a false is returned do not transition
+        boolean transition = true;
+        if ((ret != null) && (ret instanceof Boolean))
+            transition = ((Boolean)ret).booleanValue();
+
+        if (transition)
+        {
+            TransitionNodeDetails det = (TransitionNodeDetails)_grtNode.details();
+            TransitionContext ctx = (TransitionContext)_context;
+            //TODO: this is under the assumption that the parameter passed is the prime data
+            //when a related data is introduced this needs to be changed
+            System.out.println("The returned value is true: transitioning to: " + det.to());
+            ctx.modifyToState(det.to());
+        }
         return true;
     }
 

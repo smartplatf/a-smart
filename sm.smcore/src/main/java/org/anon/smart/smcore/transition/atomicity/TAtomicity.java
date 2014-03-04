@@ -91,7 +91,8 @@ public class TAtomicity extends Atomicity implements AtomicityConstants
         {
             String toState = _context.toState();
             SmartDataED data = (SmartDataED)dataFor(SMARTDATA, _context.primeData().smart___myTruth());
-            data.empirical().smart___transition(toState);
+            if (toState != null) //this means do not transition the state???
+                data.empirical().smart___transition(toState);
             System.out.println("Transitioned the state to: " + toState + ":" + data.empirical().utilities___currentState());
         }
     }

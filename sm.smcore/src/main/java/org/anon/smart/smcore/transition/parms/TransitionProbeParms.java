@@ -58,7 +58,8 @@ public class TransitionProbeParms extends DefaultProbeParms
     {
         super(ctx, prms);
         _event = ctx.event();
-        _prime = ctx.primeData();
+        //_prime = ctx.primeData();
+        _prime = (SmartPrimeData)ctx.primeED().empirical();
     }
 
     public SmartEvent event() { return _event; }

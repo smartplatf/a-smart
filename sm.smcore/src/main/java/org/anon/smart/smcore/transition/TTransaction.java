@@ -84,7 +84,7 @@ public class TTransaction
         String flow = flowFor(object.getClass());
         if ((object.smart___group() != null) && (object.smart___group().length() > 0))
             flow = object.smart___group();
-        System.out.println("Adding: " + object + ":" + flow + ":" + object.smart___group());
+        System.out.println("Adding: startTransaction: " + object + ":" + flow + ":" + object.smart___group());
         if (!_transactions.containsKey(flow))
         {
         	createTransaction(flow);
@@ -158,7 +158,7 @@ public class TTransaction
         String flow = flowFor(object.getClass());
         if ((object.smart___group() != null) && (object.smart___group().length() > 0))
             flow = object.smart___group();
-        System.out.println("Adding: " + object + ":" + flow + ":" + object.smart___group());
+        System.out.println("Adding addToTransaction: " + object + ":" + flow + ":" + object.smart___group());
         D2CacheTransaction txn = _transactions.get(flow);
         assertion().assertNotNull(txn, "No transaction has been started for: " + flow);
         DSpaceService.addObject(txn, object);
@@ -198,7 +198,7 @@ public class TTransaction
         flow = flowFor(object.empirical().getClass());
         if ((object.empirical().smart___group() != null) && (object.empirical().smart___group().length() > 0))
             flow = object.empirical().smart___group();
-        System.out.println("Adding: " + object.empirical() + ":" + flow + ":" + object.empirical().smart___group());
+        System.out.println("Adding addToTransaction: " + object.empirical() + ":" + flow + ":" + object.empirical().smart___group());
         D2CacheTransaction txn = _transactions.get(flow);
         assertion().assertNotNull(txn, "No transaction has been started for: " + flow);
         DSpaceService.addObject(txn, ((SmartDataTruth)object.truth()).smartData(), object.empirical(), object.original());

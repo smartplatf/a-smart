@@ -26,32 +26,30 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.base.annot.MessageAnnotate
+ * File:                org.anon.smart.smcore.anatomy.CoreContext
  * Author:              rsankar
  * Revision:            1.0
- * Date:                14-01-2013
+ * Date:                17-02-2014
  *
  * ************************************************************
  * REVISIONS
  * ************************************************************
- * An annotation for internal messages
+ * An interface to be implemented by core contexts
  *
  * ************************************************************
  * */
 
-package org.anon.smart.base.annot;
+package org.anon.smart.smcore.anatomy;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.anon.smart.base.anatomy.SmartModuleContext;
+import org.anon.smart.channels.shell.InternalConfig;
+import org.anon.smart.smcore.events.SmartEvent;
 
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface MessageAnnotate
+import org.anon.utilities.exception.CtxException;
+
+public interface CoreContext extends SmartModuleContext
 {
-    public String name();
-    public String crosspost();
-    public boolean postflowadmin();
+    public InternalConfig getMessageConfig(SmartEvent event)
+        throws CtxException;
 }
 

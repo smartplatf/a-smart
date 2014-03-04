@@ -26,7 +26,7 @@
  * ************************************************************
  * HEADERS
  * ************************************************************
- * File:                org.anon.smart.smcore.transition.parms.SearchDataProbe
+ * File:                org.anon.smart.smcore.transition.parms.SearchConfigProbe
  * Author:              rsankar
  * Revision:            1.0
  * Date:                20-09-2013
@@ -48,10 +48,7 @@ import java.lang.reflect.Type;
 
 import org.anon.smart.atomicity.EmpiricalData;
 import org.anon.smart.base.tenant.shell.RuntimeShell;
-import org.anon.smart.smcore.data.SmartData;
-import org.anon.smart.smcore.data.SmartDataED;
-import org.anon.smart.smcore.data.SmartPrimeData;
-import org.anon.smart.smcore.transition.TransitionContext;
+import org.anon.smart.smcore.data.ConfigData;
 import org.anon.smart.smcore.transition.atomicity.AtomicityConstants;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
@@ -64,27 +61,26 @@ import org.anon.utilities.gconcurrent.execute.ProbeParms;
 import org.anon.utilities.gconcurrent.execute.PProbe;
 import org.anon.utilities.exception.CtxException;
 
-public class SearchDataProbe implements AtomicityConstants, PProbe
+public class SearchConfigProbe implements AtomicityConstants, PProbe
 {
-    public SearchDataProbe()
+    public SearchConfigProbe()
     {
     }
 
     private Object getKeyFor(String[] lnks, ProbeParms parms, String attribute)
         throws CtxException
     {
-        if (lnks.length == 2)
-            return attribute; //assume it is a constant and  use it
+        assertion().assertTrue((lnks.length > 1), "Have to provide the value to search for config.");
 
         System.out.println("Got links: " + lnks.length);
         for (int i = 0; i < lnks.length; i++)
             System.out.println(":" + lnks[i]);
         Object val = null;
-        if (lnks.length > 2)
+        if (lnks.length > 1)
         {
-            ParamType t = ParamType.valueOf(lnks[2]);
-            assertion().assertNotNull(t, "Cannot find the provided param type. " + lnks[2]);
-            String pstr = "(" + lnks[2] + "." + attribute + ")";
+            ParamType t = ParamType.valueOf(lnks[1]);
+            assertion().assertNotNull(t, "Cannot find the provided param type. " + lnks[1]);
+            String pstr = "(" + lnks[1] + "." + attribute + ")";
             List<PDescriptor> desc = PDescriptor.parseParamDesc(pstr);
             PProbe p = t.myProbe();
             val = p.valueFor(parms, null, desc.get(0));
@@ -101,47 +97,18 @@ public class SearchDataProbe implements AtomicityConstants, PProbe
         {
             RuntimeShell rshell = RuntimeShell.currentRuntimeShell();
             String[] links = desc.links();
-            String flow = links[0];
-            assertion().assertNotNull(flow, "Need to provide the type of object to search");
-            assertion().assertTrue((links.length >= 2), "Need to provide an object to search");
-            String type = links[1];
+            String cfggroup = links[0];
+            assertion().assertNotNull(cfggroup, "Need to provide the type of config to search");
 
             Object key = getKeyFor(links, parms, desc.attribute());
-            System.out.println("The key got for: " + links.length + ":" + parms + ":" + key + ":" + flow + ":" + type);
+            System.out.println("The key got for: " + links.length + ":" + parms + ":" + key + ":" + cfggroup);
             if (key != null)
             {
-                if (key instanceof List)
-                {
-                    List vals = new ArrayList();
-                    List lkey = (List)key;
-                    for (int i = 0; i < lkey.size(); i++)
-                    {
-                        Object data = getSmartData(flow, type, lkey.get(i), rshell);
-                        vals.add(data);
-                    }
-                    return vals;
-                }
-                else
-                {
-                    return getSmartData(flow, type, key, rshell);
-                }
+                ConfigData data = (ConfigData)rshell.lookupConfigFor(cfggroup, key);
+                System.out.println("The key got for: " + links.length + ":" + parms + ":" + key + ":" + cfggroup + ":" + data);
+                return data;
             }
         }
-        return null;
-    }
-
-    private Object getSmartData(String flow, String type, Object key, RuntimeShell rshell)
-        throws CtxException
-    {
-        SmartData data = (SmartData)rshell.lookupFor(flow, type, key);
-        System.out.println("The key got for: " + ":" + key + ":" + flow + ":" + type);
-        TransitionContext ctx = (TransitionContext)threads().threadContext();
-        if ((ctx != null) && (data != null))
-        {
-            SmartDataED ed = ctx.atomicity().includeData(data);
-            return ed.empirical();
-        }
-
         return null;
     }
 

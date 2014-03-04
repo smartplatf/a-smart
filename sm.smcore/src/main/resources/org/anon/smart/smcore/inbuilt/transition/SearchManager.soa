@@ -28,6 +28,7 @@ actions:
       foreach:  FlowAdmin|GetListings
       from:     active
       to:       active
-
- 
+services:
+    - name:     searchService
+      method:   searchService
 

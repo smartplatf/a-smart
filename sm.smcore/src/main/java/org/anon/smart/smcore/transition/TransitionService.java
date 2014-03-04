@@ -49,6 +49,8 @@ import org.anon.smart.smcore.transition.parms.TxnDataProbe;
 import org.anon.smart.smcore.transition.parms.ConfigProbe;
 import org.anon.smart.smcore.transition.parms.LinkedDataProbe;
 import org.anon.smart.smcore.transition.parms.SearchDataProbe;
+import org.anon.smart.smcore.transition.parms.AllDataProbe;
+import org.anon.smart.smcore.transition.parms.SearchConfigProbe;
 import org.anon.smart.smcore.transition.parms.NeedsLinkDataProbe;
 import org.anon.smart.smcore.channel.server.CrossLinkEventRData;
 import org.anon.smart.smcore.transition.graph.TransitionGraphs;
@@ -78,6 +80,8 @@ public class TransitionService implements TConstants
         ParamType.registerProbe(LINK, new LinkedDataProbe(), false);
         ParamType.registerProbe(SEARCH, new SearchDataProbe(), true);
         ParamType.registerProbe(NEEDSLINK, new NeedsLinkDataProbe(), true);
+        ParamType.registerProbe(SRCHCFG, new SearchConfigProbe(), true);
+        ParamType.registerProbe(ALL, new AllDataProbe(), true);
     }
 
     public static TransitionContext createContext(Object rdata, MessageSource source)

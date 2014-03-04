@@ -43,6 +43,7 @@ package org.anon.smart.smcore.inbuilt.transition;
 
 import static org.anon.utilities.services.ServiceLocator.assertion;
 
+import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -62,7 +63,13 @@ import org.anon.smart.smcore.inbuilt.responses.CheckExistenceResponse;
 import org.anon.smart.smcore.inbuilt.responses.ListAllResponse;
 import org.anon.smart.smcore.inbuilt.responses.LookupResponse;
 import org.anon.smart.smcore.inbuilt.responses.SearchResponse;
+import org.anon.smart.smcore.transition.TransitionContext;
+import org.anon.smart.smcore.data.SmartData;
+import org.anon.smart.smcore.data.SmartDataED;
 import org.anon.utilities.exception.CtxException;
+
+
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 
 public class SearchManager {
 
@@ -101,6 +108,43 @@ public class SearchManager {
 		
 		SearchResponse resp = new SearchResponse(searchResult);
 	}
+
+    public void searchService(String flow, String group, Map<String, String> query, List result)
+        throws CtxException
+    {
+		if ((query != null) && (query.size() > 0))
+        {
+            System.out.println("Searching with this queryMap:" + query);
+            CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
+            RuntimeShell shell = (RuntimeShell)(tenant.runtimeShell());
+            assertion().assertNotNull(shell, "SearchManager: Runtime Shell is NULL");
+            CrossLinkDeploymentShell dShell = new CrossLinkDeploymentShell(tenant.deploymentShell());
+            Class clz = dShell.dataClass(flow, group);
+            System.out.println("Retrieved: " + group + ":" + flow + ":" + clz);
+            assertion().assertNotNull(clz, "Cannot find deployment for: " + group + ":" + flow);
+            List<Object> searchResult = new ArrayList<Object>();
+            if(clz != null)
+            {
+                System.out.println("SearchManager:result type is "+clz.getName() );
+                searchResult = shell.searchFor(dShell.deploymentFor(flow).deployedName(),
+                                                clz, query, Integer.MAX_VALUE);
+            
+                if (searchResult != null)
+                {
+                    System.out.println("ResultSet size:"+searchResult.size());
+                    TransitionContext ctx = (TransitionContext)threads().threadContext();
+                    if (ctx != null)
+                    {
+                        for(Object res : searchResult)
+                        {
+                            SmartDataED ed = ctx.atomicity().includeData((SmartData)res);
+                            result.add(ed.empirical());
+                        }
+                    }
+                }
+            }
+        }
+    }
 	
 	public void lookup(LookupEvent lookupEvent) 
 			throws CtxException

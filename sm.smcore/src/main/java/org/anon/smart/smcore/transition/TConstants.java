@@ -50,6 +50,8 @@ public interface TConstants
     public static final String TXN = "txn";
     public static final String LINK = "link";
     public static final String SEARCH = "srch";
+    public static final String SRCHCFG = "srchcfg";
+    public static final String ALL = "all";
 
     public static final String NEEDSSERVICE = "needsService";
     public static final String NOTMAPPED = "notMapped";

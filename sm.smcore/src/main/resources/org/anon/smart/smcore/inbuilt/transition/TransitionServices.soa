@@ -5,6 +5,8 @@ foreach:    FlowAdmin|Any
 services:
     - name:     changeState
       method:   changeState
+    - name:     changeObjectState
+      method:   changeObjectState
     - name:     sendEmailService
       method:   sendEmailService
     - name:     sendWithAttachment
