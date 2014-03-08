@@ -201,6 +201,13 @@ public class TTransaction
         System.out.println("Adding addToTransaction: " + object.empirical() + ":" + flow + ":" + object.empirical().smart___group());
         D2CacheTransaction txn = _transactions.get(flow);
         assertion().assertNotNull(txn, "No transaction has been started for: " + flow);
+        SmartData truth = ((SmartDataTruth)object.truth()).smartData();
+        String oldstate = "";
+        if (truth != null)
+        {
+            oldstate = truth.utilities___currentState().stateName();
+            System.out.println("The state of truth is: " + truth.utilities___currentState().stateName());
+        }
         DSpaceService.addObject(txn, ((SmartDataTruth)object.truth()).smartData(), object.empirical(), object.original());
 
         //hooks for plugins
@@ -215,9 +222,11 @@ public class TTransaction
         else
         {
             PluginManager.objectModified(modified);
-            SmartData truth = ((SmartDataTruth)object.truth()).smartData();
+            //SmartData truth = ((SmartDataTruth)object.truth()).smartData();
+            System.out.println("State Transitioned? " + truth.utilities___currentState().stateName() + ":" + modified.utilities___currentState().stateName() +
+                    ":" + object.original() + ":" + oldstate);
             if ((truth != null) && 
-                    !truth.utilities___currentState().stateName().equals(modified.utilities___currentState().stateName()))
+                    !oldstate.equals(modified.utilities___currentState().stateName()))
             {
                 PluginManager.stateTransitioned(modified, truth.utilities___currentState().stateName(), modified.utilities___currentState().stateName());
             }

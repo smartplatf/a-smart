@@ -89,7 +89,13 @@ public class SolrQueryConstructor implements Constants{
 		if(fldSuffix != null)
 			condition.append(fldSuffix);
 		
-		condition.append(QUERY_DELIM+queryItem.value());
+        String add = "";
+        //This is just a work around!!! Has to be changed completely to work with lists
+        //and other data types. Whoever codes a string into a value!!! THis is a pure hack
+        //so I can go forward. Will have to come back and Fix this. TODO:
+        if ((queryItem.value() != null) && (queryItem.value().toString().contains(" ")) && (!queryItem.value().toString().startsWith("(")))
+            add = "\"";
+		condition.append(QUERY_DELIM + add + queryItem.value() + add);
 		
 		return condition.toString();
 	}

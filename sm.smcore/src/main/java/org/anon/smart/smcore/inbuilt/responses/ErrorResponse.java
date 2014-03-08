@@ -78,6 +78,15 @@ public class ErrorResponse implements java.io.Serializable
             else
                 context = "A non-descript error has occurred.";
         }
+
+        Error(int cde, Throwable t)
+        {
+            code = cde;
+            if (t != null)
+                context = t.getMessage();
+            else
+                context = "A non-descript error has occurred.";
+        }
     }
 
     private List<Error> errors;
@@ -86,12 +95,30 @@ public class ErrorResponse implements java.io.Serializable
     public ErrorResponse(servererrors err, Throwable t)
     {
         errors = new ArrayList<Error>();
-        errors.add(new Error(err, t));
+        addError(err, t);
+        //errors.add(new Error(err, t));
     }
 
     public void addError(servererrors err, Throwable t)
     {
-        errors.add(new Error(err, t));
+        boolean added = false;
+        if ((t != null) && (t.getLocalizedMessage() != null) && (!t.getLocalizedMessage().equals(t.getMessage())))
+        {
+            try
+            {
+                System.out.println("Got the error code as: " + t.getLocalizedMessage());
+                int code = Integer.parseInt(t.getLocalizedMessage());
+                System.out.println("Got the error code as: " + code);
+                added = true;
+                errors.add(new Error(code, t));
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        if (!added)
+            errors.add(new Error(err, t));
     }
 }
 

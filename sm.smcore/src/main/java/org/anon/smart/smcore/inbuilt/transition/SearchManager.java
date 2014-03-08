@@ -45,6 +45,7 @@ import static org.anon.utilities.services.ServiceLocator.assertion;
 
 import java.util.Map;
 import java.util.List;
+import java.util.HashMap;
 import java.util.ArrayList;
 
 import org.anon.smart.d2cache.ListParams;
@@ -118,6 +119,7 @@ public class SearchManager {
             CrossLinkSmartTenant tenant = CrossLinkSmartTenant.currentTenant();
             RuntimeShell shell = (RuntimeShell)(tenant.runtimeShell());
             assertion().assertNotNull(shell, "SearchManager: Runtime Shell is NULL");
+            assertion().assertNotNull(result, "Need to initialize the result with an empty list.");
             CrossLinkDeploymentShell dShell = new CrossLinkDeploymentShell(tenant.deploymentShell());
             Class clz = dShell.dataClass(flow, group);
             System.out.println("Retrieved: " + group + ":" + flow + ":" + clz);
@@ -144,6 +146,34 @@ public class SearchManager {
                 }
             }
         }
+    }
+
+    public void searchData(String flow, String group, List result, String byOwner, String status, String srchGroup)
+        throws CtxException
+    {
+        Map<String, String> query = new HashMap<String, String>();
+        if ((byOwner != null) && (!byOwner.equals("Any")))
+        {
+            query.put("___smart_legend___._ownedBy", byOwner);
+        }
+
+        if ((status != null) && (!status.equals("Any")))
+        {
+            String[] stats = status.split("\\|");
+            String statsrch = "";
+            String add = "";
+            for (int i = 0; i < stats.length; i++)
+            {
+                statsrch = statsrch + add + stats[i];
+                add = " OR ";
+            }
+            query.put("___smart_currentState___._stateName", "(" + statsrch + ")");
+        }
+
+        if ((srchGroup != null) && (!srchGroup.equals("Any")))
+            query.put("___smart_legend___._group", srchGroup);
+
+        searchService(flow, group, query, result);
     }
 	
 	public void lookup(LookupEvent lookupEvent) 

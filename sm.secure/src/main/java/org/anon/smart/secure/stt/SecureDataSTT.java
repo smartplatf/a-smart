@@ -110,6 +110,18 @@ public class SecureDataSTT implements SmartSecureData
             List<Object> perm = (List<Object>)AccessController.doPrivileged(action);
             return perm;
         }
+        catch (java.security.PrivilegedActionException pe)
+        {
+            Throwable c = pe.getCause();
+            Throwable e = pe;
+            String msg = pe.getMessage();
+            if (c != null)
+            {
+                msg = c.getMessage();
+                e = c;
+            }
+            except().rt(e, new CtxException.Context("Error", msg));
+        }
         catch (Exception e)
         {
             e.printStackTrace();

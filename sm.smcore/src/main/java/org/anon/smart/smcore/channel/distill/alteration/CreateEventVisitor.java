@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.channel.distill.sanitization.SearchedData;
 
 import static org.anon.utilities.services.ServiceLocator.*;
@@ -95,6 +96,11 @@ public class CreateEventVisitor extends CreatorFromMap
                     return collval;
                 }
             }
+        }
+        else if ((ctx.field() != null) && (type().isAssignable(ctx.fieldType(), SmartData.class)))
+        {
+            //this means we did not search because of various reasons. just return null
+            return null;
         }
         else if ((ctx.field() != null) && (type().isAssignable(ctx.fieldType(), Map.class))) //if Map, then it means we r assigning directly
         {

@@ -46,11 +46,16 @@ import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.events.SmartEvent;
 import org.anon.smart.smcore.inbuilt.events.TimedEvent;
 import org.anon.smart.smcore.channel.internal.MessageConfig;
+import org.anon.smart.smcore.anatomy.CoreContext;
+import org.anon.utilities.exception.CtxException;
 
+import static org.anon.utilities.objservices.ObjectServiceLocator.*;
 import static org.anon.utilities.services.ServiceLocator.*;
 
 public class StateExpiryTask implements Runnable
 {
+    private static final String SYSTEM_RUNTIME = "systemContext";
+
     private Object objectkey;
     private String objectgroup;
     private String objectflow;
@@ -67,17 +72,19 @@ public class StateExpiryTask implements Runnable
         try
         {
             RuntimeShell rshell = RuntimeShell.currentRuntimeShell();
+            threads().addToContextLocals(SYSTEM_RUNTIME, "TimedEvent");
             SmartData data = (SmartData)rshell.lookupFor(objectflow, objectgroup, objectkey);
             assertion().assertNotNull(data, "Cannot find data to post timed event to. " + objectflow + ":" + objectgroup + ":" + objectkey + ":" + this.getClass().getClassLoader());
             Object evt = new TimedEvent("stateexpired", data);
             SmartEvent event = (SmartEvent)evt;
-            MessageConfig mc = new MessageConfig(event);
+            //MessageConfig mc = new MessageConfig(event);
+            CoreContext ctx = (CoreContext)anatomy().overriddenContext(this.getClass());
+            MessageConfig mc = (MessageConfig)ctx.getMessageConfig(event);
             mc.postMessage();
         }
         catch (Exception e)
         {
             e.printStackTrace();
-
         }
     }
 }

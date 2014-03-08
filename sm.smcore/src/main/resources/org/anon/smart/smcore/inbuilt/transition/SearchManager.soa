@@ -31,4 +31,6 @@ actions:
 services:
     - name:     searchService
       method:   searchService
+    - name:     searchData
+      method:   searchData
 

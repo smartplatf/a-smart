@@ -87,6 +87,17 @@ public class TransitionServices
         new SuccessUpdated("Updated state");
     }
 
+    public void changeObjectListState(List obj, String from, String to, String forcecheck)
+        throws CtxException
+    {
+        String[] lst = from.split(",");
+        for (int i = 0; (obj != null) && (i < obj.size()); i++)
+        {
+            SmartData dobj = (SmartData)obj.get(i);
+            changeObjectState(dobj, lst, to, forcecheck);
+        }
+    }
+
     public void changeObjectState(SmartData obj, String[] from, String to, String forcecheck)
         throws CtxException
     {

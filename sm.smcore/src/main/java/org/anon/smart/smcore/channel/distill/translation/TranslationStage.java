@@ -265,7 +265,7 @@ public class TranslationStage implements Distillation
             assertion().assertNotNull(val, "Destination value for " + dest.getName() + " is NULL in INTERNAL event.");
             flow = AnnotationUtils.flowFor(val.getClass());
             System.out.println("Got destination field as: " + dest + ":" + flow);
-            String clsName = AnnotationUtils.crossClassName(dest.getType());
+            String clsName = AnnotationUtils.crossClassName(val.getClass());
             addDestination(val, map, clsName);
             addeddest = true;
         }

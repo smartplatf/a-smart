@@ -77,13 +77,15 @@ public class SystemGuard extends BaseSGuard implements Constants
         _allowedObjects[cnt] = "org.anon.smart.secure.inbuilt.data.iden.Identity";
         cnt++;
 
-        _allowedServices = new String[3];
+        _allowedServices = new String[4];
         cnt = 0;
         _allowedServices[cnt] = "enableFlowService";
         cnt++;
         _allowedServices[cnt] = "newTenantService";
         cnt++;
         _allowedServices[cnt] = "deployJarService";
+        cnt++;
+        _allowedServices[cnt] = "TimedEvent";
     }
 
     public SystemGuard(Class cls)

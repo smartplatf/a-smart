@@ -52,6 +52,8 @@ import org.anon.utilities.exception.CtxException;
 
 public class SmartAccessController
 {
+    private static final int ACCESS_DENIED_CODE = 1000001;
+
     private SmartAccessController()
     {
     }
@@ -66,7 +68,7 @@ public class SmartAccessController
         }
         catch (Exception e)
         {
-            except().rt(e, new CtxException.Context("No Access", "Not Allowed to access"));
+            except().rt(e, ACCESS_DENIED_CODE, new CtxException.Context("No Access", "Not Allowed to access"));
         }
     }
 
@@ -85,7 +87,7 @@ public class SmartAccessController
         }
         catch (Exception e)
         {
-            except().rt(e, new CtxException.Context("No Access", "Not Allowed to access"));
+            except().rt(e, ACCESS_DENIED_CODE, new CtxException.Context("No Access", "Not Allowed to access"));
         }
 
         return false;
