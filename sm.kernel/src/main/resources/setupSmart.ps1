@@ -48,7 +48,7 @@ $mylink = $($scriptdir + "mylink.exe")
 $installlib = $($install + "\lib\")
 $configdir = $($install + "\config\")
 $libdir = "lib\"
-$smartver = "2.0"
+$smartver = "2.1"
 
 Write-Output "[Creating directories]"
 createdir $install

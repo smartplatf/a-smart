@@ -38,7 +38,7 @@ then
     exit
 fi
 
-SMARTVER=2.0
+SMARTVER=2.1
 
 if [ ! -f $1 ];
 then
