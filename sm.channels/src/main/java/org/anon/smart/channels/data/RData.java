@@ -112,7 +112,11 @@ public class RData extends Isotope
         if (send.size() > 0)
             _dscope.transmit(send.toArray(new PData[0]));
 
-        _dscope.close();
+        System.out.println("Closing connection... " + _dscope.isKeepAlive());
+        if (!_dscope.isKeepAlive())
+        {
+            _dscope.close();
+        }
     }
 
     public void commitResponses()

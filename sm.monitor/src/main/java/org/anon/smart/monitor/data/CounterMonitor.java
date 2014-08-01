@@ -130,6 +130,7 @@ public class CounterMonitor implements java.io.Serializable, Monitor, Constants
     public void smart___initOnLoad() 
         throws CtxException 
     {
+        isNew = false;
     }
 
 

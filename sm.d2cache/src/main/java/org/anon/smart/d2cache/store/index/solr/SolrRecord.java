@@ -43,6 +43,7 @@
 package org.anon.smart.d2cache.store.index.solr;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.HashMap;
 
 import org.apache.solr.common.SolrInputDocument;
@@ -58,6 +59,7 @@ import org.anon.utilities.exception.CtxException;
 public class SolrRecord extends AbstractStoreRecord implements Constants
 {
     public  static Map<Class, String> SUFFIXES = new HashMap<Class, String>();
+    public  static Map<Class, String> LIST_SUFFIXES = new HashMap<Class, String>();
 
     static
     {
@@ -72,6 +74,18 @@ public class SolrRecord extends AbstractStoreRecord implements Constants
         SUFFIXES.put(Double.TYPE, "_d");
         SUFFIXES.put(Float.class, "_f");
         SUFFIXES.put(Float.TYPE, "_f");
+        SUFFIXES.put(UUID.class, "_s");
+
+        LIST_SUFFIXES.put(Integer.TYPE, "_mi");
+        LIST_SUFFIXES.put(Integer.class, "_mi");
+        LIST_SUFFIXES.put(String.class, "_ms");
+        LIST_SUFFIXES.put(Long.TYPE, "_ml");
+        LIST_SUFFIXES.put(Long.class, "_ml");
+        LIST_SUFFIXES.put(Double.class, "_md");
+        LIST_SUFFIXES.put(Double.TYPE, "_md");
+        LIST_SUFFIXES.put(Float.class, "_mf");
+        LIST_SUFFIXES.put(Float.TYPE, "_mf");
+        LIST_SUFFIXES.put(UUID.class, "_ms");
     }
 
     private SolrInputDocument _document;
@@ -108,26 +122,33 @@ public class SolrRecord extends AbstractStoreRecord implements Constants
                         if ((!key.equals(ID_COLUMN)) && (!key.equals("_version_")))
                             _document.addField(key, _exist.get(key));
                     }
-                    System.out.println("Got a document for the key: " + _idKey + "::" + _document);
+                    System.out.println("Got a document for the key: " + _idKey );
                 }
 
                 _setup = true;
             }
             if (ctx.field() != null)
             {
+                if (ctx.field().isAnnotationPresent(NoIndex.class))
+                    return;
+
             	String fieldPath = ctx.fieldpath();
             	String type = ctx.getType();
+                //list hence use the list suffix instead
+                Map<Class, String> usesuffix = SUFFIXES;
             	//remove type from path
             	if((type != null) && (type.length()>0))
             	{
+                    usesuffix = LIST_SUFFIXES;
             		fieldPath = fieldPath.replaceAll("."+type, "");
+                    System.out.println("----->Is a multi-value field Indexing:"+type+":"+ctx.field().getType());
             	}
                 String key = _group + PART_SEPARATOR + fieldPath ;
                 Object fldval = ctx.fieldVal();
-                if ((fldval != null) && (SUFFIXES.containsKey(ctx.field().getType())))
+                if ((fldval != null) && (usesuffix.containsKey(ctx.field().getType())))
                 {
-                    key = key + SUFFIXES.get(ctx.field().getType());
-                    //System.out.println("----->Indexing:"+key+":"+fldval);
+                    key = key + usesuffix.get(ctx.field().getType());
+                    System.out.println("----->Indexing:"+key+":"+fldval);
 
                     //Just read the document and change it and write it back. Doing an update
                     //has a lot of problems esp when there are list items which are new.

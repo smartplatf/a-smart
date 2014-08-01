@@ -58,6 +58,8 @@ import org.anon.utilities.exception.CtxException;
 
 public class SecureSanitizeData extends SanitizeData
 {
+    private static final int INVALID_SESSION = 1000002;
+
     public SecureSanitizeData()
     {
         super();
@@ -83,7 +85,7 @@ public class SecureSanitizeData extends SanitizeData
         if (epdata.sessionId() != null)
         {
             Object session = searchSession(epdata.sessionId(), populate.tenant());
-            assertion().assertNotNull(session, "Cannot find session specified. Please login before executing.");
+            assertion().assertNotNullWithCode(session, INVALID_SESSION, "Cannot find session specified. Please login before executing.");
             spopulate.setSession(session);
         }
     }

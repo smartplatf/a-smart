@@ -50,7 +50,7 @@ public interface IndexedStore extends MemoryStore
     public void index(List<StoreItem> obj)
         throws CtxException;
 
-    public List<Object> search(String group, Object query)
+    public List<Object> search(String group, Object query, int size, int pn, int ps, String sby, boolean asc)
         throws CtxException;
 }
 

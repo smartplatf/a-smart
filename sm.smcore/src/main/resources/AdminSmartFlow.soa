@@ -10,6 +10,7 @@ events:
     - org.anon.smart.smcore.inbuilt.events.AddFlowLinks
     - org.anon.smart.smcore.inbuilt.events.InternalEnableFlow
     - org.anon.smart.smcore.inbuilt.events.DeployEvent
+    - org.anon.smart.smcore.inbuilt.events.DeployApplication
     - org.anon.smart.smcore.inbuilt.events.InternalDeployEvent
     - org.anon.smart.smcore.inbuilt.events.ListDeployments
     - org.anon.smart.smcore.inbuilt.events.DefinePrime
@@ -35,6 +36,7 @@ features:
         - org.anon.smart.smcore.inbuilt.events.AddFlowLinks
         - org.anon.smart.smcore.inbuilt.events.InternalEnableFlow
         - org.anon.smart.smcore.inbuilt.events.DeployEvent
+        - org.anon.smart.smcore.inbuilt.events.DeployApplication
         - org.anon.smart.smcore.inbuilt.events.InternalDeployEvent
         - org.anon.smart.smcore.inbuilt.events.ListDeployments
         - org.anon.smart.smcore.inbuilt.events.DefinePrime

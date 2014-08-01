@@ -37,6 +37,13 @@ features:
         - org.anon.smart.secure.inbuilt.transition.ManageRoles
         - org.anon.smart.secure.inbuilt.transition.AuthenticateUser
         - org.anon.smart.secure.inbuilt.events.Logout
+    - name: standard
+      artefacts:
+        - org.anon.smart.secure.inbuilt.data.SmartUser
+        - org.anon.smart.secure.inbuilt.data.iden.Identity
+        - org.anon.smart.secure.inbuilt.events.ChangePassword
+        - org.anon.smart.secure.inbuilt.responses.SecurityResponse
+        - org.anon.smart.secure.inbuilt.transition.ManageUsers
 links:
     - from: Identity._smartUser(n)
       to: SmartUser._id

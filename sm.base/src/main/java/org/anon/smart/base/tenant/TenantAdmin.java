@@ -68,7 +68,16 @@ public class TenantAdmin implements RelatedObject, java.io.Serializable
     {
         //need to add validations for things like only smart objects,
         //only smart models etc.
-        _defaultTenantObjects.put(model, objs);
+        if (!_defaultTenantObjects.containsKey(model))
+        {
+            _defaultTenantObjects.put(model, objs);
+        }
+        else
+        {
+            List<Object> exist = _defaultTenantObjects.get(model);
+            exist.addAll(objs);
+            _defaultTenantObjects.put(model, exist);
+        }
     }
 
     public String tenantName()

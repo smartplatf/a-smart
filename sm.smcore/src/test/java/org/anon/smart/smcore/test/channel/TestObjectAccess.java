@@ -143,7 +143,7 @@ public class TestObjectAccess
         System.out.println("Running search event.................");
         //Search
         resp = clnt.post("SearchEvent",
-        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'queryMap':{'email':'vjaasti0@gmail.com'}}");
+        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'queryMap':{'email':'vjaasti0@gmail.com'},'size':100}");
         System.out.println("Zzzzzzzz 1 Min after Search----------------------");
         
         //Thread.sleep(10000);
@@ -157,7 +157,7 @@ public class TestObjectAccess
         System.out.println("Running search event with Integer field.................");
         //Search
         resp = clnt.post("SearchEvent",
-        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'queryMap':{'weight':'0.0'}}");
+        		"{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'RegistrationFlow'}, 'group':'Registration', 'queryMap':{'weight':'0.0'},'size':100}");
         System.out.println("Zzzzzzzz 1 Min after Search----------------------");
         
         //Thread.sleep(10000);

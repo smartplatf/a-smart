@@ -141,7 +141,7 @@ public class JCSTransaction extends AbstractStoreTransaction
 
     public boolean shouldStore(String storeIn)
     {
-        return ((storeIn == null) || (storeIn.length() <= 0) || (storeIn.indexOf("memory") >= 0));
+        return ((storeIn == null) || (storeIn.length() <= 0) || (storeIn.indexOf("memory") >= 0) || (storeIn.indexOf("repository") >= 0));
     }
 }
 

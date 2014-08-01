@@ -72,6 +72,7 @@ public class SmartDataSTT implements SmartData, DSpaceObject
     private DataLegend ___smart_legend___;
     private transient String ___smart_name___;
     private transient boolean ___smart_isNew___;
+    private transient boolean ___smart_included_txn___ = false;
 
     public SmartDataSTT()
     {
@@ -86,8 +87,11 @@ public class SmartDataSTT implements SmartData, DSpaceObject
         ___smart_name___ = objectName(this);
 	    startFSM();
         TransitionContext ctx = (TransitionContext)threads().threadContext();
-        if (ctx != null)
+        if ((ctx != null) && (!___smart_included_txn___))
+        {
             ctx.atomicity().includeNewData(this);
+            ___smart_included_txn___ = true; //so that if the constructor has callbacks to other constructors only include first time.
+        }
     }
 
     private void startFSM()

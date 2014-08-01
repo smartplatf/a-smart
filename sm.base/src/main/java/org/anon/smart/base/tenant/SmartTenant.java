@@ -89,6 +89,7 @@ public class SmartTenant implements RelatedObject, TenantConstants,
     private List<String> _domain;
     private String _clientOf;
     private String _controlsAdmin;
+    private List<ApplicationDetails> _applications;
 	
 
 	private transient SmartLoader _loader;
@@ -101,6 +102,7 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 	public SmartTenant(String name) throws CtxException {
 		_name = name;
 		_enabledFeatureList = new ArrayList<FeatureName>();
+        _applications = new ArrayList<ApplicationDetails>();
 		initTenant();
         _isNew = true;
 	}
@@ -257,6 +259,27 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 		_runtimeShell
 				.enabledFlowClazzez(amodel, deployed.toArray(new Class[0]));
 	}
+
+    public void enabledApplication(String nm, String pkg)
+        throws CtxException
+    {
+        ApplicationDetails det = null;
+        for (int i = 0; (_applications != null) && (i < _applications.size()); i++)
+        {
+            if (_applications.get(i).name.equals(nm))
+            {
+                det = _applications.get(i);
+                det.setPackage(pkg);
+                break;
+            }
+        }
+
+        if (det == null)
+        {
+            det = new ApplicationDetails(nm, pkg);
+            _applications.add(det);
+        }
+    }
 
 	public List<Object> smart___keys() throws CtxException {
 		List<Object> keys = new ArrayList<Object>();
@@ -431,6 +454,23 @@ public class SmartTenant implements RelatedObject, TenantConstants,
 		
 		public String toString() { return _name; }
 	}
+
+    private class ApplicationDetails implements java.io.Serializable
+    {
+        private String name;
+        private String enablePkg;
+
+        private ApplicationDetails(String nm, String ep)
+        {
+            name = nm;
+            enablePkg = ep;
+        }
+
+        private void setPackage(String ep)
+        {
+            enablePkg = ep;
+        }
+    }
 }
 
 

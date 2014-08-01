@@ -71,7 +71,7 @@ public interface StoreConnection extends Repeatable
     public Object find(String group, Object key)
         throws CtxException;
 
-    public List<Object> search(String group, Object query)
+    public List<Object> search(String group, Object query, int size, int pn, int ps, String sby, boolean asc)
         throws CtxException;
     
     public void remove(String group, Object key)

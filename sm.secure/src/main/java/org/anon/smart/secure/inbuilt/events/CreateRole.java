@@ -56,6 +56,14 @@ public class CreateRole implements java.io.Serializable
     {
     }
 
+    public CreateRole(String nm, Map p)
+    {
+        roleName = nm;
+        permits = (Map<String, String>)p;
+        allAccess = "";
+        smartAdmin = "";
+    }
+
     public String getRoleName() { return roleName; }
     public Map<String, String> getPermits() { return permits; }
     public String getAllAccess() { return allAccess; }

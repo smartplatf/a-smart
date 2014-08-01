@@ -41,6 +41,9 @@
 
 package org.anon.smart.monitor.plugin;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.anon.smart.base.dspace.DSpaceService;
 import org.anon.smart.base.tenant.shell.RuntimeShell;
 import org.anon.smart.smcore.data.SmartData;
@@ -62,11 +65,12 @@ import org.anon.utilities.exception.CtxException;
 
 public class MonitorPlugin extends BasicPlugin implements Constants
 {
+    private static final String MONITORS = "MONITORS";
     public MonitorPlugin()
     {
     }
 
-    private void createOrModifyMonitor(String[] parms, String group, String qualified, D2CacheTransaction txn, RuntimeShell rshell)
+    private void createOrModifyMonitor(String[] parms, String group, String qualified, D2CacheTransaction txn, RuntimeShell rshell, TransitionContext ctx)
         throws CtxException
     {
         MonitorTypes mtype = MonitorTypes.valueOf(parms[1]);
@@ -74,13 +78,24 @@ public class MonitorPlugin extends BasicPlugin implements Constants
         if ((qualified != null) && (qualified.length() > 0))
             evtkey = evtkey + SEP + qualified;
         String key = mtype.getMonitorKey(evtkey, parms);
-        Monitor mon = (Monitor)rshell.lookupMonitorFor(group, key);
-        System.out.println("Looking up : " + group + ":" + key + ":" + mon);
+        Map<String, Monitor> monsaved = (Map<String, Monitor>)ctx.getTxnSpecific(MONITORS);
+        if (monsaved == null)
+        {
+            monsaved = new ConcurrentHashMap<String, Monitor>();
+            ctx.storeTxnSpecific(MONITORS, monsaved);
+        }
+
+        monsaved = (Map<String, Monitor>)ctx.getTxnSpecific(MONITORS);
+        Monitor mon = monsaved.get(key);
+        if (mon == null)
+            mon = (Monitor)rshell.lookupMonitorFor(group, key);
+        System.out.println("Looking up : " + group + ":" + key + ":" + mon + ":");
         if (mon == null)
             mon = mtype.getMonitor(group, evtkey, parms);
 
         mon.monitorAction();
         DSpaceService.addObject(txn, mon);
+        monsaved.put(key, mon); //save for next use
     }
 
     private void addMonitors(Object obj, String grp, MonitorHookTypes mevt, String qualified)
@@ -101,7 +116,7 @@ public class MonitorPlugin extends BasicPlugin implements Constants
                 assertion().assertTrue(parms.length >= 2, "Wrong configuration for monitor");
                 MonitorHookTypes type = MonitorHookTypes.valueOf(parms[0]);
                 if (type.equals(mevt))
-                    createOrModifyMonitor(parms, grp, qualified, txn, rshell);
+                    createOrModifyMonitor(parms, grp, qualified, txn, rshell, ctx);
             }
         }
     }

@@ -164,7 +164,7 @@ public class JCSConnection implements StoreConnection
 	}
 
 	@Override
-	public List<Object> search(String group, Object query) throws CtxException {
+	public List<Object> search(String group, Object query, int size, int pn, int ps, String sby, boolean asc) throws CtxException {
 		return null; //Does not support
 	}
 

@@ -74,6 +74,11 @@ public class MacroDeployer
         CONFIG_DIR = dir;
     }
 
+    public static String getConfigDir()
+    {
+        return CONFIG_DIR;
+    }
+
     public static void registerDeploymentClazz(String type, Class<? extends Deployment> cls, Class<? extends DeploymentSuite> suite)
     {
         if (!REGISTERED.containsKey(type))

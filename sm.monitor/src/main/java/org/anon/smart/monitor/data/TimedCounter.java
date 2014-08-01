@@ -45,12 +45,15 @@ import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import org.anon.smart.base.annot.PrimeDataAnnotate;
+
 import static org.anon.utilities.services.ServiceLocator.*;
 
 import org.anon.utilities.utils.Repeatable;
 import org.anon.utilities.utils.RepeaterVariants;
 import org.anon.utilities.exception.CtxException;
 
+@PrimeDataAnnotate(name="TimedCounter",store="repository")
 public class TimedCounter extends CounterMonitor
 {
     private enum groupby { hour, day, week, month };

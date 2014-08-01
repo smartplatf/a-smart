@@ -15,4 +15,12 @@ services:
       method:   sendWithAttachment
     - name:     sendSMS
       method:   sendSMS
+    - name:     assertAllObjectInState
+      method:   assertAllObjectInState
+    - name:     assertNoObjectInState
+      method:   assertNoObjectInState
+    - name:     assertObjectNotState
+      method:   assertObjectNotState
+    - name:     assertObjectState
+      method:   assertObjectState
 

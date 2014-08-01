@@ -77,6 +77,9 @@ import org.anon.utilities.exception.CtxException;
 
 public class SanitizeData implements ChannelConstants
 {
+    private static final String NO_SEARCH = "USEDASDATA";
+    private static final int INVALID_PRIME = 20000001;
+
     public SanitizeData()
     {
     }
@@ -342,7 +345,7 @@ public class SanitizeData implements ChannelConstants
         }
         Object searched = searchData(flow, type, typecls, val, deps, t);
 
-        assertion().assertNotNull(searched, "Cannot find object of type: " + type + ":" + val);
+        assertion().assertNotNullWithCode(searched, INVALID_PRIME, "Cannot find object of type: " + type + ":" + val);
 
         Collection primes = null;
 
@@ -404,6 +407,8 @@ public class SanitizeData implements ChannelConstants
         List deps = tenant.deploymentShell().flowForType(type);
         assertion().assertTrue((deps.size() > 0), "Cannnot find the deployment for: " + type);
         Object val = searchData(populate.getFlow(), type, cls, value, deps, tenant);
+        if (val == NO_SEARCH)
+            return;
         if (val instanceof List)
             populate.addSearch(key, (List<Object>)val);
         else
@@ -495,6 +500,12 @@ public class SanitizeData implements ChannelConstants
                         //load search class and populate it
                         type = tenant.getRelatedLoader().loadClass(QueryObject.class.getName());
                     }
+                    else
+                    {
+                        //this means we have not been asked to look up this object, but it is 
+                        //used as a data object.
+                        return NO_SEARCH;
+                    }
 
 
                     if ((type != null) && (type().checkPrimitive(type)))
@@ -503,7 +514,7 @@ public class SanitizeData implements ChannelConstants
                         if ((!type().isAssignable(type, val.getClass())) && convert().canConvertFromString(type))
                             val = convert().stringToClass((String)smap.get(VALUE), type);
                     }
-                    else
+                    else if (type != null)
                     {
                         val = convert().mapToObject(type, smap);
                     }

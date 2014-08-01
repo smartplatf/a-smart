@@ -19,6 +19,6 @@ security:
       access:   execute
     - name:     flowaccess
       type:     flow
-      access:   create
+      access:   execute
 
 

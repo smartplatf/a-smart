@@ -3,6 +3,8 @@ type:       Transition
 flow:       AllFlows
 foreach:    FlowAdmin|Any
 services:
+    - name:     pinLatLng
+      method:   pinLatLng
     - name:     autocomplete
       method:   autocomplete
     - name:     details

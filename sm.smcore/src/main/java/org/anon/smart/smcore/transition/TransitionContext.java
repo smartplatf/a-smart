@@ -41,10 +41,12 @@
 
 package org.anon.smart.smcore.transition;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.anon.smart.atomicity.Atomicity;
 import org.anon.smart.base.dspace.DSpaceService;
@@ -84,12 +86,14 @@ public class TransitionContext extends AbstractGraphContext implements CThreadCo
     private SmartDataED _primeED;
     private String _flow;
     private DataLinker _linker;
+    private Map<String, Object> _txnSpecific;
 
     public TransitionContext(Object data, ExecutorService service, Graph graph, MessageSource src)
         throws CtxException
     {
         super(graph, service);
         _linker = new DataLinker();
+        _txnSpecific = new ConcurrentHashMap<String, Object>();
         _rData = new CrossLinkEventRData(data);
         _event = _rData.event();
         _prime = _event.smart___primeData();
@@ -155,5 +159,14 @@ public class TransitionContext extends AbstractGraphContext implements CThreadCo
 
     public TTransaction transaction() { return _transaction; }
     public DataLinker getLinker() { return _linker; }
+    public void storeTxnSpecific(String key, Object obj)
+    {
+        _txnSpecific.put(key, obj);
+    }
+
+    public Object getTxnSpecific(String key)
+    {
+        return _txnSpecific.get(key);
+    }
 }
 

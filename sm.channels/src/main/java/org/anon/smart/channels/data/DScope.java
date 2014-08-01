@@ -77,5 +77,7 @@ public interface DScope
     
     public String origin();
     public String flow();
+
+    public boolean isKeepAlive();
 }
 

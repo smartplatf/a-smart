@@ -142,6 +142,7 @@ public class Deployment implements Deployable, VerifiableObject
         String myuri = deployedURI();
         for (Feature f : features)
         {
+            System.out.println("Searching in feature: " + f.getName());
             f.deployedURI(nm, myuri, uris);
         }
 

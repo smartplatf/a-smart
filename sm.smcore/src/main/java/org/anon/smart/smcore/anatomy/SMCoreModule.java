@@ -59,6 +59,7 @@ import org.anon.smart.smcore.transition.TransitionService;
 import org.anon.smart.deployment.MacroDeployer;
 import org.anon.smart.smcore.transition.plugin.PluginManager;
 import org.anon.smart.smcore.timer.TimerPlugin;
+import org.anon.smart.smcore.application.ApplicationService;
 
 import static org.anon.smart.base.utils.AnnotationUtils.*;
 
@@ -107,6 +108,7 @@ public class SMCoreModule extends AModule implements FlowConstants
             shell.addChannel(channels[i]);
 
         shell.startAllChannels();
+        ApplicationService.initialize();
 
         if (ccfg.firstJVM())
         {

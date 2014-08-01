@@ -89,7 +89,7 @@ public class DefaultReader implements Reader {
 	}
 
 	@Override
-	public List<Object> search(String group, Object query, long size) 
+	public List<Object> search(String group, Object query, long size, long pn, long ps, String sby, boolean asc) 
         throws CtxException 
     {
 		except().te(null, "Search is NOT suppoerted in Mem Only cache schema");

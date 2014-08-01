@@ -109,7 +109,7 @@ public class TestD2Cache {
 		QueryObject qo = new QueryObject();
 		qo.addCondition("_string", "SimpleTestObject");
 		qo.setResultType(SimpleTestObject.class);
-		List<Object> resultSet = reader.search("SimpleTestObject", qo, -1);
+		List<Object> resultSet = reader.search("SimpleTestObject", qo, -1, -1, -1, null, true);
 		assertTrue(resultSet.size()>0);
 		for(Object o : resultSet)
 		{
@@ -143,7 +143,7 @@ public class TestD2Cache {
 		QueryObject qo = new QueryObject();
 		qo.addCondition("id", "compObject");
 		qo.setResultType(ComplexTestObject.class);
-		List<Object> resultSet = reader.search("ComplexTestObject", qo, -1);
+		List<Object> resultSet = reader.search("ComplexTestObject", qo, -1, -1, -1, null, true);
 		assertTrue(resultSet.size()>0);
 		for(Object o : resultSet)
 		{

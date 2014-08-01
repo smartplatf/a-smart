@@ -57,6 +57,7 @@ import org.anon.smart.base.tenant.shell.CrossLinkRuntimeShell;
 import org.anon.smart.base.tenant.shell.DeploymentShell;
 import org.anon.smart.base.tenant.shell.RuntimeShell;
 import org.anon.smart.base.anatomy.SmartModuleContext;
+import org.anon.smart.base.application.ApplicationSuite;
 import org.anon.smart.smcore.data.SmartData;
 import org.anon.smart.smcore.inbuilt.events.LinkFor;
 import org.anon.smart.smcore.inbuilt.events.ListEnabledFlows;
@@ -105,15 +106,41 @@ public class SmartTenantManager
         //stenant.deploymentShell().enableForMe("AdminSmartFlow", new String[] { "all" }, new HashMap<String, String>());
         //stenant.deploymentShell().enableForMe("AllFlows", new String[] { "all" }, new HashMap<String, String>());
         for (int i = 0; i < stdenable.size(); i++)
-            stenant.deploymentShell().enableForMe(stdenable.get(i), new String[] { "all" }, new HashMap<String, List<String>>());
+        {
+            String en = stdenable.get(i);
+            String[] vals = en.split(":");
+            String ef = en;
+            List<String> ff = new ArrayList<String>();
+            if ((vals != null) && (vals.length > 0))
+                ef = vals[0];
+            for (int j = 1; (vals != null) && (j < vals.length); j++)
+                ff.add(vals[j]);
+
+            if (ff.size() <= 0)
+                ff.add("all");
+            stenant.deploymentShell().enableForMe(ef, ff.toArray(new String[0]), new HashMap<String, List<String>>());
+        }
         TenantAdmin admin = new TenantAdmin(tenant.tenantName(), stenant);
 
-        String flow = tenant.getEnableFlow();
-        List<String> features = tenant.getEnableFeatures();
-        if ((flow != null) && (flow.length() > 0) && (features != null))
+        //If application/package is provided, then enable that not the flow??
+        if ((tenant.getEnableApplication() != null) && (tenant.getEnableApplication().length() > 0))
         {
-            System.out.println("Typing to enable flow for: " + flow + ":" + features);
-            stenant.deploymentShell().enableForMe(flow, features.toArray(new String[0]), new HashMap<String, List<String>>());
+            //assumption is that the appln is always enabled when creating, after this it shd be upgrade
+            //need to add that event. Cannot separate flows.
+            assertion().assertNotNull(tenant.getEnablePackage(), "Cannot enable a null package.");
+            assertion().assertTrue(tenant.getEnablePackage().length() > 0, "Cannot enable a null package.");
+            System.out.println("Typing to enable application for: " + tenant.getEnableApplication() + ":" + tenant.getEnablePackage());
+            ApplicationSuite.enableApplication(tenant.getEnableApplication(), tenant.getEnablePackage(), stenant, admin, false);
+        }
+        else
+        {
+            String flow = tenant.getEnableFlow();
+            List<String> features = tenant.getEnableFeatures();
+            if ((flow != null) && (flow.length() > 0) && (features != null))
+            {
+                System.out.println("Typing to enable flow for: " + flow + ":" + features);
+                stenant.deploymentShell().enableForMe(flow, features.toArray(new String[0]), new HashMap<String, List<String>>());
+            }
         }
 
         ClassLoader ldr = stenant.getRelatedLoader();

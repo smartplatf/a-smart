@@ -93,7 +93,7 @@ public class MemoryReader implements Reader {
 	}
 
 	@Override
-	public List<Object> search(String group, Object query, long size) 
+	public List<Object> search(String group, Object query, long size, long pn, long ps, String sby, boolean asc) 
 	    throws CtxException 
 	{
 		// TODO Auto-generated method stub

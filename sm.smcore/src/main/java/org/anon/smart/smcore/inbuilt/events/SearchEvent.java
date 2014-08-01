@@ -47,10 +47,21 @@ import java.util.Map;
 public class SearchEvent implements Serializable {
 	private String group;
     private long size = -1; //default returns all
+    private long pageNum = -1;
+    private long pageSize = -1; //default returns all
+    private String sortBy = null;
+    private boolean ascending = true;
+
 	private Map<String, String> queryMap;
 	public SearchEvent(){}
 	
 	public Map<String, String> getQueryMap() { return queryMap; }
 	public String getGroup() { return group; }
     public long getSize() { if (size == 0) return -1; else return size; } //return all
+
+    public long getPageNum() { return pageNum; }
+    public long getPageSize() { if (pageSize == 0) return -1; else return pageSize; }
+
+    public String getSortBy() { return sortBy; }
+    public boolean sortAscending() { return ascending; }
 }

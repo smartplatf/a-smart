@@ -255,14 +255,17 @@ public class SolrConnection implements StoreConnection, Constants
 	}
 
 	@Override
-	public List<Object> search(String group, Object query) throws CtxException {
+	public List<Object> search(String group, Object query, int size, int pn, int ps, String sby, boolean asc) 
+        throws CtxException 
+    {
 		List<Object> resultSet = new ArrayList<Object>();
 		QueryObject qo = (QueryObject)query;
-		SolrQuery solrQuery = SolrQueryConstructor.getQuery(group, qo);
+		SolrQuery solrQuery = SolrQueryConstructor.getQuery(group, qo, size, pn, ps, sby, asc);
 		try {
 			perf().startHere("SolrSearch");
 			QueryResponse qr = _server.query(solrQuery);
 			SolrDocumentList docList = qr.getResults();
+            qo.setNumFound(docList.getNumFound());
 			perf().checkpointHere("SolrSearch");
 			for(SolrDocument doc : docList)
 			{
@@ -273,7 +276,7 @@ public class SolrConnection implements StoreConnection, Constants
 			    }
 			}
 			perf().dumpHere(_logger);
-			
+			System.out.println("Got after search: " + resultSet.size());
 			
 		} catch (SolrServerException e) {
 			except().rt(e, new CtxException.Context("SolrConnection.search", "Exception while querying"));

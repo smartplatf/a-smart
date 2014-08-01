@@ -176,5 +176,10 @@ public abstract class HTTPMessageDScope implements DScope
     {
         return _referer;
     }
+
+    public boolean isKeepAlive()
+    {
+        return _keepAlive;
+    }
 }
 

@@ -46,11 +46,17 @@ import java.util.List;
 
 public class SearchResponse implements Serializable{
 	private List searchResult;
+    private long totalFound;
 	
 	public SearchResponse(List resultSet)
 	{
 		searchResult = resultSet;
 	}
+
+    public void setTotalFound(long val)
+    {
+        totalFound = val;
+    }
 	
 	public List getSearchResult()
 	{

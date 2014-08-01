@@ -54,6 +54,8 @@ import org.anon.smart.deployment.MacroDeployer;
 import org.anon.smart.secure.stt.SecureSTTService;
 import org.anon.smart.secure.sdomain.SmartSecurityManager;
 import org.anon.smart.secure.inbuilt.transition.TransitionService;
+import org.anon.smart.secure.transaction.TransitionParmService;
+import org.anon.smart.secure.application.ApplicationService;
 import org.anon.smart.secure.flow.SecureFlowService;
 
 
@@ -75,6 +77,7 @@ public class SecureModule extends AModule implements FlowConstants
     protected void setup()
         throws CtxException
     {
+        TransitionParmService.initialize();
         SecureSTTService.initialize();
         TransitionService.initialize();
         SecureFlowService.initialize();
@@ -95,6 +98,8 @@ public class SecureModule extends AModule implements FlowConstants
 
         SecureContext smctx = (SecureContext)_context;
         SecureConfig ccfg = (SecureConfig)cfg;
+
+        ApplicationService.initialize();
 
         if (ccfg.firstJVM())
         {

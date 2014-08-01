@@ -41,8 +41,9 @@
 
 package org.anon.smart.d2cache.store.index.solr;
 
-import java.lang.reflect.Field;
 import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 
 import org.anon.smart.d2cache.QueryObject;
 import org.anon.smart.d2cache.QueryObject.QueryItem;
@@ -54,7 +55,7 @@ public class SolrQueryConstructor implements Constants{
 
 	public static final String QUERY_DELIM = ":";
 	public static final String DEFUALT_OPER = " AND ";
-	public static SolrQuery getQuery(String group, QueryObject qo)
+	public static SolrQuery getQuery(String group, QueryObject qo, int size, int pn, int ps, String sby, boolean asc)
 		throws CtxException
 	{
 		List<QueryItem> condList = qo.getQuery();
@@ -70,10 +71,45 @@ public class SolrQueryConstructor implements Constants{
 			condition = getQueryCondition(cond,  qo.getResultType(), group);
 			q.append(DEFUALT_OPER+condition);
 		}
-		System.out.println("SolrQuery:"+q.toString());
-		return new SolrQuery(q.toString());
-		
+		System.out.println("SolrQuery:"+q.toString() + ":" + size);
+
+        if (pn < 0) pn = 0;
+        if (ps <= 0) ps = -1;
+
+        int start = 0;
+        if (ps > 0) start = (pn * ps);
+
+        int rows = size;
+        if (ps > 0) rows = ps;
+		SolrQuery sq = new SolrQuery(q.toString());
+        sq.setStart(start);
+        sq.setRows(rows);
+        if ((sby != null) && (sby.length() > 0))
+        {
+            String sort = getSortBy(sby, qo.getResultType(), group);
+            if (asc)
+                sq.addSortField(sort, SolrQuery.ORDER.asc);
+            else
+                sq.addSortField(sort, SolrQuery.ORDER.desc);
+        }
+
+		return sq;
 	}
+
+    private static String getSortBy(String attribute, Class resultType, String group)
+    {
+        StringBuffer condition = new StringBuffer();
+		if(attribute.equals(ID_COLUMN))
+			condition.append(attribute);
+		else
+			condition.append(group+PART_SEPARATOR+attribute);
+        String[] path = attribute.split("\\.");
+		String fldSuffix = getFieldSuffix(path, resultType, false);
+		if(fldSuffix != null)
+			condition.append(fldSuffix);
+
+        return condition.toString();
+    }
 
 	private static String getQueryCondition(QueryItem queryItem,
 			Class resultType, String group) {
@@ -85,7 +121,7 @@ public class SolrQueryConstructor implements Constants{
 			condition.append(group+PART_SEPARATOR+attribute);
 
         String[] path = attribute.split("\\.");
-		String fldSuffix = getFieldSuffix(path, resultType);
+		String fldSuffix = getFieldSuffix(path, resultType, false);
 		if(fldSuffix != null)
 			condition.append(fldSuffix);
 		
@@ -100,13 +136,17 @@ public class SolrQueryConstructor implements Constants{
 		return condition.toString();
 	}
 
-	private static String getFieldSuffix(String[] attribute, Class resultType) {
+	private static String getFieldSuffix(String[] attribute, Class resultType, boolean multiple) {
 		
 		Field[] flds = resultType.getDeclaredFields();
 		for(int i = 0 ; i<flds.length;i++)
 		{
 			if(flds[i].getName().equals(attribute[0]))
 			{
+                boolean multi = multiple;
+                if (!multiple && (flds[i].getGenericType() instanceof ParameterizedType))
+                    multi = true;
+
                 if (attribute.length > 1)
                 {
                     //need to go next level and search
@@ -114,13 +154,17 @@ public class SolrQueryConstructor implements Constants{
                     for (int j = 1; j < attribute.length; j++)
                         nxtsrch[j - 1] = attribute[j];
 
-                    return getFieldSuffix(nxtsrch, flds[i].getType());
+                    return getFieldSuffix(nxtsrch, flds[i].getType(), multi);
                 }
-				return SolrRecord.SUFFIXES.get(flds[i].getType());
+
+                if (multiple)
+                    return SolrRecord.LIST_SUFFIXES.get(flds[i].getType());
+                else
+                    return SolrRecord.SUFFIXES.get(flds[i].getType());
 			}
 		}
 		if(resultType.getSuperclass()!= null)
-			return getFieldSuffix(attribute, resultType.getSuperclass());
+			return getFieldSuffix(attribute, resultType.getSuperclass(), multiple);
 		
 		return null;
 	}

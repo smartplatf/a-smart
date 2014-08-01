@@ -70,6 +70,8 @@ public class GoogleMapServices
     private static final String ADD = "add/";
     private static final String DELETE = "delete/";
 
+    private static final String GEOCODEURI = "/maps/api/geocode/";
+
     public GoogleMapServices()
     {
     }
@@ -93,19 +95,31 @@ public class GoogleMapServices
         return scfg;
     }
 
-    private Map rungoogleapi(String api, Map data)
+    private Map intrungoogleapi(String uripath, String api, Map data)
         throws CtxException
     {
         Pool p = getMapsAPIPool();
         HTTPClientObject hclient = (HTTPClientObject)p.lockone();
         String post = hclient.getFormatted(data, "form");
-        String uri = PLACEURI + api + FORMAT + "?" + post;
+        String uri = uripath + api + FORMAT + "?" + post;
         Object resp = hclient.getData(uri, true);
         p.unlockone(hclient);
         assertion().assertNotNull(resp, "Cannot call the " + api + " uri.");
         JSONResponse r = (JSONResponse)resp;
         Map m = r.getResponse();
         return m;
+    }
+
+    private Map rungoogleapi(String api, Map data)
+        throws CtxException
+    {
+        return intrungoogleapi(PLACEURI, api, data);
+    }
+
+    private Map rungooglegeocodeapi(Map data)
+        throws CtxException
+    {
+        return intrungoogleapi(GEOCODEURI, "", data);
     }
 
     private Map postgoogleapi(String api, Map data, Object post)
@@ -136,6 +150,27 @@ public class GoogleMapServices
         in.put("sensor", "false");
 
         return in;
+    }
+
+    public void pinLatLng(String pincde, String state, String country, Map output)
+        throws CtxException
+    {
+        Map data = new HashMap();
+        data.put("address", pincde + "," + state + "," + country);
+        Map m = rungooglegeocodeapi(data);
+        String stat = (String)m.get("status");
+        assertion().assertNotNull(stat, "Cannot find lat lng for " + pincde);
+        assertion().assertTrue(stat.equals("OK"), "Cannot find lat lng for " + pincde);
+        List l = (List)m.get("results");
+        assertion().assertNotNull(l, "Cannot find lat lng for " + pincde);
+        //for (int i = 0; i < l.size(); i++)
+        {
+            Map m1 = (Map)l.get(0);
+            Map m2 = (Map)m1.get("geometry");
+            Map m3 = (Map)m2.get("location");
+            output.put("lat", m3.get("lat"));
+            output.put("lng", m3.get("lng"));
+        }
     }
 
     public void autocomplete(String input, Map output)

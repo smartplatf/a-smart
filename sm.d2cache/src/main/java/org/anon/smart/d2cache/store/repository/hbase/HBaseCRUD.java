@@ -91,7 +91,7 @@ public class HBaseCRUD implements Constants
             for (int i = 0; i < cf.length; i++) 
                 desc.addFamily(new HColumnDescriptor(cf[i]));
             _admin.createTable(desc);
-            createRowIDTableFor(tableName);
+            //createRowIDTableFor(tableName);
             System.out.println("Table Created:"+tableName);
         }
         
@@ -265,7 +265,7 @@ public class HBaseCRUD implements Constants
         table.put(puts);
         
         /* adding ROWIDs */
-        insertRowIDs(tableName, puts);
+        //insertRowIDs(tableName, puts);
         }
         catch (Exception e)
         {

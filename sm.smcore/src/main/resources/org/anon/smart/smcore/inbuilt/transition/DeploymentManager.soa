@@ -1,11 +1,16 @@
 name:       DeploymentManager
 type:       Transition
 flow:       AdminSmartFlow
-foreach:    TenantAdmin|DeployEvent,FlowAdmin|ListDeployments,TenantAdmin|InternalDeployEvent
+foreach:    TenantAdmin|DeployEvent,FlowAdmin|ListDeployments,TenantAdmin|InternalDeployEvent,TenantAdmin|DeployApplication
 actions:
     - name:     deployJar
       method:   deployJar
       foreach:  TenantAdmin|DeployEvent,TenantAdmin|InternalDeployEvent
+      from:     active
+      to:       active
+    - name:     deployApplication
+      method:   deployApplication
+      foreach:  TenantAdmin|DeployApplication
       from:     active
       to:       active
     - name:     retrieveDeployments

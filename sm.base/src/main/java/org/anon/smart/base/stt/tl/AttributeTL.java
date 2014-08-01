@@ -49,6 +49,7 @@ import java.lang.annotation.Annotation;
 
 import org.anon.smart.base.annot.DestinationAnnotate;
 import org.anon.smart.base.annot.KeyAnnotate;
+import org.anon.smart.d2cache.store.index.solr.NoIndex;
 
 public class AttributeTL extends BaseTL
 {
@@ -61,6 +62,7 @@ public class AttributeTL extends BaseTL
             _annotationMapping = new HashMap<String, Class>();
             _annotationMapping.put("destination", DestinationAnnotate.class);
             _annotationMapping.put("key", KeyAnnotate.class);
+            _annotationMapping.put("noindex", NoIndex.class);
         }
     }
 

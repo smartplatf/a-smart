@@ -100,7 +100,7 @@ public class SecureContext implements CoreContext
 
     public String[] getEnableFlows()
     {
-        return new String[] { "Security" };
+        return new String[] { "Security:all:standard" };
     }
 
 

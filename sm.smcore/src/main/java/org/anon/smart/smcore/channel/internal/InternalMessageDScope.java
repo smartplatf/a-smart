@@ -200,4 +200,9 @@ public class InternalMessageDScope implements DScope {
             return legend.link();
     }
 
+    public boolean isKeepAlive()
+    {
+        return false;
+    }
+
 }

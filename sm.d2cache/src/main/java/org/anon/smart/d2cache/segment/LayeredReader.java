@@ -147,7 +147,7 @@ public class LayeredReader implements Reader
     }
 
 	@Override
-	public List<Object> search(String group, Object query, long size) 
+	public List<Object> search(String group, Object query, long size, long pn, long ps, String sby, boolean asc) 
         throws CtxException 
     {
 		List<Object> ret = new ArrayList<Object>();
@@ -159,13 +159,18 @@ public class LayeredReader implements Reader
         {
 			if(_stores[i] instanceof IndexedStore)
 			{
-				resultKeys.addAll(((IndexedStore)_stores[i]).search(group, query));
+				resultKeys.addAll(((IndexedStore)_stores[i]).search(group, query, (int)size, (int)pn, (int)ps, sby, asc));
 			}
         }
         int totsize = 0;
         System.out.println("Searching for size: " + size + ":" + resultKeys.size());
-		for(Object key : resultKeys)
+        if ((pn >= 0) && (ps > 0))
+            size = ps;
+
+        //traverse in the same order, else sort by is wrong
+		for (int i = 0; i < resultKeys.size(); i++)
 		{
+            Object key = resultKeys.get(i);
             if ((size >= 0) && (totsize >= size))
                 break;
 

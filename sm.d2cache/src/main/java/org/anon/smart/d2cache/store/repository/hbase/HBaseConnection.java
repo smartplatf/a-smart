@@ -226,7 +226,7 @@ public class HBaseConnection implements StoreConnection, Constants {
 	}
 
 	@Override
-	public List<Object> search(String group, Object query) throws CtxException {
+	public List<Object> search(String group, Object query, int size, int pn, int ps, String sby, boolean asc) throws CtxException {
 		// TODO Auto-generated method stub
 		return null;
 	}

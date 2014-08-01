@@ -87,7 +87,7 @@ public class TransitionServices
         new SuccessUpdated("Updated state");
     }
 
-    public void changeObjectListState(List obj, String from, String to, String forcecheck)
+    public boolean changeObjectListState(List obj, String from, String to, String forcecheck)
         throws CtxException
     {
         String[] lst = from.split(",");
@@ -96,9 +96,11 @@ public class TransitionServices
             SmartData dobj = (SmartData)obj.get(i);
             changeObjectState(dobj, lst, to, forcecheck);
         }
+
+        return false;
     }
 
-    public void changeObjectState(SmartData obj, String[] from, String to, String forcecheck)
+    public boolean changeObjectState(SmartData obj, String[] from, String to, String forcecheck)
         throws CtxException
     {
         System.out.println("Changing State for obj " + obj + ":" + from + to);
@@ -129,9 +131,60 @@ public class TransitionServices
                 obj.smart___transition(to);
         }
         System.out.println("Changed State");
+        return false;
     }
 
-    public void sendEmailService(String to, String subject, String msg)
+    public boolean assertObjectState(SmartData obj, String state)
+        throws CtxException
+    {
+        assertion().assertNotNull(obj.utilities___currentState(), "Object current state is null. Cannot assert state?");
+        assertion().assertNotNull(obj.utilities___currentState().stateName(), "Object current state name is null. Cannot assert state?");
+        assertion().assertTrue(obj.utilities___currentState().stateName().equals(state), "The state of the object is not: " + state);
+        return false;
+    }
+
+    public boolean assertObjectNotState(SmartData obj, String state)
+        throws CtxException
+    {
+        assertion().assertNotNull(obj.utilities___currentState(), "Object current state is null. Cannot assert state?");
+        assertion().assertNotNull(obj.utilities___currentState().stateName(), "Object current state name is null. Cannot assert state?");
+        assertion().assertTrue((!obj.utilities___currentState().stateName().equals(state)), "The state of the object is: " + state);
+        return false;
+    }
+
+    public boolean assertNoObjectInState(List lst, String state)
+        throws CtxException
+    {
+        if (lst != null)
+        {
+            for (Object o : lst)
+            {
+                SmartData obj = (SmartData)o; 
+                assertion().assertNotNull(obj.utilities___currentState(), "Object current state is null. Cannot assert state?");
+                assertion().assertNotNull(obj.utilities___currentState().stateName(), "Object current state name is null. Cannot assert state?");
+                assertion().assertTrue((!obj.utilities___currentState().stateName().equals(state)), "The state of the object is: " + state);
+            }
+        }
+        return false;
+    }
+
+    public boolean assertAllObjectInState(List lst, String state)
+        throws CtxException
+    {
+        if (lst != null)
+        {
+            for (Object o : lst)
+            {
+                SmartData obj = (SmartData)o; 
+                assertion().assertNotNull(obj.utilities___currentState(), "Object current state is null. Cannot assert state?");
+                assertion().assertNotNull(obj.utilities___currentState().stateName(), "Object current state name is null. Cannot assert state?");
+                assertion().assertTrue((obj.utilities___currentState().stateName().equals(state)), "The state of the object is: " + state);
+            }
+        }
+        return false;
+    }
+
+    public boolean sendEmailService(String to, String subject, String msg)
         throws CtxException
     {
         Class cls = EmailConfig.class;
@@ -171,9 +224,11 @@ public class TransitionServices
         {
             except().rt(err, new CtxException.Context("Exception", err.getMessage()));
         }
+
+        return false;
     }
 
-    public void sendWithAttachment(String to, String subject, String msg, String filename, String name)
+    public boolean sendWithAttachment(String to, String subject, String msg, String filename, String name)
         throws CtxException
     {
         Class cls = EmailConfig.class;
@@ -229,9 +284,11 @@ public class TransitionServices
         {
             except().rt(err, new CtxException.Context("Exception", err.getMessage()));
         }
+
+        return false;
     }
 
-    public void sendSMS(Map values)
+    public boolean sendSMS(Map values)
         throws CtxException
     {
         Class cls = SMSConfig.class;
@@ -253,6 +310,7 @@ public class TransitionServices
         uri = uri + "?" + post;
         hclient.getData(uri, true);
         p.unlockone(hclient);
+        return false;
     }
 }
 

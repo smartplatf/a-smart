@@ -46,9 +46,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.anon.smart.base.dspace.DSpaceObject;
+import org.anon.smart.base.annot.PrimeDataAnnotate;
 
 import org.anon.utilities.exception.CtxException;
 
+@PrimeDataAnnotate(name="LinkedData", store="repository")
 public class LinkedData implements DSpaceObject, java.io.Serializable
 {
     private Object _linkKey;
@@ -94,10 +96,12 @@ public class LinkedData implements DSpaceObject, java.io.Serializable
         return _linkType + "__" + _linkedType;
     }
 
+    /*
     public String toString()
     {
         return "LinkType: " + _linkType + ":" + _linkedType + ":" + _linkKey + ":" + _links;
     }
+    */
 
 	public void smart___initOnLoad() 
         throws CtxException 

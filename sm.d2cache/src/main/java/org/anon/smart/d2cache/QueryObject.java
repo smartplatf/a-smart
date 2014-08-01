@@ -88,6 +88,7 @@ public class QueryObject
 
 	private List<QueryItem> query;
 	private Class _resultType;
+    private long totalFound;
 	
 	public QueryObject() 
     {
@@ -134,6 +135,16 @@ public class QueryObject
 		query.add(new QueryItem(q));
 		
 	}
+
+    public void setNumFound(long tot)
+    {
+        totalFound = tot;
+    }
+
+    public long getTotalFound()
+    {
+        return totalFound;
+    }
 }
 
 

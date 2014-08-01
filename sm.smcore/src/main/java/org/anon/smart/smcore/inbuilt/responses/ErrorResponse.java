@@ -74,7 +74,10 @@ public class ErrorResponse implements java.io.Serializable
         {
             code = err.getCode();
             if (t != null)
+            {
+                t.printStackTrace();
                 context = t.getMessage();
+            }
             else
                 context = "A non-descript error has occurred.";
         }
@@ -83,7 +86,10 @@ public class ErrorResponse implements java.io.Serializable
         {
             code = cde;
             if (t != null)
+            {
                 context = t.getMessage();
+                t.printStackTrace();
+            }
             else
                 context = "A non-descript error has occurred.";
         }

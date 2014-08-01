@@ -53,7 +53,7 @@ public interface Reader
     public Object lookup(String group, Object key)
         throws CtxException;
 
-    public List<Object> search(String group, Object query, long size)
+    public List<Object> search(String group, Object query, long size, long pn, long ps, String sby, boolean asc)
         throws CtxException;
     
     

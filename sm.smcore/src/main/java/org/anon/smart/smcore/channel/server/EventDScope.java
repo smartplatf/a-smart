@@ -117,5 +117,10 @@ public class EventDScope extends HTTPMessageDScope
         legend.stampReceived(primary().receivedTime());
         return legend.link();
     }
+
+    public boolean isKeepAlive()
+    {
+        return _keepAlive;
+    }
 }
 

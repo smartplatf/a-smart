@@ -196,12 +196,12 @@ public class DataShell implements SmartShell, TenantConstants
             return res;
         }
 
-    public List<Object> search(String spacemodel, Class clz, Map<String, String> query, long size)
+    public List<Object> search(String spacemodel, Class clz, Map<String, String> query, long size, long pageNum, long pageSize, String sortBy, boolean asc)
         throws CtxException
     {
         //DSpace space = _spaces.get(spacemodel);
         DSpace space = getSpaceFor(spacemodel, SpaceFilter.spaceaction.read, true);
-        List<Object> ret = searchIn(space, query, size, clz);
+        List<Object> ret = searchIn(space, query, size, clz, pageNum, pageSize, sortBy, asc);
         return ret;
     }
 

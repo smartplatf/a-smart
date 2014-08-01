@@ -96,7 +96,9 @@ public class SearchManager {
         {
             System.out.println("SearchManager:result type is "+clz.getName() );
             searchResult = shell.searchFor(dShell.deploymentFor(flow).deployedName(),
-											clz, searchEvent.getQueryMap(), searchEvent.getSize());
+											clz, searchEvent.getQueryMap(), searchEvent.getSize(), 
+                                            searchEvent.getPageNum(), searchEvent.getPageSize(), 
+                                            searchEvent.getSortBy(), searchEvent.sortAscending());
 		
 		
             if(searchResult != null)
@@ -107,10 +109,16 @@ public class SearchManager {
             }
         }
 		
+        Map<String, String> val = searchEvent.getQueryMap();
+        long l = 0;
+        if (val.containsKey("TOTALSIZE"))
+            l = Long.parseLong(val.get("TOTALSIZE"));
+        System.out.println("***** Setting total Found as: " + l);
 		SearchResponse resp = new SearchResponse(searchResult);
+        resp.setTotalFound(l);
 	}
 
-    public void searchService(String flow, String group, Map<String, String> query, List result)
+    public boolean searchService(String flow, String group, Map<String, String> query, List result, Integer pn, Integer ps, String sortby, Boolean asc)
         throws CtxException
     {
 		if ((query != null) && (query.size() > 0))
@@ -127,9 +135,15 @@ public class SearchManager {
             List<Object> searchResult = new ArrayList<Object>();
             if(clz != null)
             {
+                int pagenum = -1;
+                if (pn != null) pagenum = pn.intValue();
+                int pagesize = -1;
+                if (ps != null) pagesize = ps.intValue();
+                boolean a = true;
+                if (asc != null) a = asc.booleanValue();
                 System.out.println("SearchManager:result type is "+clz.getName() );
                 searchResult = shell.searchFor(dShell.deploymentFor(flow).deployedName(),
-                                                clz, query, Integer.MAX_VALUE);
+                                                clz, query, Integer.MAX_VALUE, pagenum, pagesize, sortby, a);
             
                 if (searchResult != null)
                 {
@@ -146,9 +160,11 @@ public class SearchManager {
                 }
             }
         }
+
+        return false;
     }
 
-    public void searchData(String flow, String group, List result, String byOwner, String status, String srchGroup)
+    public boolean searchData(String flow, String group, List result, String byOwner, String status, String srchGroup)
         throws CtxException
     {
         Map<String, String> query = new HashMap<String, String>();
@@ -173,7 +189,8 @@ public class SearchManager {
         if ((srchGroup != null) && (!srchGroup.equals("Any")))
             query.put("___smart_legend___._group", srchGroup);
 
-        searchService(flow, group, query, result);
+        searchService(flow, group, query, result, null, null, null, null);
+        return false;
     }
 	
 	public void lookup(LookupEvent lookupEvent) 

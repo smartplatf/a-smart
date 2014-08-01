@@ -147,6 +147,7 @@ public class DataLinker
             //else if (tobj.getFlow().equals(fflow) && fobj.getObject().equals(tname))
             else if (tobj.getFlow().equals(fflow) && (tobj.getObject().equals(fname)) && fobj.getFlow().equals(tflow) && fobj.getObject().equals(tname))
                 attr = tobj.getField();
+        System.out.println("Got for: " + pcls + ":" + fobj.getFlow() + ":" + tobj.getFlow() + ":" + tflow + ":" + fflow + ":" + fname + ":" + tname + ":" + attr);
             if (attr != null)
             {
                 Object key = reflect().getAnyFieldValue(data.getClass(), data, attr);
@@ -296,8 +297,14 @@ public class DataLinker
         if (linked.size() <= 0)
             return;
 
+        List<String> alreadylinked = new ArrayList<String>();
         for (CrossLinkFlowDeployment clf : linked)
         {
+            String lflow = clf.deployedName();
+            if (alreadylinked.contains(lflow))
+                continue;
+
+            alreadylinked.add(lflow);
             List<CrossLinkLink> links = clf.toLinksFor(flow, name);
             if ((links == null) || (links.size() <= 0))
                 continue;

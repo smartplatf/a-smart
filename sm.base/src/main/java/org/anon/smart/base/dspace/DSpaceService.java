@@ -163,7 +163,7 @@ public class DSpaceService
             return ret;
         }
 
-    public static List<Object> searchIn(DSpace space, Map<String, String> query, long size, Class clz)
+    public static List<Object> searchIn(DSpace space, Map<String, String> query, long size, Class clz, long pn, long ps, String sby, boolean asc)
         throws CtxException
     {
         List<Object> ret = null;
@@ -176,7 +176,9 @@ public class DSpaceService
         {
             System.out.println("Getting for class; " + clz);
         	String group = ArtefactType.artefactTypeFor(FlowConstants.PRIMEDATA).getName(clz);
-        	ret = rdr.search(group, qo, size);
+        	ret = rdr.search(group, qo, size, pn, ps, sby, asc);
+            //For now, have to find a better mechanism
+            query.put("TOTALSIZE", qo.getTotalFound() + "");
         }
 
         return ret;

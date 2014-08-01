@@ -42,8 +42,10 @@
 package org.anon.smart.smcore.inbuilt.transition;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Set;
 import java.util.List;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.lang.reflect.Array;
@@ -59,10 +61,12 @@ import org.anon.smart.base.flow.FlowDeploymentSuite;
 import org.anon.smart.base.flow.FlowDeployment;
 import org.anon.smart.base.flow.CrossLinkFlowDeployment;
 import org.anon.smart.base.flow.FlowConstants;
+import org.anon.smart.base.application.ApplicationSuite;
 import org.anon.smart.deployment.MacroDeployer;
 import org.anon.smart.deployment.ArtefactType;
 import org.anon.smart.base.annot.TransitionAnnotate;
 import org.anon.smart.smcore.inbuilt.events.DeployEvent;
+import org.anon.smart.smcore.inbuilt.events.DeployApplication;
 import org.anon.smart.smcore.inbuilt.events.InternalDeployEvent;
 import org.anon.smart.smcore.inbuilt.events.ListDeployments;
 import org.anon.smart.smcore.inbuilt.responses.ListEnabledFlowsResponse;
@@ -106,6 +110,37 @@ public class DeploymentManager implements FlowConstants, TConstants
         MacroDeployer.deployFile(FLOW, deploy.getFlowSoa(), jars);
         //TODO: if there is an error, this does not do anything
         SuccessCreated resp = new SuccessCreated(deploy.getJar());
+    }
+
+    public void deployApplication(TenantAdmin owner, DeployApplication deploy)
+        throws CtxException
+    {
+        System.out.println("Deploying... " + deploy.getApplicationArchive() + ":" + deploy.getApplication());
+        assertion().assertTrue(owner.isPlatformOwner(), "Cannot deploy on a tenant that is not the owner of the platform");
+        assertion().assertNotNull(deploy.getApplicationArchive(), "Cannot deploy a null archive");
+        assertion().assertNotNull(deploy.getApplication(), "Please provide an application to deploy");
+        assertion().assertTrue(deploy.getApplication().length() > 0, "Please provide an application to deploy");
+        String depDir = MacroDeployer.getConfigDir();
+        if (depDir == null)
+            depDir = ".";
+        depDir += File.separator + "applications";
+
+        try
+        {
+            File f = new File(depDir);
+            if (!f.exists()) f.mkdirs();
+            String app = deploy.getApplication();
+            jar().extractJar(deploy.getApplicationArchive(), depDir, app);
+            String appcfg = depDir + File.separator + app + File.separator + app + ".soa";
+            Map<String, String> vars = new HashMap<String, String>();
+            vars.put("install", depDir + File.separator + app);
+            ApplicationSuite.deployApplication(appcfg, vars, false);
+            SuccessCreated resp = new SuccessCreated(deploy.getApplicationArchive());
+        }
+        catch (Exception e)
+        {
+            except().rt(e, new CtxException.Context("Cannot Deploy", e.getMessage()));
+        }
     }
 
     private void addLinksIfPresent(Class cls, List<String> deps)

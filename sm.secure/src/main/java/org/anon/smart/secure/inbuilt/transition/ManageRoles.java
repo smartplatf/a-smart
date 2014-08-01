@@ -63,7 +63,7 @@ public class ManageRoles
     {
     }
 
-    public void createRole(CreateRole role)
+    public SmartRole createRole(CreateRole role)
         throws CtxException
     {
         SecurityResponse resp = null;
@@ -74,7 +74,7 @@ public class ManageRoles
         if (exist != null)
         {
             resp = new SecurityResponse("A role already exists for: " + role.getRoleName());
-            return;
+            return null;
         }
 
         SmartRole srole = new SmartRole(role.getRoleName());
@@ -100,6 +100,15 @@ public class ManageRoles
         }
         //TODO:
         resp = new SecurityResponse("Created a role for: " + role.getRoleName());
+        return srole;
+    }
+
+    public SmartRole createNewRole(String role, Map permits)
+        throws CtxException
+    {
+        System.out.println("Creating New Role for: " + role + ":" + permits);
+        CreateRole cr = new CreateRole(role, permits);
+        return createRole(cr);
     }
 
 
@@ -133,6 +142,15 @@ public class ManageRoles
         CrossLinkAny any = new CrossLinkAny(this.getClass().getName(), ldr);
         any.create();
         return any.invoke("createDefaultRole");
+    }
+
+    public Object clCreateNewRole(ClassLoader ldr, String nm, Map permits)
+        throws CtxException
+    {
+        CrossLinkAny any = new CrossLinkAny(this.getClass().getName(), ldr);
+        any.create();
+        System.out.println("Creating New Role for: " + nm + ":" + permits);
+        return any.invoke("createNewRole", new Class[] { String.class, Map.class }, new Object[] { nm, permits });
     }
 }
 

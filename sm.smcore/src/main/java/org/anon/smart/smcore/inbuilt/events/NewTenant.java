@@ -51,6 +51,8 @@ public class NewTenant implements java.io.Serializable
     private String clientOf;
     private String controlsAdmin;
     private List<String> enableFeatures;
+    private String enableApplication;
+    private String enablePackage;
 
     public NewTenant()
     {
@@ -71,5 +73,8 @@ public class NewTenant implements java.io.Serializable
     public String getDomain() { return domain; }
     public String getClientOf() { return clientOf; }
     public String getControlsAdmin() { return controlsAdmin; }
+
+    public String getEnableApplication() { return enableApplication; }
+    public String getEnablePackage() { return enablePackage; }
 }
 
