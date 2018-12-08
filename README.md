@@ -8,6 +8,4 @@ A set of demos using this platform can be found at the [demo website](http://dem
 
 Check out the demo source code in the github project [a-smartdemo](http://github.com/smartplatf/a-smartdemo)
 
-Ask a question related to the platform at [Our Forum](https://groups.google.com/forum/#!forum/smart-platform)
-
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/de31a32ac0ab7f3e8daaae82f6623c6a "githalytics.com")](http://githalytics.com/smartplatf/a-smart)
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
